@@ -1,0 +1,56 @@
+.DiskAndDataButton {
+  border-radius: 0;
+}
+.DiskAndDataButton:hover {
+  transition: background-color 0s;
+}
+.DiskAndDataButton:before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 0;
+  right: 61px;
+  border-width: 20px 14px;
+  border-style: solid;
+  border-color: transparent #409eff transparent transparent;
+}
+.DiskAndDataButton:hover:before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 0;
+  right: 61px;
+  border-width: 20px 14px;
+  border-style: solid;
+  border-color: transparent #66b1ff transparent transparent;
+  transition: border-color 0s;
+}
+.DiskAndDataButton:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 0;
+  left: 61px;
+  border-width: 20px 14px;
+  border-style: solid;
+  border-color: transparent transparent transparent #409eff;
+}
+.DiskAndDataButton:hover::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  top: 0;
+  left: 61px;
+  border-width: 20px 14px;
+  border-style: solid;
+  border-color: transparent transparent transparent #66b1ff;
+  transition: border-color 0s;
+}

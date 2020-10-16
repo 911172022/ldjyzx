@@ -1,0 +1,70 @@
+.el-scrollbar {
+  height: 100%;
+}
+.mainTitle {
+  h1 {
+    font-size: 1.6em;
+    margin-top: 0;
+  }
+}
+.el-table--enable-row-hover .el-table__body tr:hover>td {
+  background: #e6f7ff;
+}
+.el-table.mainTable {
+  width: 100%;
+  th {
+    background-color: #fafafa;
+    padding: 0;
+  }
+  td {
+    padding: 5px 0;
+  }
+}
+.el-table.asideRTable {
+  width: 100%;
+  th {
+    background-color: #fafafa;
+    padding: 5px 0;
+  }
+  td {
+    padding: 5px 0;
+  }
+}
+.el-table.dialogTable {
+  width: 100%;
+  th {
+    background-color: #fafafa;
+    padding: 5px 0;
+  }
+  td {
+    padding: 5px 0;
+  }
+}
+
+// 修改目录树 前方开关icon 箭头 => + -
+.el-tree.Common-Tree-Icon {
+  .el-tree-node__content>.el-tree-node__expand-icon {
+    padding: 0;
+    margin: 0 5px;
+  }
+  .el-icon-caret-right:before {
+    content: '';
+  }
+  .el-icon-caret-right {
+    background-image: url("~@/assets/tree/plus.png");
+    background-repeat: no-repeat;
+    background-size: 10px;
+    width: 10px;
+    height: 10px;
+  }
+  .is-leaf.el-icon-caret-right {
+    background-image: none;
+  }
+  .el-tree-node__expand-icon.expanded.el-icon-caret-right {
+    background-image: url("~@/assets/tree/minus.png");
+    background-repeat: no-repeat;
+    background-size: 10px;
+    width: 10px;
+    height: 10px;
+  }
+}

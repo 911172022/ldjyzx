@@ -1,0 +1,79 @@
+.el-scrollbar {
+  .el-scrollbar__wrap {
+    // overflow: hidden;
+    overflow-y: scroll;
+  }
+}
+.asideL {
+  height: 100%;
+  overflow: hidden;
+  h3 {
+    font-size: 1.1em;
+    margin-top: 0;
+  }
+  .asideLLine {
+    height: 1px;
+    background-color: #e0e6ed;
+    margin: 10px 0 20px;
+  }
+  .asideLTreeOuter {
+    .el-tree.asideLTree {
+      border: 0;
+      padding-bottom: 300px;
+      .el-tree-node__label {
+        position: relative;
+        padding-left: 25px;
+      }
+      .el-tree-node__label:before {
+        content: "";
+        position: absolute;
+        background-image: url("../../assets/tree/Smallfolder.png");
+        background-size: 20px;
+        top: -3px;
+        left: 0;
+        z-index: 2;
+        width: 20px;
+        height: 20px;
+      }
+      .el-tree-node__content {
+        padding: 3px;
+      }
+    }
+  }
+}
+
+
+// 文档管理的icon DocManagement
+.el-tree>.el-tree-node>.el-tree-node__content>.tree_row>span:last-child{
+  font-weight: bolder;
+}
+.el-tree>.el-tree-node>.el-tree-node__content>.tree_row>span:first-child{
+  background-image: url("../../assets/tree/document_directory.png") !important;
+}
+
+.tree_row>span:first-child{
+  height: 20px;
+  width: 20px;
+  vertical-align: text-bottom;
+  background-image: url("../../assets/tree/huang.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+// 用户组设置里的icon
+.UG-tree>.UG-tree-filter>.el-tree-node>.el-tree-node__content>span:last-child>span:last-child {
+  font-weight: bolder;
+}
+.UG-tree>.UG-tree-filter>.el-tree-node>.el-tree-node__content>span:last-child .icon {
+  background-image: url("../../assets/tree/document_directory.png") !important;
+}
+
+.UG-tree .el-tree-node>.el-tree-node__content>span:last-child .icon {
+  height: 20px;
+  width: 20px;
+  display: inline-block;
+  vertical-align: text-bottom;
+  background-image: url("../../assets/tree/huang.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}

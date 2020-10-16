@@ -1,0 +1,81 @@
+.asideR {
+  height: calc(100% - 8px);
+  overflow: hidden;
+  // padding-top: 8px;
+  .el-tabs.asideRTabs {
+    height: 100%;
+    .el-tabs__content {
+      padding: 1px 5px;
+      height: calc(100% - 55px);
+      .el-tab-pane {
+        height: 100%;
+        overflow: auto;
+        .isBtn {
+          text-align: right;
+        }
+        .isTable {
+          table-layout: fixed;
+          width: calc(100% - 1px);
+          color: #333;
+          border-collapse: collapse;
+          text-align: left;
+          .thColor {
+            color: #999;
+            padding-bottom: 5px;
+          }
+          td {
+            line-height: 1.8rem;
+            border: 1px solid #dddddd;
+            padding: 8px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow: ellipsis;
+          }
+          .bgTd {
+            background-color: #f2f1f6;
+          }
+          .bgTd:hover{ 
+            white-space:normal; 
+            overflow:auto;
+          }
+        }
+      }
+    }
+    h3 {
+      font-size: 1.1em;
+    }
+    .Attachment {
+      padding: 5px 15px;
+      border: 1px solid #dcdfe6;
+      border-radius: 5px;
+      line-height: 30px;
+      .Attachment-icon {
+        cursor: pointer;
+        display: block;
+        position: relative;
+        padding-top: 5px;
+        padding-left: 35px;
+        margin-bottom: 5px;
+        .hideText {
+          overflow:hidden;
+          white-space:nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+      .Attachment-icon:before {
+        content: "";
+        position: absolute;
+        background-image: url("../../assets/table/currency.png");
+        background-size: 20px;
+        top: 10px;
+        left: 0;
+        z-index: 2;
+        width: 20px;
+        height: 20px;
+      }
+      .Attachment-icon + .Attachment-icon {
+        border-top: 1px solid #dcdfe6;
+      }
+    }
+  }
+}

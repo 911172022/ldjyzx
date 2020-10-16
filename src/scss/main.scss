@@ -1,0 +1,139 @@
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  // background:#000;
+  h4 {
+    font-size: 1.3em;
+    margin: 0 0 10px;
+  }
+  .el-form.mainSearch {
+    // background: #f8f9fd;
+    // padding: 10px;
+    // border-radius: 5px;
+    .el-form-item {
+      margin-bottom: 0;
+    }
+    .el-form-item:nth-child(1) {
+      width: calc(100% - 70px);
+      .el-form-item__content {
+        width: 100%;
+      }
+    }
+    .el-form-item:last-child {
+      margin-right: 0;
+    }
+  }
+  .DOCmainTitle {
+    margin: 10px 0;
+    .FunctionMenu > div {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  }
+  .el-table.mainTable {
+    // td .cell {
+    //   line-height: 2rem;
+    // }
+    .table-icon img {
+      vertical-align: text-bottom;
+      padding-right: 5px;
+    }
+  }
+}
+
+.PMmainContainer {
+  .PMmainTitle {
+    .PMmainMultifunctional {
+      // background: #f8f9fd;
+      // padding: 15px;
+      // border-radius: 5px;
+      // margin-bottom: 20px;
+    }
+    .PMmainMultifunctional > button {
+      margin-bottom: 10px;
+    }
+  }
+  .el-table.PMmainTable {
+    td {
+      padding: 6px 0px;
+    }
+  }
+  .PMmainDialog {
+    .inputStyle {
+      width: calc(100% - 80px);
+      margin-right: 10px;
+      display: inline-block;
+    }
+    .buttonStyle {
+      vertical-align: top;
+      display: inline-block;
+    }
+
+    .Attachment {
+      .el-form-item__content {
+        line-height: 30px;
+      }
+      .Attachment-div {
+        padding: 0px 15px;
+        border: 1px solid #dcdfe6;
+        border-radius: 5px;
+        .Attachment-span {
+          display: block;
+          padding-top: 5px;
+          margin-bottom: 5px;
+          .el-checkbox__label {
+            display: inline-grid;
+            white-space: pre-line;
+          }
+          .Attachment-icon {
+            display: block;
+            position: relative;
+            padding-left: 25px;
+          }
+          .Attachment-icon:before {
+            content: "";
+            position: absolute;
+            background-image: url("../../assets/table/currency.png");
+            background-size: 20px;
+            top: -1px;
+            left: 0;
+            z-index: 2;
+            width: 20px;
+            height: 20px;
+          }
+        }
+        .Attachment-span + .Attachment-span {
+          border-top: 1px solid #dcdfe6;
+        }
+      }
+    }
+    .PMmainDialogBottom {
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+    }
+  }
+}
+
+.PWmainContainer {
+  .el-table.PWmainTable {
+    td {
+      padding: 6px 0px;
+    }
+  }
+}
+
+.NAVmainContainer {
+  .el-table.NAVmainTable {
+    td {
+      padding: 6px 0px;
+    }
+  }
+}
+
+.iconStyle {
+  color: #f56c6c;
+  font-size: 100px;
+}
+.FixedHeight {
+  height: 300px;
+}
