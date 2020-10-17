@@ -64,14 +64,12 @@
     <!-- <div class="el-backtop" style="right: 100px; bottom: 50px;">
       <el-button class="DiskAndDataButton" type="primary" @click="pageChange">展示页</el-button>
     </div> -->
-    <!-- <ShowPageButton /> -->
   </div>
 </template>
 
 <script>
 import UserApi from "../api/Login";
 import User from "../entity/User";
-import ShowPageButton from "../plugins/common/ShowPageButton";
 
 export default {
   data() {
@@ -93,9 +91,6 @@ export default {
       },
       isRememberMe: true, // 是否记住我
     };
-  },
-  components: {
-    ShowPageButton,
   },
   methods: {
     pageChange() {

@@ -4,7 +4,6 @@
     </div>
 </template>
 <script>
-import { PluginsList } from "./const.js";
 import {connectionWebSocket} from '@/util/WebSocket'
 
 export default {
@@ -14,24 +13,7 @@ export default {
     mounted() {
         // 建立 websocket 连接
 		connectionWebSocket();
-
         this.getWidth();
-        // 动态设置html title
-        if (PluginsList.indexOf("FYPlugin") != -1) {
-            document.title = "劳动就业中心";
-        } else {
-            document.title = "劳动就业中心";
-        }
-
-        if (PluginsList.includes('I3VTDPlugin')) {
-            // 自动登录bos
-            let bos_access_token = localStorage.getItem('bos_access_token')
-            let bos_expires = parseInt(localStorage.getItem('bos_expires'))
-            let bos_projectKey = localStorage.getItem('bos_projectKey')
-            if (!bos_access_token || (bos_expires < new Date().valueOf()) || !bos_projectKey) {
-                this.$store.dispatch('bos/login')
-            }
-        }
     },
     methods: {
         globleFunc(payload) {

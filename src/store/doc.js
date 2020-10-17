@@ -1,6 +1,5 @@
 import UserApi from '../api/services/doc'
 import UserApi2 from '../api/services/project'
-import bosApi from '../api/bos/index'
 import { AddTypeIcon } from '../util/AddTypeIcon'
 import { Message } from 'element-ui'
 
@@ -90,50 +89,6 @@ export default {
             UserApi2.getProjectRightList(ProjectKeyword).then(res => {
                 commit('GET_RIGHTLIST', res.data)
             })
-        },
-        // 2020.4.20-1
-        getProjectBos3dData({ commit }, ProjectKeyWord) {
-            return new Promise((resolve, reject) => {
-                UserApi.getDocBosModel(ProjectKeyWord).then(async res => {
-                    if (res.success) {
-                        if (res.data.length === 0) return;
-                        // 先访问模型文件解析成功没有
-                        let res2 = await bosApi.model.parsesStatus(res.data[0].bosModelKey, res.data[0].bosProjectKey)
-                        console.log(res2)
-                        if (res2.code === 'SUCCESS') {
-                            if (res2.data.status === '3') {
-                                res.data[0].control = true
-                                commit("SET_MODEL_PREVIEW", res.data[0])
-                                // // 直接跳转到模型预览项
-                                commit('menu/ISPREVIEW', 'MODEL', { root: true })
-                                commit("menu/ISTABLE", false, { root: true })
-                                // 右边那里要转向模型预览的tab
-                                commit("CHANGE_ACTIVENAME", 'h');
-                                resolve()
-                            } else if (res2.data.status === '-1' || res2.data.status === '-2') {
-                                Message.error({
-                                    message: `模型解析错误：${res2.data.remark}，请重新上传模型。`
-                                })
-                            } else {
-                                Message.warning({
-                                    message: `模型解析未完成：${res2.data.remark}，解析进度：${res2.data.percentage}`
-                                })
-                                commit("SET_MODEL_PREVIEW", { control: false })
-                            }
-                        } else {
-                            Message.error({
-                                message: `获取模型解析状态失败：${res2.message}`
-                            })
-                            commit("SET_MODEL_PREVIEW", { control: false })
-                        }
-                    } else {
-                        commit("SET_MODEL_PREVIEW", { control: false })
-                    }
-                }).catch(err => {
-                    reject(err)
-                })
-            })
-
         },
         // 设置检出状态
         setCheckOut({ commit }, payload) {

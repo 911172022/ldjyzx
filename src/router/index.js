@@ -6,28 +6,9 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { Message } from "element-ui";
 import UserApi from "../api/services/user";
-import Product from "../views/Product.vue";
-import ProductSecond from "../views/ProductSecond.vue";
-
 Vue.use(VueRouter);
 
 const routes = [
-  {
-    path: "/test",
-    component: () => import("../views/test.vue")
-  },
-  {
-    path: "/bosView",
-    component: () => import("../views/bosView.vue")
-  },
-
-  // {
-  //   path: "/",
-  //   alias: "/index",
-  //   name: "index",
-  //   component: () => import(/* webpackChunkName: "index" */ "../views/index.vue"),
-  //   meta: { title: "首页", auth: true }
-  // },
   {
     path: "/home",
     name: "home",
@@ -40,74 +21,6 @@ const routes = [
         name: "DocManagement",
         meta: { title: "文档管理", headerActiveIndex: "1" }
       },
-      {
-        path: "Per-Message",
-        name: "PerMessage",
-        meta: { title: "个人消息", headerActiveIndex: "2" }
-      },
-      {
-        path: "Pro-Workbench",
-        name: "ProWorkbench",
-        meta: { title: "流程工作台", headerActiveIndex: "3" }
-      },
-      {
-        path: "Per-Workbench",
-        name: "PerWorkbench",
-        meta: { title: "个人工作台", headerActiveIndex: "4" }
-      },
-      {
-        path: "Logical-Directory",
-        name: "LogicalDirectory",
-        meta: { title: "逻辑目录", headerActiveIndex: "5" }
-      },
-      {
-        path: "Doc-Select",
-        name: "DocSelect",
-        meta: { title: "文档查询", headerActiveIndex: "6" }
-      },
-      {
-        path: "Navigation",
-        name: "Navigation",
-        meta: { title: "导航页", headerActiveIndex: "7" }
-      }
-    ]
-  },
-  {
-    path: "/product",
-    name: "Product",
-    redirect: { name: "ProductBase" }, // 根目录默认跳转到“产品库”
-    component: Product,
-    meta: { title: "产品库", auth: true },
-    children: [
-      {
-        path: "product-base",
-        name: "ProductBase",
-        meta: { title: "产品库", headerActiveIndex: "8" }
-      },
-      {
-        path: "product-base-setting",
-        name: "ProductBaseSetting",
-        meta: { title: "产品库设定", headerActiveIndex: "9" }
-      }
-    ]
-  },
-  {
-    path: "/product-second",
-    name: "ProductSecond",
-    redirect: { name: "ProductBase2" }, // 根目录默认跳转到“产品库”
-    component: ProductSecond,
-    meta: { title: "产品库", auth: true },
-    children: [
-      {
-        path: "product-base2",
-        name: "ProductBase2",
-        meta: { title: "产品库", headerActiveIndex: "10" }
-      },
-      {
-        path: "product-base-setting2",
-        name: "ProductBaseSetting2",
-        meta: { title: "产品库设定", headerActiveIndex: "11" }
-      }
     ]
   },
   {

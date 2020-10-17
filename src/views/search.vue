@@ -17,7 +17,7 @@
           </el-button>
         </el-input>
       </div>
-      <transition name="fade">
+      <!-- <transition name="fade"> -->
         <div class="table-list" v-show="!isAdvanced">
           <div>
             <el-table
@@ -59,7 +59,7 @@
             <p>3.如果关键字模糊搜索没有结果,请尝试高级搜索</p>
           </div>
         </div>
-      </transition>
+      <!-- </transition> -->
       <!-- 高级检索 -->
       <transition name="fade">
         <div v-show="isAdvanced" :class="['search-condition', 'file-detail']">
@@ -118,7 +118,7 @@
               >支持模糊以及批量搜索,多个关键字之间用","隔开,可选择多个搜索条件组合查询,最多可同时设置5个搜索条件</span
             >
           </div>
-          <el-scrollbar>
+          <!-- <el-scrollbar> -->
             <el-form
               class="search-detail"
               :model="form"
@@ -226,7 +226,7 @@
                 <el-button>重置</el-button>
               </el-form-item>
             </el-form>
-          </el-scrollbar>
+          <!-- </el-scrollbar> -->
         </div>
       </transition>
     </div>
@@ -351,6 +351,9 @@ export default {
     width: 1200px;
     margin: 0 auto;
     padding-top: 100px;
+    position: relative;
+    left: 0;
+    top: 0;
     .checkAll {
       transition: all 0.5s;
       &:hover {
@@ -380,8 +383,9 @@ export default {
     }
     .search-condition {
       width: 1160px;
+      height: calc(100vh - 250px);
+      overflow: auto;
       position: absolute;
-      top: 17%;
       z-index: 10;
       background-color: #f0f0f0;
       padding: 20px;
@@ -410,7 +414,6 @@ export default {
       }
       .search-detail {
         width: 100%;
-        max-height: 500px;
       }
     }
   }

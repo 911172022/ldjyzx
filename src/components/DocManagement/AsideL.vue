@@ -54,29 +54,6 @@
         </li>
       </ul>
     </div>
-    <!-- <User :dialogObj="userData" @reData="reUserData" />
-    <UserGroup :dialogObj="userGroupData" @reData="reGroupData" /> -->
-    <!-- 新建根目录 -->
-    <!-- <TreeContextMenu
-      :dialogObj="rightData"
-      @reData="reData(arguments)"
-      @refreshAsideL="refreshAsideL"
-    /> -->
-    <!-- 二级弹窗 - 增加用户/用户组 -->
-    <!-- <PermissionList
-      :dialogObj="PermissionData"
-      @reData="rePData"
-      @reUser="reUser(arguments)"
-    /> -->
-
-    <!-- 方圆鹤洞项目流程弹窗 -->
-    <!-- <FYHDDistribute
-      :projectKeyword="projectId"
-      @closeDialog="closeFYHDDialog"
-      :processId="FYHDProcessId"
-      :showDialog="FYHDShowDialog"
-      :editForm="{}"
-    /> -->
     <el-dialog title="新增目录" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="目录名称">
@@ -217,10 +194,8 @@ import UserApi3 from "../../api/services/doc";
 import UserApi4 from "../../api/services/workflow";
 import UserApi5 from "../../api/services/dbsource";
 import PermissionList from "../Dialog/PermissionList-PM2";
-import TreeMenu from "../../plugins/GJEPCPlugin/TreeMenu";
 import { Doc_TreeIconChange } from "@/util/Common";
 import { mapGetters } from "vuex";
-import { PluginsList } from "../../const.js";
 
 export default {
   data() {
@@ -344,25 +319,10 @@ export default {
   },
   components: {
     PermissionList,
-    TreeMenu,
   },
   // mounted() {
   //   this.getProjectPath();
   //   this.getProjectList();
-  // },
-  // computed: {
-  //   ...mapGetters("doc", ["ProjectShowPath"]),
-  //   ...mapGetters("project", ["isRefreshTree"]),
-  //   // 过滤掉启动流程
-  //   MenuListFilter() {
-  //     // 如果是方圆的插件，过滤掉启动流程
-  //     if (PluginsList.indexOf("FYPlugin") != -1) {
-  //       return this.MenuList.filter(
-  //         (i) => i.Id != "MS_StartProjectFlow" && i.Name != "启动流程"
-  //       );
-  //     }
-  //     return this.MenuList;
-  //   },
   // },
   watch: {
     // 个人消息附件跳转过来, 添加目录, 复制目录
@@ -393,97 +353,6 @@ export default {
       this.getProjectPath();
       this.getProjectList();
     },
-    // changeTreeList() {
-    //     this.isMenu = false;
-    //     this.cascaderModel = "";
-    //     this.loading = true;
-    // },
-    // // 展开获取子目录
-    // async handleOpen(key) {
-    //     let keyArr = key.toString().split("_"),
-    //         nodeKeyword = key,
-    //         ProjectType = "1";
-    //     let keyword = keyArr.pop();
-    //     const res = await UserApi.getProjectList(nodeKeyword, ProjectType);
-    //     let ProjectList = res.data.map(item => item.Keyword).join(",");
-    //     const res2 = await UserApi.getChildsDocsCount(ProjectList);
-    //     let nodeFilesTotal = res2.data[0];
-    //     const menuData = [];
-    //     res.data.forEach(item => {
-    //         let str = "";
-    //         if (nodeFilesTotal[item.Keyword] > 0) {
-    //             str = `${item.text}【${nodeFilesTotal[item.Keyword]}】`;
-    //         } else {
-    //             str = item.text;
-    //         }
-    //         menuData.push({
-    //             text: str,
-    //             leaf: item.leaf,
-    //             Keyword: item.Keyword,
-    //             id: item.id,
-    //             iconCls: item.Cls,
-    //             isShort: item.isShort
-    //         });
-    //     });
-    //     this.treeMenuData.forEach(item => {
-    //         // 二级菜单
-    //         if (item.children) {
-    //             item.children.forEach(i => {
-    //                 if (i.Keyword == keyword) {
-    //                     // 三级菜单
-    //                     this.$set(i, "children", menuData);
-    //                 }
-    //                 if (i.children) {
-    //                     i.children.forEach(j => {
-    //                         if (j.Keyword == keyword) {
-    //                             // 四级菜单
-    //                             this.$set(j, "children", menuData);
-    //                         }
-    //                         if (j.children) {
-    //                             j.children.forEach(k => {
-    //                                 if (k.Keyword == keyword) {
-    //                                     // 五级菜单
-    //                                     this.$set(k, "children", menuData);
-    //                                 }
-    //                             });
-    //                         }
-    //                     });
-    //                 }
-    //             });
-    //         } else {
-    //             this.$set(item, "children", menuData);
-    //         }
-    //     });
-    //     let ProjectList2 = keyword,
-    //         Position = "TVProject",
-    //         TvPosition = "1";
-    //     UserApi5.getMenuList(ProjectList2, Position, TvPosition).then(
-    //         res => {
-    //             if (res.success) {
-    //                 res.data.forEach(item => {
-    //                     if (item.Id == "HX_SendDocument") {
-    //                         this.$store.commit(
-    //                             "menu/GET_MENU_TYPE",
-    //                             item.Id
-    //                         );
-    //                     } else if (item.Id == "HX_CreateCompany") {
-    //                         this.$store.commit(
-    //                             "menu/GET_MENU_TYPE",
-    //                             item.Id
-    //                         );
-    //                     } else {
-    //                         this.$store.commit(
-    //                             "menu/GET_MENU_TYPE",
-    //                             "hide"
-    //                         );
-    //                     }
-    //                 });
-    //             }
-    //         }
-    //     );
-    //     this.$store.commit("project/getProjectKeyWord", keyword);
-    //     this.getProjectPath(keyword);
-    // },
     // async handleClose(key) {
     //     let keyArr = key.toString().split("_");
     //     let keyword = keyArr.pop();
@@ -655,30 +524,6 @@ export default {
       vm.rightData.dialogTitle = "新建根目录";
       vm.rightData.projectId = this.projectId;
     },
-    // 2020.4.20-1
-    // 新建Bos模型
-    async CreateBosModel() {
-      let vm = this;
-      // 开启dialog框
-      vm.rightData.switch = true;
-      vm.rightData.Id = "TD_NewBosModel";
-      vm.rightData.dialogTitle = "新建BOS模型";
-      vm.rightData.projectId = this.projectId;
-    },
-    // 右键选单选取
-    async getMenuRight(e) {
-      switch (e.Name) {
-        case "新建目录":
-          this.dialogFormVisible = true;
-          break;
-        case "收文":
-          this.getFileData.switch = true;
-          break;
-        default:
-          break;
-      }
-    },
-    // 要根据 e 传来的StateName，即 e[1] 这个参数，判断什么状态，做什么，start 就是启动流程
     reData(e) {
       let vm = this;
       vm.rightData.switch = e[0];
@@ -836,57 +681,6 @@ export default {
         ProjectList = object.projectId;
         vm.contextMenuObj = object;
       }
-      // vm.$store.dispatch('dbsource/getMenuList', { ProjectList, Position, TvPosition })
-      UserApi5.getMenuList(ProjectList, Position, TvPosition).then((res) => {
-        // 当PluginsList里面，有'I3VTDPlugin'时，显示新建BOS模型
-        if (PluginsList.indexOf("I3VTDPlugin") == -1) {
-          let index = res.data.map((i) => i.Id).indexOf("TD_NewBosModel");
-          if (index != -1) {
-            res.data.splice(index, 1);
-          }
-        }
-        vm.MenuList = res.data;
-        vm.len = res.data.length * 33;
-        vm.styleObject.opacity = 1;
-
-        // 窗口高度
-        let windowHeight = document.body.clientHeight;
-        // 窗口宽度
-        // let windowWidth = document.body.clientWidth
-
-        if (res.data.length === 1) {
-          vm.styleObject.top = MouseEvent.clientY - 80 + "px";
-          vm.styleObject.left = MouseEvent.clientX + 30 + "px";
-        } else {
-          // getBoundingClientRect 獲取視窗寬高
-          // console.log(MouseEvent.clientY, document.body.clientHeight, vm.len)
-          // if (MouseEvent.clientY > vm.$el.getBoundingClientRect().height / 1.1) {
-          //     vm.styleObject.top = MouseEvent.clientY - vm.len - 100 + "px";
-          // } else if (MouseEvent.clientY > vm.$el.getBoundingClientRect().height / 2 ) {
-          //     vm.styleObject.top =
-          //         MouseEvent.clientY - vm.len + 80 + "px";
-          // } else {
-          //     vm.styleObject.top = MouseEvent.clientY - 80 + "px";
-          // }
-          // 要注意视窗高度和鼠标点击的y是否能完全容纳menu
-          if (windowHeight - MouseEvent.clientY > this.len) {
-            this.styleObject.top = MouseEvent.clientY + "px";
-          } else {
-            this.styleObject.top =
-              MouseEvent.clientY -
-              (this.len - (windowHeight - MouseEvent.clientY)) +
-              "px";
-          }
-
-          vm.styleObject.left = MouseEvent.clientX + 30 + "px";
-        }
-      });
-      // if (MouseEvent.clientX > vm.$el.getBoundingClientRect().width / 1.8) {
-      //   console.log(1111111111);
-      //   vm.styleObject.left = MouseEvent.clientX - vm.$refs.rightMenu.clientWidth - 50 + 'px'
-      // } else {
-      // vm.styleObject.left = MouseEvent.clientX + 40 + 'px'
-      // }
       document.addEventListener("click", vm.foo);
       // document.addEventListener('contextmenu', vm.foo)
     },
@@ -900,40 +694,7 @@ export default {
       vm.styleObject.left = 0;
       document.removeEventListener("mousedown", vm.foo);
     },
-    /* ----------------------------------------------------------------------------------- */
-    // 关闭方圆鹤洞项目的dialog
-    closeFYHDDialog(mode) {
-      if (mode === "refresh") {
-        this.refreshAsideL();
-      }
-      this.FYHDShowDialog = false;
-    },
     // 选择了启动流程后，打开方圆鹤洞项目的流程
-    openFYHDDialog(e) {
-      // 6.15 方圆鹤洞项目预留流程位置
-      let FYProcessList = [
-        // 设计变更管理
-        "FY_NewDesignChange",
-        // 付款通知单
-        "FY_NewPaymentNotice",
-        // 鹤洞业务审批
-        "FY_NewBusiness",
-        // 用章使用审批
-        "FY_NewSealUse",
-        // 费用报销单
-        "FY_NewReimbursement",
-        // 合同审批表
-        "FY_NewContractApproval",
-        // 发文审批表
-        "FY_SendDocument",
-        // 通用审批流程
-        "FY_NewTransaction",
-      ];
-      if (FYProcessList.indexOf(e.Id) != -1) {
-        this.FYHDProcessId = e.Id;
-        this.FYHDShowDialog = true;
-      }
-    },
     //  原型代码
     contextMenuClickTest(MouseEvent, object, Node) {
       console.log(object, Node);

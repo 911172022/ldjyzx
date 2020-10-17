@@ -1,27 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import doc from "./doc";
-import PerMessage from "./PerMessage";
-import workflow from "./workflow";
-import defworkflow from "./defworkflow";
-import SelectAttachment from "./SelectAttachment";
-import user from "./user";
-import dbsource from "./dbsource";
-import AdjustMenuWidth from "./AdjustMenuWidth";
-import project from "./project";
-import menu from "./menu";
-import CopyPaste from "./CopyPaste";
-import home from "./home";
-import productLibrary from "./productLibrary";
-import productLibrary2 from "./productLibrary2";
-import bos from "./bos";
-import { jumpToGJEPCLoginPage } from "../plugins/FYPlugin/util.js";
-import { PluginsList } from "../const.js";
-import router from "../router";
-import downloadModule from './download';
 import upload from './upload'
-
-import docTree from "./docTree.js";
+import menu from './menu'
 
 Vue.use(Vuex);
 
@@ -35,7 +16,9 @@ export default new Vuex.Store({
   mutations: {
     SAVE_USER(state, user) {
       if (user.sid) {
-        state.userData = { ...user };
+        state.userData = {
+          ...user
+        };
         if (state.userData.isRememberMe) {
           localStorage.setItem("sid", state.userData.sid);
           localStorage.setItem("username", state.userData.username);
@@ -79,31 +62,7 @@ export default new Vuex.Store({
       }
     },
     // state not use
-    // REMOVE_USER(state) {
-    REMOVE_USER() {
-      let username = sessionStorage.getItem("username");
-      let password = sessionStorage.getItem("password");
-      let isRememberMe = sessionStorage.getItem("isRememberMe");
-      localStorage.clear();
-      sessionStorage.clear();
-      if (isRememberMe === "true") {
-        sessionStorage.setItem("username", username);
-        sessionStorage.setItem("password", password);
-        sessionStorage.setItem("isRememberMe", true);
-      } else {
-        sessionStorage.setItem("isRememberMe", false);
-      }
-
-      // 跳转
-      // 原来的跳转
-      // i3v，跳转到8090端口
-      if (PluginsList.indexOf("I3VTDPlugin") !== -1) {
-        router.push("/login");
-      } else if (PluginsList.indexOf("FYPlugin") !== -1) {
-        // 方圆项目跳转
-        jumpToGJEPCLoginPage();
-      }
-    },
+    
     setHeaderActiveIndex(state, index) {
       if (index) {
         state.headerActiveIndex = index;
@@ -116,23 +75,8 @@ export default new Vuex.Store({
     UserKeyword: state => state.userData.userkeyword
   },
   modules: {
-    PerMessage,
-    workflow,
-    defworkflow,
     doc,
-    SelectAttachment,
-    user,
-    dbsource,
-    AdjustMenuWidth,
-    project,
-    menu,
-    CopyPaste,
-    home,
-    productLibrary,
-    docTree,
-    bos,
-    productLibrary2,
-    download: downloadModule,
-    upload
+    upload,
+    menu
   }
 });

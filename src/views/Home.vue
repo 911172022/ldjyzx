@@ -145,38 +145,6 @@
           <el-main id="main" :width="Mainwidth" v-if="!navUrl">
             <Main />
           </el-main>
-
-          <!-- <transition
-            @enter="enter2"
-            @leave="leave2"
-            :css="false"
-            v-if="!navUrl"
-          >
-            <el-aside
-              id="right"
-              v-show="rightToggle"
-              :style="rightToggleShowStyle"
-              :width="asideRwidth"
-            >
-              <el-row class="right_position" style="height: 100%">
-                <el-col v-show="rightToggle" :span="1" style="height: 100%">
-                  <i id="resize2" class="el-icon-caret-left" />
-                </el-col>
-                <el-col v-show="rightToggle" :span="22" style="height: 100%">
-                  <AsideR />
-                </el-col>
-                <el-col :span="1" style="height: 100%">
-                  <i
-                    class="iconBtn"
-                    :class="
-                      rightToggle ? 'el-icon-caret-right' : 'el-icon-caret-left'
-                    "
-                    @click="RightMenuSwitch"
-                  />
-                </el-col>
-              </el-row>
-            </el-aside>
-          </transition> -->
           <div v-if="navUrl" style="margin: 10px">
             <iframe
               :src="navUrl"
@@ -187,16 +155,6 @@
           </div>
         </el-container>
       </el-container>
-      <!-- <div class="el-backtop" style="right: 10%; bottom: 50px;">
-            <el-button class="DiskAndDataButton" type="primary" @click="pageChange">展示页</el-button>
-      </div>-->
-      <!-- <ShowPageButton /> -->
-
-      <!-- <download-tasks /> -->
-      <!-- <upload-tasks /> -->
-      <!-- <open-files /> -->
-
-      <!-- <test-components /> -->
     </div>
     <User :dialogObj="userData" @reData="reUserData"></User>
     <UserGroup :dialogObj="userGroupData" @reData="reGroupData"></UserGroup>
@@ -214,7 +172,6 @@ import { TweenMax, Power4 } from "gsap";
 import { mapGetters } from "vuex";
 import UserApi2 from "../api/services/project";
 
-import ShowPageButton from "../plugins/common/ShowPageButton";
 import downloadTasks from "../components/download/downloadTasks.vue";
 import uploadTasks from "../components/UploadFiles/uploadTasks.vue";
 import openFiles from "../components/openFiles/openFiles.vue";
@@ -322,7 +279,6 @@ export default {
     AsideL,
     Main,
     AsideR,
-    ShowPageButton,
     downloadTasks,
     uploadTasks,
     // testComponents,

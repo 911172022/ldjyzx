@@ -1,51 +1,6 @@
 <template>
   <div>
     <el-row class="header">
-      <!-- <el-col :xl="5" :lg="5" :md="5" :sm="6" :xs="10" class="header-logo">
-                <img :src="logoSrc" />
-            </el-col> -->
-      <!-- <el-col :xl="15" :lg="16" :md="15" :sm="13" :xs='7' class="nav-wrapper">
-                <el-menu
-                    :default-active="activeIndex"
-                    mode="horizontal"
-                    style="display: flex; justify-content: center; flex-wrap: wrap;"
-                    @select="handleSelect"
-                    text-color="#fff"
-                >
-                    <el-menu-item index="1" class="active">
-                        <i class="el-icon-folder"></i>
-                        <span slot="title">文档管理</span>
-                    </el-menu-item>
-                    <el-menu-item index="2">
-                        <i class="el-icon-bell"></i>
-                        <span slot="title">个人消息</span>
-                    </el-menu-item>
-                    <el-menu-item index="3">
-                        <i class="el-icon-monitor"></i>
-                        <span slot="title">流程工作台</span>
-                    </el-menu-item>
-                    <el-menu-item index="4">
-                        <i class="el-icon-files"></i>
-                        <span slot="title">个人工作台</span>
-                    </el-menu-item>
-                    <el-menu-item index="5">
-                        <i class="el-icon-share"></i>
-                        <span slot="title">逻辑目录</span>
-                    </el-menu-item>
-                    <el-menu-item index="6">
-                        <i class="el-icon-search"></i>
-                        <span slot="title">文档查询</span>
-                    </el-menu-item>
-                    <el-menu-item index="7">
-                        <i class="el-icon-position"></i>
-                        <span slot="title">导航页</span>
-                    </el-menu-item>
-                    <el-menu-item index="9" v-if="productLibraryShow">
-                        <i class="el-icon-notebook-2"></i>
-                        <span slot="title">产品库</span>
-                    </el-menu-item>
-                </el-menu>
-            </el-col> -->
       <el-col class="UserPanel" :span="24">
         <div class="user-wrapper">
           <div>
@@ -74,9 +29,6 @@
               >
             </el-dropdown-menu>
           </el-dropdown>
-          <!-- <i class="el-icon-delete" style="margin-left: 10px; cursor:pointer"></i> -->
-          <!-- <el-button type="text" icon="el-icon-delete" style="margin-left: 10px;"></el-button>
-                    <el-button type="text" icon="el-icon-delete" style="margin-left: 10px;"></el-button>-->
         </div>
       </el-col>
     </el-row>
@@ -321,8 +273,6 @@ import Cropper from "../Cropper";
 import PermissionList from "../Dialog/PermissionList-PM2";
 import { mapGetters } from "vuex";
 import { TimeChange } from "../../util/Time";
-import { PluginsList } from "../../const.js";
-// import { jumpToGJEPCLoginPage } from '../../plugins/FYPlugin/util.js'
 
 export default {
   data() {
@@ -474,23 +424,6 @@ export default {
     ...mapGetters(["UserKeyword"]),
     activeIndex() {
       return this.$store.state.headerActiveIndex;
-    },
-    // 哪个项目的就显示哪个logo
-    logoSrc() {
-      if (PluginsList.indexOf("FYPlugin") != -1) {
-        return require("../../assets/logo9.png");
-      } else {
-        return require("../../assets/logo8.png");
-      }
-    },
-    // 产品库显示控制，
-    // 有'I3VTDPlugin'时，显示产品库Tab页
-    productLibraryShow() {
-      if (PluginsList.indexOf("I3VTDPlugin") != -1) {
-        return true;
-      } else {
-        return false;
-      }
     },
   },
   methods: {

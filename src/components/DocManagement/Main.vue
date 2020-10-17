@@ -39,12 +39,7 @@
       </el-row>
       <!--列表-->
       <!-- @dragover="fileDragover" @drop="fileDrop" -->
-      <div
-        v-show="isTable"
-        v-if="refreshList"
-        id="uploadDrop"
-        style="overflow: hidden; flex: 1"
-      >
+      <div id="uploadDrop" style="overflow: hidden; flex: 1">
         <div v-if="dragStatus" class="drag-tip" :style="dragMaskStyle">
           <i class="el-icon-plus"></i>
           <p v-if="!dragEnterDiv">请将文件拖拽至此处</p>
@@ -160,71 +155,6 @@
           />
         </el-table>
       </div>
-      <div v-if="!isTable" id="previewWrapper">
-        <!-- 2020-5-22 退出预览按钮 -->
-        <el-button
-          class="exit-preview-btn"
-          type="warning"
-          round
-          @click="exitPreview"
-          >退出预览</el-button
-        >
-        <div style="position: relative; height: 100%">
-          <template v-if="isPreview === 'IMAGE'">
-            <img :src="PreviewImgURL" alt class="preview-img" />
-          </template>
-          <template v-else-if="isPreview === false">
-            <iframe
-              scrolling="auto"
-              :src="PreviewDocURL"
-              width="100%"
-              :height="screenHeight - 140"
-              frameborder="0"
-            />
-            <div id="iframeMask" ref="iframeMask" />
-          </template>
-          <template v-else-if="isPreview === 'VIDEO'">
-            <video
-              :src="PreviewVideoURL"
-              width="100%"
-              controls
-              style="max-height: 600px"
-              autoplay="autoplay"
-            >
-              <!-- <source :src="PreviewVideoURL" type="video/mp4"> -->
-              您的浏览器不支持 HTML5 video 标签。
-            </video>
-          </template>
-          <!-- 2020.4.20-1 bos模型预览窗口 -->
-          <template v-else-if="isPreview === 'MODEL'">
-            <Bos3d :projectKey="projectKey" :modelKey="modelKey" />
-          </template>
-          <template v-else>
-            <div style="text-align: center">
-              <img
-                src="../../assets/PreviewError.png"
-                alt
-                style="max-width: 100%"
-              />
-              <p>文件暂不支持预览，请直接下载查看</p>
-            </div>
-          </template>
-          <div class="arrow-wrapper">
-            <div>
-              <span
-                @click="previewPrevious"
-                class="el-icon-arrow-left left-arrow"
-              ></span>
-            </div>
-            <div>
-              <span
-                @click="previewNext"
-                class="el-icon-arrow-right right-arrow"
-              ></span>
-            </div>
-          </div>
-        </div>
-      </div>
       <!-- 右键功能 -->
       <div
         v-show="menuVisible"
@@ -234,7 +164,7 @@
       >
         <ul class="rightMenu-ul">
           <li
-            v-for="(item, index) in MenuListFilter"
+            v-for="(item, index) in MenuList"
             :key="index"
             class="rightMenu-li"
             :class="item.State === 'Enabled' ? '' : 'RM-disabled'"
@@ -258,17 +188,6 @@
         @reData="rePData"
         @reUser="reUser(arguments)"
       />
-      <!-- 选择会签专业 -->
-      <!-- <ChooseProfession
-        :dialogObj="ChooseProfessionData"
-        @reData="reChooseProfession"
-      /> -->
-      <!-- 项目立项 -->
-      <!-- <ProjectSetUp :dialogObj="ProjectSetUpData" @reData="reProjectSetUp" /> -->
-      <!-- 填报工时 -->
-      <!-- <WorkTime :dialogObj="WorkTimeData" @reData="reWorkTime" /> -->
-      <!-- 收文 -->
-      <GetDocument :dialogObj="GetDocumentData" @reData="reGetDocument" />
       <!-- 发文 -->
       <el-dialog
         title="添加发文"
@@ -391,13 +310,6 @@
           >
         </span>
       </el-dialog>
-      <!-- 流程定义 // QGY -->
-      <!-- <DefWorkflowMain :dialogObj="DefWorkflowData" @reData="reDefWorkflow" /> -->
-      <!--方圆 Start-->
-      <!-- 项目立项 方圆-->
-      <!-- <FyProjectSetUp :dialogObj="FyProjectSetUpData" @reData="reFyProjectSetUp" /> -->
-      <!--方圆 End-->
-
       <uploadFiles3
         projectKeyword
         :autoUpload="false"
@@ -406,16 +318,6 @@
       >
         <div ref="replaceFile"></div>
       </uploadFiles3>
-
-      <!-- 方圆鹤洞项目流程弹窗 -->
-      <FYHDDistribute
-        :docKeyword="DocKeyword"
-        :projectKeyword="ProjectKeyWord"
-        @closeDialog="closeFYHDDialog"
-        :processId="FYHDProcessId"
-        :showDialog="FYHDShowDialog"
-        :editForm="{}"
-      />
     </div>
   </div>
 </template>
@@ -436,7 +338,6 @@ import {
 } from "@/util/Common";
 import { statusIcon } from "../../util/AddTypeIcon";
 // import {connectionWebSocket} from '@/util/WebSocket'
-import { PluginsList } from "../../const.js";
 
 export default {
   data() {
@@ -542,38 +443,10 @@ export default {
       // beforeFile: null,
       MenuList: [],
       len: 0,
-      maps: new Map(),
       pid: "",
-      // QGY start
-      DefWorkflowData: {
-        switch: false,
-      },
-      // QGY end
-      // ZY start
-      ChooseProfessionData: {
-        switch: false,
-        docKeyWord: [],
-      },
-      ProjectSetUpData: {
-        switch: false,
-      },
-      FyProjectSetUpData: {
-        switch: false,
-      },
-      WorkTimeData: {
-        switch: false,
-      },
-      // ZY end
+
       // 当前正在预览的文件，为预览上一个预览下一个准备
       previewKeyword: "",
-      // 用来设置iframe高度
-      screenHeight: 700,
-
-      // 6.15 方圆鹤洞项目流程预留
-      // 显示方圆鹤洞定制流程开关
-      FYHDShowDialog: false,
-      // 用户选择的流程 id
-      FYHDProcessId: "",
 
       // 文档列表当前页数
       currentPage: 1,
@@ -581,9 +454,6 @@ export default {
       // 文件拖拽
       dragStatus: false,
       dragEnterDiv: false,
-
-      // 表格高度
-      tableHeightLocal: 600,
     };
   },
   components: {
@@ -602,7 +472,6 @@ export default {
       "refreshList",
       "DocBaseAttr",
     ]),
-    ...mapGetters("PerMessage", ["AttachmentDocData"]),
     ...mapGetters("menu", [
       "tableHeight",
       "isPreview",
@@ -612,16 +481,6 @@ export default {
       "Type",
       "PreviewVideoURL",
     ]),
-    // 过滤掉启动流程
-    MenuListFilter() {
-      // 如果是方圆的插件，过滤掉启动流程
-      if (PluginsList.indexOf("FYPlugin") != -1) {
-        return this.MenuList.filter(
-          (i) => i.Id != "MS_StartProcess" && i.Name != "启动流程"
-        );
-      }
-      return this.MenuList;
-    },
     // 拖拽上传的mask
     dragMaskStyle() {
       if (this.dragEnterDiv) {
@@ -648,7 +507,11 @@ export default {
         return i.O_dmsstatus_DESC;
       };
     },
-  },
+    tableHeightLocal() {
+      let height = document.body.clientHeight - 300;
+      return height
+    }
+ },
   destroyed() {
     // 移除拖拽监听
     this.setDrag(false);
@@ -659,19 +522,7 @@ export default {
     this.$nextTick(() => {
       this.setDrag(true);
     });
-    // connectionWebSocket();
-
     // 监听屏幕大小，来刷新iframe的高度
-    this.screenHeight = document.body.clientHeight;
-    window.onresize = () => {
-      return (() => {
-        this.screenHeight = document.body.clientHeight;
-        // 重设table的高度
-        this.tableHeightLocal = document.getElementById(
-          "uploadDrop"
-        ).clientHeight;
-      })();
-    };
     if (!this.refreshList) {
       setTimeout(() => {
         this.$store.commit("doc/SET_REFRESH_LIST");
@@ -738,6 +589,9 @@ export default {
     },
   },
   methods: {
+    sendDocument() {
+      this.SendDocumentData.switch = true;
+    },
     /* ------------------------------------------------------------ */
     // 搞文件状态的
     // 用户点击文件状态为锁定的文档
@@ -832,53 +686,6 @@ export default {
       this.fileDownloadTable(row.Keyword);
     },
     /* ------------------------------------------------------------ */
-    //  ZY start  弹窗
-    getDocument() {
-      this.GetDocumentData.switch = true;
-    },
-    reGetDocument(e) {
-      this.GetDocumentData.switch = e;
-    },
-    sendDocument() {
-      this.SendDocumentData.switch = true;
-    },
-    reSendDocument(e) {
-      this.SendDocumentData.switch = e;
-    },
-    openChooseProfession() {
-      this.ChooseProfessionData.switch = true;
-    },
-    reChooseProfession(e) {
-      this.ChooseProfessionData.switch = e;
-    },
-    ProjectSetUp() {
-      this.ProjectSetUpData.switch = true;
-    },
-    reProjectSetUp(e) {
-      this.ProjectSetUpData.switch = e;
-    },
-    FyProjectSetUp() {
-      this.FyProjectSetUpData.switch = true;
-    },
-    reFyProjectSetUp(e) {
-      this.FyProjectSetUpData.switch = e;
-    },
-    openWorkTime() {
-      this.WorkTimeData.switch = true;
-    },
-    reWorkTime(e) {
-      this.WorkTimeData.switch = e;
-    },
-    //  ZY end
-    //QGY start
-    onDefWorkflow() {
-      this.DefWorkflowData.switch = true;
-    },
-    // 流程定义返回
-    reDefWorkflow(e) {
-      this.DefWorkflowData.switch = e;
-    },
-    //QGY end
     async PreviewHandle(docKeyword) {
       let vm = this;
       // 隐藏右边的
@@ -950,27 +757,6 @@ export default {
     _$ErrorMessage() {
       this.$message.error("文件暂不支持预览，请直接下载查看");
     },
-    // reFiles() {
-    // 	// let { pid } = this;
-    // 	//
-    // 	// // console.log(this.maps)
-    // 	// const { tree, treeNode, resolve } = this.maps.get(pid);
-    // 	// this.$set(this.$refs.DocList.store.states.lazyTreeNodeMap, pid, []);
-    // 	// // console.log(this.$refs.DocList.store.states.lazyTreeNodeMap)
-    // 	// this.tableLoad(tree, treeNode, resolve);
-    // 	let page = 1,
-    // 		{
-    // 			ProjectKeyWord
-    // 		} = this;
-    // 	const filterJson = "",
-    // 		limit = 50;
-    // 	this.$store.dispatch("doc/getDocList", {
-    // 		ProjectKeyWord,
-    // 		filterJson,
-    // 		page,
-    // 		limit
-    // 	});
-    // },
     async tableLoad(tree, treeNode, resolve) {
       let rdata = [],
         imgUrl = "",
@@ -1358,49 +1144,6 @@ export default {
       this.$store.commit("menu/ISTABLE", true);
       this.$store.commit("doc/CHANGE_ACTIVENAME", "c");
       this.$store.commit("home/ASIDER_SHOW_CONTROL");
-    },
-
-    /* ----------------------------------------------------------------------------------- */
-    // 关闭方圆鹤洞项目的dialog
-    closeFYHDDialog(mode) {
-      if (mode === "refresh") {
-        this.currentPage = 1;
-        this.$store.dispatch({
-          type: "doc/getDocList",
-          ProjectKeyWord: this.ProjectKeyWord,
-          filterJson: "",
-          page: 1,
-          limit: 50,
-        });
-      }
-      this.FYHDShowDialog = false;
-    },
-    // 选择了启动流程后，打开方圆鹤洞项目的流程
-    openFYHDDialog(e) {
-      // 6.15 方圆鹤洞项目预留流程位置
-
-      let FYProcessList = [
-        // 设计变更管理
-        "FY_NewDesignChange",
-        // 付款通知单
-        "PaymentNotice",
-        // 鹤洞业务审批
-        "HDBusinessApproval",
-        // 用章使用审批
-        "UseSealApproval",
-        // 费用报销单
-        "ExpenseReimbursement",
-        // 合同审批表
-        "ContractApproval",
-        // 发文审批表
-        "IssueApproval",
-        // 通用审批流程
-        "FY_NewTransaction",
-      ];
-      if (FYProcessList.indexOf(e.Id) != -1) {
-        this.FYHDProcessId = e.Id;
-        this.FYHDShowDialog = true;
-      }
     },
   },
 };

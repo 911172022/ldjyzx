@@ -69,10 +69,6 @@
         </el-row>
       </div>
     </div>
-    <!-- <div class="el-backtop" style="right: 100px; bottom: 50px;">
-            <el-button class="DiskAndDataButton" type="primary" @click="pageChange">展示页</el-button>
-        </div>-->
-    <ShowPageButton />
   </div>
 </template>
 
@@ -84,10 +80,6 @@
 // import UserApi from "../api/Login";
 import UserApi2 from "../api/services/dbsource";
 import User from "../entity/User";
-
-import { PluginsList } from "../const.js";
-
-import ShowPageButton from "../plugins/common/ShowPageButton";
 import { Base64 } from "js-base64";
 
 export default {
@@ -117,9 +109,6 @@ export default {
       isRememberMe: false // 是否记住我
     };
   },
-  components: {
-    ShowPageButton
-  },
   mounted() {
     // 根据sessionStorage判断用户有没有勾选记住密码
     if (sessionStorage.getItem("isRememberMe")) {
@@ -127,15 +116,6 @@ export default {
       this.ruleForm.account = sessionStorage.getItem("username") || "";
       let initPass = sessionStorage.getItem("password") ? Base64.decode(sessionStorage.getItem("password")) : ""
       this.ruleForm.Password = initPass;
-    }
-  },
-  computed: {
-    loginLogoSrc() {
-      if (PluginsList.indexOf("FYPlugin") != -1) {
-        return require("../assets/login/login_title2.png");
-      } else {
-        return require("../assets/login/login_title.png");
-      }
     }
   },
   methods: {

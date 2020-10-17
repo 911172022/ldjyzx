@@ -436,6 +436,7 @@ export default {
 }
 .pageCss {
   width: 100%;
+  overflow: hidden !important;
   .myNavCss {
     margin-bottom: 30px;
   }
