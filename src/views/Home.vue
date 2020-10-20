@@ -1,128 +1,137 @@
 <template>
   <div class="flex-box">
     <div id="home">
+      <el-aside class="menu">
+        <div class="logo">劳动就业管理中心</div>
+        <el-menu
+          background-color="#304156"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+          unique-opened
+          :default-active="defaultActive"
+          @select="menuSelect"
+        >
+          <el-submenu index="100">
+            <template slot="title">
+              <span slot="title">档案管理</span>
+            </template>
+            <el-menu-item index="4">
+              <span slot="title">未归管理</span>
+            </el-menu-item>
+            <el-submenu index="1">
+              <template slot="title">
+                <span slot="title">预归档整理</span>
+              </template>
+              <el-menu-item-group>
+                <el-menu-item index="1-3">案卷管理</el-menu-item>
+                <el-menu-item index="1-2">卷内管理</el-menu-item>
+                <el-menu-item index="1-1">归档管理</el-menu-item>
+                <el-menu-item index="1-4">资料管理</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="2">
+              <template slot="title">
+                <span slot="title">归档整理</span>
+              </template>
+              <el-menu-item-group>
+                <el-menu-item index="2-3">案卷管理</el-menu-item>
+                <el-menu-item index="2-2">卷内管理</el-menu-item>
+                <el-menu-item index="2-1">归档管理</el-menu-item>
+                <el-menu-item index="2-4">资料管理</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="3">
+              <template slot="title">
+                <span slot="title">审核管理</span>
+              </template>
+              <el-menu-item-group>
+                <el-menu-item index="3-3">案卷管理</el-menu-item>
+                <el-menu-item index="3-2">审核日志</el-menu-item>
+                <el-menu-item index="3-1">归档管理</el-menu-item>
+                <el-menu-item index="3-4">资料管理</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+          </el-submenu>
+          <el-submenu index="5">
+            <template slot="title">
+              <span slot="title">开放管理</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="5-1">开放列表</el-menu-item>
+              <el-menu-item index="5-2">开放日志</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+          <el-menu-item index="6">
+            <span slot="title">综合检索</span>
+          </el-menu-item>
+          <el-menu-item index="7">
+            <span slot="title">统计管理</span>
+          </el-menu-item>
+          <el-submenu index="8">
+            <template slot="title">
+              <span slot="title">综合管理</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="8-1">公告管理</el-menu-item>
+              <el-menu-item index="8-2">数据汇总</el-menu-item>
+              <el-menu-item index="8-3">数据备份与恢复</el-menu-item>
+              <el-menu-item index="8-4">数据查重</el-menu-item>
+              <el-menu-item index="8-5">数据导入</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+          <el-submenu index="9">
+            <template slot="title">
+              <span slot="title">全宗管理</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="9-1">全宗增加</el-menu-item>
+              <el-menu-item index="9-2">全宗修改</el-menu-item>
+              <el-menu-item index="9-3">全宗打印</el-menu-item>
+              <el-menu-item index="9-4">全宗历史沿革</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+          <el-submenu index="10">
+            <template slot="title">
+              <span slot="title">安全维护</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="10-1">单位管理</el-menu-item>
+              <el-menu-item index="10-2">用户管理</el-menu-item>
+              <el-menu-item index="10-3">用户组管理</el-menu-item>
+              <el-menu-item index="10-4">日志管理</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+          <el-submenu index="11">
+            <template slot="title">
+              <span slot="title">系统设置</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="11-1">模板维护</el-menu-item>
+              <el-menu-item index="11-2">档号设置</el-menu-item>
+              <el-menu-item index="11-3">分类维护</el-menu-item>
+              <el-menu-item index="11-4">报表打印</el-menu-item>
+              <el-menu-item index="11-5">报表管理</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
       <el-container>
         <el-header>
           <Header />
         </el-header>
         <el-container>
-          <el-aside>
-            <el-menu
-              unique-opened
-              :default-active="defaultActive"
-              @select="menuSelect"
-            >
-              <el-submenu index="100">
-                <template slot="title">
-                  <span slot="title">档案管理</span>
-                </template>
-                <el-submenu index="1">
-                  <template slot="title">
-                    <span slot="title">预归档整理</span>
-                  </template>
-                  <el-menu-item-group>
-                    <el-menu-item index="1-1">归档管理</el-menu-item>
-                    <el-menu-item index="1-2">卷内管理</el-menu-item>
-                    <el-menu-item index="1-3">案卷管理</el-menu-item>
-                    <el-menu-item index="1-4">资料管理</el-menu-item>
-                  </el-menu-item-group>
-                </el-submenu>
-                <el-submenu index="2">
-                  <template slot="title">
-                    <span slot="title">归档整理</span>
-                  </template>
-                  <el-menu-item-group>
-                    <el-menu-item index="2-1">归档管理</el-menu-item>
-                    <el-menu-item index="2-2">卷内管理</el-menu-item>
-                    <el-menu-item index="2-3">案卷管理</el-menu-item>
-                    <el-menu-item index="2-4">资料管理</el-menu-item>
-                  </el-menu-item-group>
-                </el-submenu>
-                <el-submenu index="3">
-                  <template slot="title">
-                    <span slot="title">审核管理</span>
-                  </template>
-                  <el-menu-item-group>
-                    <el-menu-item index="3-1">归档管理</el-menu-item>
-                    <el-menu-item index="3-2">审核日志</el-menu-item>
-                    <el-menu-item index="3-3">案卷管理</el-menu-item>
-                    <el-menu-item index="3-4">资料管理</el-menu-item>
-                  </el-menu-item-group>
-                </el-submenu>
-                <el-menu-item index="4">
-                  <span slot="title">未归管理</span>
-                </el-menu-item>
-              </el-submenu>
-              <el-submenu index="5">
-                <template slot="title">
-                  <span slot="title">开放管理</span>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item index="5-1">开放列表</el-menu-item>
-                  <el-menu-item index="5-2">开放日志</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-              <el-menu-item index="6">
-                <span slot="title">综合检索</span>
-              </el-menu-item>
-              <el-menu-item index="7">
-                <span slot="title">统计管理</span>
-              </el-menu-item>
-              <el-submenu index="8">
-                <template slot="title">
-                  <span slot="title">综合管理</span>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item index="8-1">公告管理</el-menu-item>
-                  <el-menu-item index="8-2">数据汇总</el-menu-item>
-                  <el-menu-item index="8-3">数据备份与恢复</el-menu-item>
-                  <el-menu-item index="8-4">数据查重</el-menu-item>
-                  <el-menu-item index="8-5">数据导入</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-              <el-submenu index="9">
-                <template slot="title">
-                  <span slot="title">全宗管理</span>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item index="9-1">全宗增加</el-menu-item>
-                  <el-menu-item index="9-2">全宗修改</el-menu-item>
-                  <el-menu-item index="9-3">全宗打印</el-menu-item>
-                  <el-menu-item index="9-4">全宗历史沿革</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-              <el-submenu index="10">
-                <template slot="title">
-                  <span slot="title">安全维护</span>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item index="10-1">单位管理</el-menu-item>
-                  <el-menu-item index="10-2">用户管理</el-menu-item>
-                  <el-menu-item index="10-3">用户组管理</el-menu-item>
-                  <el-menu-item index="10-4">日志管理</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-              <el-submenu index="11">
-                <template slot="title">
-                  <span slot="title">系统设置</span>
-                </template>
-                <el-menu-item-group>
-                  <el-menu-item index="11-1">模板维护</el-menu-item>
-                  <el-menu-item index="11-2">档号设置</el-menu-item>
-                  <el-menu-item index="11-3">分类维护</el-menu-item>
-                  <el-menu-item index="11-4">报表打印</el-menu-item>
-                  <el-menu-item index="11-5">报表管理</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-            </el-menu>
-          </el-aside>
           <transition
             @enter="enter"
             @leave="leave"
             :css="false"
             v-if="!navUrl && !hideLeft"
           >
-            <el-aside id="left" v-show="leftToggle" :width="asideLwidth">
+            <el-aside
+              id="left"
+              v-show="leftToggle"
+              :style="{ marginLeft: leftMarginLeft }"
+              :width="asideLwidth"
+            >
               <el-row style="height: 100%">
                 <el-col v-show="leftToggle" :span="22" style="height: 100%">
                   <AsideL />
@@ -142,7 +151,12 @@
               </el-row>
             </el-aside>
           </transition>
-          <el-main id="main" :width="Mainwidth" v-if="!navUrl">
+          <el-main
+            id="main"
+            :style="{ marginLeft: mainMarginLeft }"
+            :width="Mainwidth"
+            v-if="!navUrl"
+          >
             <Main />
           </el-main>
           <div v-if="navUrl" style="margin: 10px">
@@ -184,6 +198,8 @@ export default {
   name: "home",
   data() {
     return {
+      leftMarginLeft: "250px",
+      mainMarginLeft: "20px",
       asideLwidth: "22rem",
       Mainwidth: "42rem",
       leftToggle: true,
@@ -263,6 +279,11 @@ export default {
     },
   },
   watch: {
+    hideLeft(newValue) {
+      newValue
+        ? (this.mainMarginLeft = "270px")
+        : (this.mainMarginLeft = "20px");
+    },
     // 只要这个值有变动，就隐藏asideR
     asideRNotice() {
       this.rightToggle = false;
@@ -386,7 +407,7 @@ export default {
     enter: function (el, done) {
       done;
       TweenMax.to(el, 0.6, {
-        width: 20 + "%",
+        width: 15 + "%",
         paddingLeft: 15 + "px",
         ease: Power4.easeOut,
       });
@@ -437,9 +458,23 @@ export default {
 <style lang="scss" scoped>
 .flex-box {
   display: flex;
-  ul {
-    height: calc(100vh - 100px);
-    overflow: auto;
+  .menu {
+    position: fixed;
+    z-index: 12;
+    .logo {
+      width: 250px;
+      line-height: 59px;
+      background-color: #2b2f3a;
+      font-size: 20px;
+      text-align: center;
+      height: 59px;
+      color: #fff;
+    }
+    ul {
+      width: 250px;
+      height: calc(100vh - 60px);
+      overflow: auto;
+    }
   }
 }
 #home {

@@ -28,7 +28,7 @@ const  {
 export const Doc_TreeIconChange = isleaf => {
     let LeafIcon = ''
     if (isleaf) LeafIcon = 'huang'
-    else LeafIcon = 'document_directory'
+    else LeafIcon = 'Smallfolder'
     let imgUrl = require(`@/assets/tree/${LeafIcon}.png`)
     return imgUrl
 }

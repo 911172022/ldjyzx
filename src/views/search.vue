@@ -369,6 +369,8 @@ export default {
       }
     }
     .table-list {
+      position: absolute;
+      width: 1200px;
       height: calc(100vh - 250px);
       background-color: #fff;
       .search-nothing {

@@ -288,11 +288,11 @@ export default {
       FYHDProcessId: "",
       data: [
         {
-          text: "文件类型",
+          text: "案卷类型",
           value: "1",
           children: [
             {
-              text: "文书文件",
+              text: "文书案卷",
               children: [
                 {
                   text: "收文",
@@ -304,15 +304,43 @@ export default {
                 },
               ],
             },
+            {
+              text: "科技案卷",
+              value: "1-2",
+            },
+            {
+              text: "会计案卷",
+              value: "1-3",
+            },
+            {
+              text: "基建案卷",
+              value: "1-4",
+            },
+            {
+              text: "设备案卷",
+              value: "1-5",
+            },
+            {
+              text: "声像案卷",
+              value: "1-6",
+            },
+            {
+              text: "实物案卷",
+              value: "1-7",
+            },
+            {
+              text: "照片案卷",
+              value: "1-8",
+            },
+            {
+              text: "审计档案",
+              value: "1-9",
+            },
+            {
+              text: "已故人员档案",
+              value: "1-10",
+            },
           ],
-        },
-        {
-          text: "科技文件",
-          value: "2",
-        },
-        {
-          text: "会计文件",
-          value: "3",
         },
       ],
     };

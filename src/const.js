@@ -23,3 +23,5 @@ export const MODEL_TYPES = ["zip", "ifc", "imodel", "obj", "fbx", "dae"];
 // 客户端下载链接
 export const client_download_url = 'http://jhcdms.f3322.net:81/ISO/Client/i3vmsme.exe';
 export const client_name = 'i3vmsme.exe'
+
+export const BASE_URL = ""

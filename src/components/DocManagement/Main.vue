@@ -3,14 +3,14 @@
     <div class="mainContainer">
       <el-form class="mainSearch" :inline="true" :model="formInline">
         <!-- <el-form-item>
-				<el-input v-model="ProjectShowPath" style="width: 100%;" size="small" />
+				<el-input size="small" v-model="ProjectShowPath" style="width: 100%;" size="small" />
 			</el-form-item> -->
         <el-form-item>
           <el-input
+            size="small"
             v-model="formInline.user"
             placeholder="搜一搜，找得更快"
             prefix-icon="el-icon-search"
-            size="small"
             @keyup.enter.native="SearchHandle"
           />
         </el-form-item>
@@ -194,47 +194,48 @@
         :visible.sync="SendDocumentData.switch"
         width="45%"
       >
-        <el-form :model="fileForm" ref="fileForm">
+        <el-form :model="fileForm" ref="fileForm" label-width="100px">
           <el-form-item label="文件题名">
-            <el-input />
+            <el-input size="small" />
           </el-form-item>
           <el-form-item label="并列题名">
-            <el-input />
+            <el-input size="small" />
           </el-form-item>
           <el-form-item label="副题名">
-            <el-input />
+            <el-input size="small" />
           </el-form-item>
           <el-row :gutter="40">
             <el-col :span="12">
               <el-form-item label="成文单位" prop="theme">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="文件编号">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="分类号">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="主题词">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="人名">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="页数">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="文件流水号">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="机构问题">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="录入人">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="录入时间" class="date" prop="date">
                 <el-date-picker
+                  size="small"
                   type="date"
                   placeholder="选择时间"
                   v-model="fileForm.date"
@@ -243,24 +244,25 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="签发人">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="文件时间" class="date" prop="date">
                 <el-date-picker
+                  size="small"
                   type="date"
                   placeholder="选择时间"
                   v-model="fileForm.date"
                 ></el-date-picker>
               </el-form-item>
               <el-form-item label="密级">
-                <el-select>
+                <el-select size="small">
                   <el-option label="一般">一般</el-option>
                   <el-option label="紧急">紧急</el-option>
                   <el-option label="保密">保密</el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="文件类型" prop="fileType">
-                <el-select v-model="fileForm.fileType">
+                <el-select size="small" v-model="fileForm.fileType">
                   <el-option
                     label="EM_电子可修改版"
                     value="EM_电子可修改版"
@@ -276,25 +278,27 @@
               </el-form-item>
               <el-form-item label="保管期限" class="date" prop="date">
                 <el-date-picker
+                  size="small"
                   type="date"
                   placeholder="选择时间"
                   v-model="fileForm.date"
                 ></el-date-picker>
               </el-form-item>
               <el-form-item label="附注">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="主送机关">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="抄送机关">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="份数">
-                <el-input />
+                <el-input size="small" />
               </el-form-item>
               <el-form-item label="收文时间" class="date" prop="date">
                 <el-date-picker
+                  size="small"
                   type="date"
                   placeholder="选择时间"
                   v-model="fileForm.date"
@@ -509,9 +513,9 @@ export default {
     },
     tableHeightLocal() {
       let height = document.body.clientHeight - 300;
-      return height
-    }
- },
+      return height;
+    },
+  },
   destroyed() {
     // 移除拖拽监听
     this.setDrag(false);

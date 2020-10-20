@@ -283,12 +283,7 @@ export default {
           },
         ],
         yAxis: {
-          axisLabel: {
-            show: true,
-            textStyle: {
-              color: "#fff",
-            },
-          },
+          type: "value",
         },
         series: [
           {

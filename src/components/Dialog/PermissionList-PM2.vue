@@ -339,7 +339,7 @@ export default {
     .el-tree-node__label:before {
         content: "";
         position: absolute;
-        background-image: url("../../assets/tree/document_directory.png");
+        background-image: url("../../assets/tree/Smallfolder.png");
         background-size: 20px;
         top: -3px;
         left: 0;

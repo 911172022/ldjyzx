@@ -169,11 +169,53 @@
         <div class="tab-top">
           <el-button type="primary" size="small">上传</el-button>
         </div>
-        <iframe
-          src="http://gyy.fdx360.com/static/sealApplication/1695BE4C97704D0F81C2D21A7FE2D532.pdf"
-          frameborder="0"
-          style="width: 100%; height: 100vh"
-        ></iframe>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-table :data="tableData" border style="width: 100%">
+              <el-table-column type="selection" width="50"> </el-table-column>
+              <el-table-column type="index" width="50"> </el-table-column>
+              <el-table-column
+                prop="num"
+                label="文件编号"
+                width="100"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column
+                prop="title"
+                label="题名"
+                width="320"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column prop="unit" label="单位" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column fixed="right" label="操作" width="100">
+                <template slot-scope="scope">
+                  <el-button
+                    @click="tableClick2(scope.row)"
+                    type="text"
+                    size="small"
+                    >查看</el-button
+                  >
+                  <el-button type="text" size="small">下载</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <Pagination
+              :pagination="pagination"
+              @changepage="pageNum2"
+              :current-page.sync="currentPage"
+            />
+          </el-col>
+          <el-col :span="12" v-if="fileShow">
+            <iframe
+              src="http://gyy.fdx360.com/static/sealApplication/1695BE4C97704D0F81C2D21A7FE2D532.pdf"
+              frameborder="0"
+              style="width: 100%; height: 100vh"
+            ></iframe>
+          </el-col>
+        </el-row>
       </el-tab-pane>
       <el-tab-pane label="档案日志" name="4">
         <el-steps direction="vertical">
@@ -230,6 +272,7 @@ export default {
         title: "广州市教育装备中心1985-2015年档案利用实例",
       },
       activeName: "1",
+      fileShow: false,
       tableData: [
         {
           num: "004",
@@ -252,6 +295,9 @@ export default {
   methods: {
     pageNum2(e) {},
     tableClick(e) {},
+    tableClick2() {
+      this.fileShow = true
+    },
     handleClick(tab, event) {
       console.log(tab, event);
     },

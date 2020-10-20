@@ -12,7 +12,7 @@
           <el-dropdown trigger="click">
             <div
               class="el-dropdown-link"
-              style="color: #fff; display: flex; align-items: center"
+              style="display: flex; align-items: center"
             >
               <div>{{ sysUserName }}</div>
               <i class="el-icon-arrow-down el-icon--right"></i>
@@ -827,7 +827,6 @@ export default {
   text-align: right;
   .el-dropdown-link {
     cursor: pointer;
-    color: #fff;
   }
   .el-button--text:focus,
   .el-button--text:hover {
@@ -843,9 +842,8 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  // background: #545c64;
-  background: $main-color-light;
-  color: #fff;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
   .el-menu {
     background-color: $main-color-light;
     .el-menu-item i {
