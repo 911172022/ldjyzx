@@ -121,7 +121,8 @@
           <el-col :span="12">
             <el-table :data="tableData" border style="width: 100%">
               <el-table-column type="selection" width="50"> </el-table-column>
-              <el-table-column type="index" width="50"> </el-table-column>
+              <el-table-column type="index" label="序号" width="70">
+              </el-table-column>
               <el-table-column
                 prop="num"
                 label="文件编号"
@@ -173,22 +174,13 @@
           <el-col :span="12">
             <el-table :data="tableData" border style="width: 100%">
               <el-table-column type="selection" width="50"> </el-table-column>
-              <el-table-column type="index" width="50"> </el-table-column>
-              <el-table-column
-                prop="num"
-                label="文件编号"
-                width="100"
-                show-overflow-tooltip
-              >
+              <el-table-column type="index" label="序号" width="70">
               </el-table-column>
               <el-table-column
                 prop="title"
-                label="题名"
-                width="320"
+                label="文件名称"
                 show-overflow-tooltip
               >
-              </el-table-column>
-              <el-table-column prop="unit" label="单位" show-overflow-tooltip>
               </el-table-column>
               <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
@@ -296,7 +288,7 @@ export default {
     pageNum2(e) {},
     tableClick(e) {},
     tableClick2() {
-      this.fileShow = true
+      this.fileShow = true;
     },
     handleClick(tab, event) {
       console.log(tab, event);

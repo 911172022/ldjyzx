@@ -1,10 +1,3 @@
-/*
- * @Author: CiFong
- * @Date: 2020-04-03 13:51:19
- * @LastEditors: CiFong
- * @LastEditTime: 2020-04-07 09:36:52
- * @Description: 请输入
- */
 export default {
     namespaced: true,
     state: {
@@ -16,10 +9,14 @@ export default {
         PreviewVideoURL: '',
         navUrl: "",
         changeClientWidth: 0,
-        Type: ""
+        Type: "",
+        menuIndex: "4",
     },
     actions: {},
     mutations: {
+        GET_MENU_INDEX(state, status) {
+            state.menuIndex = status
+        },
         GET_MENU_TYPE(state, status) {
             state.Type = status
         },
@@ -61,6 +58,7 @@ export default {
         PreviewVideoURL: state => state.PreviewVideoURL,
         navUrl: state => state.navUrl,
         changeClientWidth: state => state.changeClientWidth,
-        Type: state => state.Type
+        Type: state => state.Type,
+        menuIndex: state => state.menuIndex
     }
 }

@@ -13,6 +13,7 @@
         >
           <el-submenu index="100">
             <template slot="title">
+              <i class="el-icon-folder-opened"></i>
               <span slot="title">档案管理</span>
             </template>
             <el-menu-item index="4">
@@ -54,6 +55,7 @@
           </el-submenu>
           <el-submenu index="5">
             <template slot="title">
+              <i class="el-icon-share"></i>
               <span slot="title">开放管理</span>
             </template>
             <el-menu-item-group>
@@ -62,13 +64,16 @@
             </el-menu-item-group>
           </el-submenu>
           <el-menu-item index="6">
+            <i class="el-icon-search"></i>
             <span slot="title">综合检索</span>
           </el-menu-item>
           <el-menu-item index="7">
+            <i class="el-icon-pie-chart"></i>
             <span slot="title">统计管理</span>
           </el-menu-item>
           <el-submenu index="8">
             <template slot="title">
+              <i class="el-icon-info"></i>
               <span slot="title">综合管理</span>
             </template>
             <el-menu-item-group>
@@ -81,6 +86,7 @@
           </el-submenu>
           <el-submenu index="9">
             <template slot="title">
+              <i class="el-icon-reading"></i>
               <span slot="title">全宗管理</span>
             </template>
             <el-menu-item-group>
@@ -92,6 +98,7 @@
           </el-submenu>
           <el-submenu index="10">
             <template slot="title">
+              <i class="el-icon-s-help"></i>
               <span slot="title">安全维护</span>
             </template>
             <el-menu-item-group>
@@ -103,6 +110,7 @@
           </el-submenu>
           <el-submenu index="11">
             <template slot="title">
+              <i class="el-icon-setting"></i>
               <span slot="title">系统设置</span>
             </template>
             <el-menu-item-group>
@@ -208,7 +216,7 @@ export default {
       // 修复右边收起时收起左边右边会弹出来的bug
       asideRwidth: "28rem",
       asideREvent: null,
-      defaultActive: "1-1",
+      defaultActive: "4",
       hideLeft: false,
       userGroupData: {
         switch: false,
@@ -315,7 +323,7 @@ export default {
     },
     // 点击菜单
     menuSelect(index) {
-      console.log(index);
+      this.$store.commit("menu/GET_MENU_INDEX",index)
       switch (index) {
         case "6": {
           const { href } = this.$router.resolve({
@@ -358,7 +366,7 @@ export default {
           break;
         default:
           this.hideLeft = false;
-          this.$store.commit("setHeaderActiveIndex", 1);
+            this.$store.commit("setHeaderActiveIndex", 1);
           break;
       }
     },
@@ -459,10 +467,10 @@ export default {
 .flex-box {
   display: flex;
   .menu {
+    width: 250px !important;
     position: fixed;
     z-index: 12;
     .logo {
-      width: 250px;
       line-height: 59px;
       background-color: #2b2f3a;
       font-size: 20px;
@@ -471,7 +479,6 @@ export default {
       color: #fff;
     }
     ul {
-      width: 250px;
       height: calc(100vh - 60px);
       overflow: auto;
     }

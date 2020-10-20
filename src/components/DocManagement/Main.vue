@@ -687,7 +687,7 @@ export default {
     /* ------------------------------------------------------------ */
     // 行的双击事件
     tableDoubleClick(row) {
-      this.fileDownloadTable(row.Keyword);
+      // this.fileDownloadTable(row.Keyword);
     },
     /* ------------------------------------------------------------ */
     async PreviewHandle(docKeyword) {
@@ -934,34 +934,34 @@ export default {
       }
     },
     tableSelect(val, row) {
-      let vm = this;
-      vm.DocKeyword = "";
-      if (row !== null) {
-        vm.DocKeyword = row.Keyword;
-      }
+      // let vm = this;
+      // vm.DocKeyword = "";
+      // if (row !== null) {
+      //   vm.DocKeyword = row.Keyword;
+      // }
     },
     // 点击列表
     handleCurrentChange(val) {
-      let vm = this;
-      if (val) {
-        vm.$refs.DocList.clearSelection();
-        vm.DocKeyword = val.Keyword;
-        this.$nextTick(() => {
-          vm.$refs.DocList.toggleRowSelection(val);
-        });
-        vm.$store.dispatch("doc/getDocBaseAttr", val.Keyword);
-        // if (val.Keyword === vm.DocKeyword) return
-      }
+      // let vm = this;
+      // if (val) {
+      //   vm.$refs.DocList.clearSelection();
+      //   vm.DocKeyword = val.Keyword;
+      //   this.$nextTick(() => {
+      //     vm.$refs.DocList.toggleRowSelection(val);
+      //   });
+      //   vm.$store.dispatch("doc/getDocBaseAttr", val.Keyword);
+      //   // if (val.Keyword === vm.DocKeyword) return
+      // }
     },
     // 多选列表
     handleSelectionChange(val) {
-      let vm = this;
-      this.multipleSelection = val;
-      this.ChooseProfessionData.docKeyWord = val;
-      // 2020.4.15-4
-      if (val.length > 0) {
-        vm.$store.dispatch("doc/getDocBaseAttr", val[val.length - 1].Keyword);
-      }
+      // let vm = this;
+      // this.multipleSelection = val;
+      // this.ChooseProfessionData.docKeyWord = val;
+      // // 2020.4.15-4
+      // if (val.length > 0) {
+      //   vm.$store.dispatch("doc/getDocBaseAttr", val[val.length - 1].Keyword);
+      // }
       // 2020.4.27-2
     },
     // 替换文件式的上传文件

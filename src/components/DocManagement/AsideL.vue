@@ -14,7 +14,7 @@
     <div class="asideLTreeOuter" @contextmenu.prevent="contextMenuClickTest">
       <!-- <div class="asideLTreeOuter" @contextmenu.prevent="contextMenuClick"> -->
       <el-tree
-        :data="data"
+        :data="treeData"
         :props="props"
         @node-contextmenu="contextMenuClickTest"
       ></el-tree>
@@ -286,61 +286,34 @@ export default {
       FYHDShowDialog: false,
       // 用户选择的流程 id
       FYHDProcessId: "",
-      data: [
+      treeData: [
         {
-          text: "案卷类型",
+          text: "文件类型",
           value: "1",
           children: [
             {
-              text: "文书案卷",
+              text: "文书类型",
+              value: "1-1",
               children: [
                 {
+                  value: "1-1-1",
                   text: "收文",
-                  value: "1-1",
                 },
                 {
-                  value: "1-2",
-                  text: "收文",
+                  value: "1-1-2",
+                  text: "发文",
                 },
               ],
             },
-            {
-              text: "科技案卷",
-              value: "1-2",
-            },
-            {
-              text: "会计案卷",
-              value: "1-3",
-            },
-            {
-              text: "基建案卷",
-              value: "1-4",
-            },
-            {
-              text: "设备案卷",
-              value: "1-5",
-            },
-            {
-              text: "声像案卷",
-              value: "1-6",
-            },
-            {
-              text: "实物案卷",
-              value: "1-7",
-            },
-            {
-              text: "照片案卷",
-              value: "1-8",
-            },
-            {
-              text: "审计档案",
-              value: "1-9",
-            },
-            {
-              text: "已故人员档案",
-              value: "1-10",
-            },
           ],
+        },
+        {
+          text: "科技类型",
+          value: "2",
+        },
+        {
+          text: "会计类型",
+          value: "3",
         },
       ],
     };
@@ -348,11 +321,89 @@ export default {
   components: {
     PermissionList,
   },
-  // mounted() {
-  //   this.getProjectPath();
-  //   this.getProjectList();
-  // },
+  computed: {
+    ...mapGetters("menu", ["menuIndex"]),
+  },
   watch: {
+    menuIndex: {
+      handler(newValue) {
+        console.log(newValue);
+        if (newValue == "4") {
+          this.treeData = [
+            {
+              text: "文件类型",
+              value: "1",
+              children: [
+                {
+                  text: "文书类型",
+                  value: "1-1",
+                  children: [
+                    {
+                      value: "1-1-1",
+                      text: "收文",
+                    },
+                    {
+                      value: "1-1-2",
+                      text: "发文",
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              text: "科技类型",
+              value: "2",
+            },
+            {
+              text: "会计类型",
+              value: "3",
+            },
+          ];
+        } else {
+          this.treeData = [
+            {
+              text: "案卷类型",
+              value: "1",
+              children: [
+                {
+                  text: "文书案卷",
+                },
+                {
+                  text: "科技案卷",
+                  value: "1-2",
+                },
+                {
+                  text: "会计案卷",
+                  value: "1-3",
+                },
+                {
+                  text: "基建案卷",
+                  value: "1-4",
+                },
+                {
+                  text: "设备案卷",
+                  value: "1-5",
+                },
+                {
+                  text: "声像案卷",
+                  value: "1-6",
+                },
+                {
+                  text: "实物案卷",
+                  value: "1-7",
+                },
+                {
+                  text: "照片案卷",
+                  value: "1-8",
+                },
+              ],
+            },
+          ];
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
     // 个人消息附件跳转过来, 添加目录, 复制目录
     // 刷新目录树，使用方法：
     // this.$store.dispatch("project/REFRESH_TREE", true)

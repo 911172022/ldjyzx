@@ -10,7 +10,7 @@ module.exports = {
   runtimeCompiler: true,
   devServer: {
     //port: 42380, // 端口号
-    port: 8089,
+    port: 8080,
     proxy: {
       '/WebApi': {
         target: "http://jhcdms.f3322.net:81",

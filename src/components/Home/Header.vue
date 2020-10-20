@@ -1,6 +1,14 @@
 <template>
   <div>
     <el-row class="header">
+      <!-- <el-col :span="1"></el-col>
+      <el-col :span="2">
+        <i
+          style="font-size: 20px; cursor: pointer"
+          :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
+          @click="collapseMenu"
+        ></i>
+      </el-col> -->
       <el-col class="UserPanel" :span="24">
         <div class="user-wrapper">
           <div>
@@ -277,6 +285,7 @@ import { TimeChange } from "../../util/Time";
 export default {
   data() {
     return {
+      isCollapse: false,
       userName: "",
       sysName: "艾三维协同系统",
       sysUserName: "账号管理",
@@ -843,7 +852,7 @@ export default {
   flex-direction: row;
   justify-content: space-around;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   .el-menu {
     background-color: $main-color-light;
     .el-menu-item i {
