@@ -213,7 +213,6 @@ export default {
       leftToggle: true,
       rightToggle: true,
       notify: [],
-      // 修复右边收起时收起左边右边会弹出来的bug
       asideRwidth: "28rem",
       asideREvent: null,
       defaultActive: "4",
@@ -227,56 +226,6 @@ export default {
     };
   },
   mounted() {
-    // let resize = document.getElementById("resize");
-    // let left = document.getElementById("left");
-    // let main = document.getElementById("main");
-    // let right = document.getElementById("right");
-    // let home = document.getElementById("home");
-    // Drag(resize, left, main, right, home);
-    // 2020.4.15-1
-    this.$notify.closeAll();
-    // this.getNewMessage();
-    this.hideRight();
-
-    // 2020-5-26 获取之前上传没上传完的信息
-    // 先对比跟上次上传的是不是同一个用户
-    // if (
-    //   sessionStorage.getItem("username") ===
-    //   localStorage.getItem("lastUploadUserName")
-    // ) {
-    //   let lastFileList = localStorage.getItem("uncompletedUploadList");
-    //   let lastProjectKeyWord = localStorage.getItem("lastUploadProjectKeyWord");
-
-    //   if (lastFileList && lastFileList.length != 0) {
-    //     this.$notify({
-    //       title: "上传未完成任务",
-    //       message: `以下文件上传未完成${lastFileList}`,
-    //       type: "warning",
-    //       duration: 0,
-    //       customClass: "uploadNotify",
-    //       onClick: async () => {
-    //         // 跳转
-    //         // 获取 ProjectKeyWord
-    //         let Keyword = lastProjectKeyWord,
-    //           IgnoreShortCut = "false";
-    //         const res = await UserApi2.getProjectPath(Keyword, IgnoreShortCut);
-    //         if (res.success) {
-    //           const ProjectKeyWord = res.data[0].ProjectKeyword;
-    //           //  储存位置
-    //           await UserApi2.saveLastProject(ProjectKeyWord);
-    //           this.$router.push({ name: "DocManagement" });
-    //           this.$store.commit("project/REFRESH_TREE", true);
-    //         }
-    //       },
-    //       onClose: () => {
-    //         // 清空缓存内的信息
-    //         localStorage.setItem("uncompletedUploadList", "");
-    //         localStorage.setItem("lastUploadProjectKeyWord", "");
-    //         localStorage.setItem("lastUploadUserName", "");
-    //       },
-    //     });
-    //   }
-    // }
   },
   computed: {
     ...mapGetters("AdjustMenuWidth", ["TabsName", "switch"]),
@@ -373,44 +322,8 @@ export default {
     pageChange() {
       this.$router.push({ path: "/" });
     },
-    hideRight() {
-      if (document.body.clientWidth < 1450) {
-        this.rightToggle = false;
-      }
-    },
-    // 获取新消息
-    getNewMessage() {
-      let vm = this;
-      UserApi.getUserNoReadMessageList().then((res) => {
-        if (res.success) {
-          vm.notify = this.$notify({
-            title: res.data[0].Title,
-            message: res.data[0].Content,
-            dangerouslyUseHTMLString: true,
-            //  弹出后1min关闭
-            duration: 1000 * 60,
-            position: "bottom-right",
-            onClick() {
-              vm.$router.push({ path: "Per-Message" });
-              vm.$store.commit("menu/GET_NAVURL", "");
-              vm.notify.close();
-            },
-            // 2020.4.15-1
-            // 关闭后3min后再查询一个出来
-            onClose() {
-              setTimeout(() => {
-                vm.getNewMessage();
-              }, 1000 * 180);
-            },
-          });
-        }
-      });
-    },
     LeftMenuSwitch() {
       this.leftToggle = !this.leftToggle;
-    },
-    RightMenuSwitch() {
-      this.rightToggle = !this.rightToggle;
     },
     enter: function (el, done) {
       done;
@@ -426,38 +339,6 @@ export default {
         width: 35 + "px",
         paddingLeft: 3 + "px",
         ease: Power4.easeOut,
-      });
-    },
-    enter2: function (el, done) {
-      done;
-      TweenMax.to(el, 0.6, {
-        width: 20 + "%",
-        paddingLeft: 0 + "px",
-        ease: Power4.easeOut,
-        onComplete: () => {
-          if (this.asideREvent != "leave") {
-            this.asideRwidth = "20%";
-          }
-        },
-        onStart: () => {
-          this.asideREvent = "enter";
-        },
-      });
-    },
-    leave2: function (el, done) {
-      done;
-      TweenMax.to(el, 0.6, {
-        width: 35 + "px",
-        paddingLeft: 4 + "px",
-        ease: Power4.easeOut,
-        onComplete: () => {
-          if (this.asideREvent != "enter") {
-            this.asideRwidth = "35px";
-          }
-        },
-        onStart: () => {
-          this.asideREvent = "leave";
-        },
       });
     },
   },

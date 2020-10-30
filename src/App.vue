@@ -4,41 +4,11 @@
     </div>
 </template>
 <script>
-import {connectionWebSocket} from '@/util/WebSocket'
-
 export default {
-    created() {
-        window.$vueFunc = this.globleFunc
-    },
-    mounted() {
-        // 建立 websocket 连接
-		connectionWebSocket();
-        this.getWidth();
-    },
     methods: {
         globleFunc(payload) {
             payload.type = 'home/' + payload.type
             return this.$store.dispatch(payload)
-        },
-        getWidth() {
-            // window.onresize = () => {
-            //     this.$store.commit(
-            //         "menu/CHANGE_TABLE_HEIGHT",
-            //         document.body.clientHeight - 277
-            //     );
-            //     this.$store.commit(
-            //         "menu/CHANGE_CLIENT_WIDTH",
-            //         document.body.clientWidth - 410
-            //     );
-            // };
-            this.$store.commit(
-                "menu/CHANGE_TABLE_HEIGHT",
-                document.body.clientHeight - 277
-            );
-            this.$store.commit(
-                "menu/CHANGE_CLIENT_WIDTH",
-                document.body.clientWidth - 410
-            );
         },
     }
 };

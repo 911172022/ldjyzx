@@ -773,12 +773,9 @@ export default {
       vm.styleObject.left = 0;
       document.removeEventListener("mousedown", vm.foo);
     },
-    // 选择了启动流程后，打开方圆鹤洞项目的流程
     //  原型代码
     contextMenuClickTest(MouseEvent, object, Node) {
       console.log(object, Node);
-      console.log(this.data.indexOf(object));
-
       let vm = this;
       this.menuVisible = false;
       this.menuVisible = true;

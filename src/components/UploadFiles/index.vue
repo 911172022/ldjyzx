@@ -43,10 +43,6 @@
       <div class="uploadDetails">已上传{{ percent2 }}% (共{{fileNum}}个文件), 上传速度：{{uploadSpeed}}{{unit}}</div>
     </span>
   </el-dialog>
-  <!-- 2020.4.21-1 -->
-  <!-- <InTray :dialogObj="InTrayData" @reData="reInTray" />
-    <FyInTray :dialogObj="FyInTrayData" @reData="reFyInTray" /> -->
-  <CommInTray :InTrayType='InTrayType' :docKeyWord="docKeyWord" @reIntrayData='reIntrayData' />
 </div>
 </template>
 <script>

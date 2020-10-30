@@ -25,7 +25,6 @@
         <el-button type="primary" @click="confirmAllHandle('allCover');confirmHandle('false')">全部覆盖</el-button>
       </span>
     </el-dialog>
-    <InTray :dialogObj="InTrayData" @reData="reInTray" />
   </div>
 </template>
 <script>
