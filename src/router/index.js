@@ -20,13 +20,13 @@ const routes = [
         path: "Doc-Management",
         name: "DocManagement",
         meta: { title: "文档管理", headerActiveIndex: "1" }
-      },
+      }
     ]
   },
   {
     path: "/",
     name: "login",
-    component: () => import("../views/Login2.vue"),
+    component: () => import("../views/Login.vue"),
     meta: { title: "登录页", auth: true },
     props: route => ({ refer: route.query.refer })
   },
@@ -67,70 +67,22 @@ const router = new VueRouter({
   routes
 });
 
-// router.beforeEach((to, from, next) => {
-//   // 进度条
-//   NProgress.start();
-//   if (to.meta.headerActiveIndex) {
-//     store.commit("setHeaderActiveIndex", to.meta.headerActiveIndex);
-//   }
-//   if (to.matched.some(r => r.meta.auth)) {
-//     store.commit("INIT_USER_STATE");
-//     let sid = store.getters.sid;
-//     if (to.name === "index") next();
-//     // 用户不是访问登录页
-//     else if (to.name !== "login" && sid) {
-//       store.commit("INIT_USER_STATE");
-//       sid = store.getters.sid;
-//       // 用户状态为登录，判断是否有 sid 超时
-//       UserApi.getNavigationDisplay(sid).then(res => {
-//         if (res) {
-//           next();
-//         } else {
-//           // Message.error('登录超时, 请重新登录')
-//           store.commit("REMOVE_USER");
-//           next({ name: "login" });
-//         }
-//       });
-//     } else if (to.name !== "login" && !sid) {
-//       store.commit("REMOVE_USER");
-//       if (to.name === "ProductBase2") {
-//         next({ path: "/login?refer=productLibrary" });
-//       } else {
-//         next({ name: "login" });
-//       }
-//     }
-//     // 用户访问登录页
-//     else {
-//       let sid = localStorage.getItem("sid") || sessionStorage.getItem("sid");
-//       if (sid) {
-//         store.commit("INIT_USER_STATE");
-//         sid = store.getters.sid;
-//         // 用户状态为登录，判断是否有 sid 超时
-//         UserApi.getNavigationDisplay(sid).then(res => {
-//           if (res) {
-//             // 判断进入产品库还是资料盘
-//             if (to.query.refer === "productLibrary") {
-//               next({ name: "ProductBase2" });
-//             } else {
-//               next({ name: "home" });
-//             }
-//           } else {
-//             store.commit("REMOVE_USER");
-//             next();
-//           }
-//         });
-//       } else {
-//         next();
-//       }
-//     }
-//   } else {
-//     next();
-//   }
-// });
+router.beforeEach((to, from, next) => {
+  // 进度条
+  NProgress.start();
+  let token = localStorage.getItem("LOGIN");
+  if (to.name !== "login" && !token) {
+    next({ name: "login" });
+  } else if (to.name === "login" && token) {
+    next({ name: "home" });
+  } else {
+    next();
+  }
+});
 
-// router.afterEach(() => {
-//   // 进度条
-//   NProgress.done();
-// });
+router.afterEach(() => {
+  // 进度条
+  NProgress.done();
+});
 
 export default router;

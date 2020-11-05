@@ -284,7 +284,7 @@ export default {
         );
         if (res.success) {
           // 有重复
-          if (res.msg === "ConfirmUpgrade") {
+          if (res.message === "ConfirmUpgrade") {
             if (fileList[i].raw) {
               vm.DuplicateFiles.push(fileList[i].raw);
             } else {
@@ -303,7 +303,7 @@ export default {
           }
         } else {
           vm.$message({
-            message: res.msg,
+            message: res.message,
             type: "error"
           });
         }
@@ -357,7 +357,7 @@ export default {
           });
         } else {
           vm.$message({
-            message: res.msg,
+            message: res.message,
             type: "error"
           });
         }
@@ -530,7 +530,7 @@ export default {
             //   });
             // });
             // 续传完成返回FINISH 则终止此次循环
-            if (res.msg == "FINISH") {
+            if (res.message == "FINISH") {
               // 重置flag
               vm.flag = true
               vm.flagName = ''
@@ -538,9 +538,9 @@ export default {
             }
           } else {
             vm.$refs.upload.clearFiles();
-            if (res.msg !== "") {
+            if (res.message !== "") {
               vm.$message({
-                message: res.msg,
+                message: res.message,
                 type: "error"
               });
             }
@@ -745,7 +745,7 @@ export default {
         } else {
           removeFileList.push(DuplicateFiles[i].name)
           vm.$message({
-            message: res.msg,
+            message: res.message,
             type: "error"
           });
         }
@@ -908,7 +908,7 @@ export default {
             //   });
             // });
             // 续传完成返回FINISH 则终止此次循环
-            if (res.msg == "FINISH") {
+            if (res.message == "FINISH") {
               // 重置flag
               vm.flag = true
               vm.flagName = ''
@@ -916,9 +916,9 @@ export default {
             }
           } else {
             vm.$refs.upload.clearFiles();
-            if (res.msg !== "") {
+            if (res.message !== "") {
               vm.$message({
-                message: res.msg,
+                message: res.message,
                 type: "error"
               });
             }

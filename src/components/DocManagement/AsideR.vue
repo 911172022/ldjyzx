@@ -725,7 +725,7 @@ export default {
         this._$isLoading();
       } else {
         this.previewAble = false;
-        this.filePreviewTip = res.msg;
+        this.filePreviewTip = res.message;
         // this.isPreview = null;
         this._$isLoading();
       }
@@ -753,7 +753,7 @@ export default {
     //         Doc = `${VIEW_DOC}${BASE_URL}/${res.data[0].path}`;
     //         return Doc;
     //     } else {
-    //         this.$message.error(res.msg);
+    //         this.$message.error(res.message);
     //         return;
     //     }
     // },

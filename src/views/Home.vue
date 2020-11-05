@@ -163,23 +163,20 @@
             id="main"
             :style="{ marginLeft: mainMarginLeft }"
             :width="Mainwidth"
-            v-if="!navUrl"
           >
             <Main />
           </el-main>
-          <div v-if="navUrl" style="margin: 10px">
+          <!-- <div v-if="navUrl" style="margin: 10px">
             <iframe
               :src="navUrl"
               :width="changeClientWidth"
               :height="tableHeight + 220"
               frameborder="0"
             />
-          </div>
+          </div> -->
         </el-container>
       </el-container>
     </div>
-    <User :dialogObj="userData" @reData="reUserData"></User>
-    <UserGroup :dialogObj="userGroupData" @reData="reGroupData"></UserGroup>
   </div>
 </template>
 
@@ -188,49 +185,30 @@ import Header from "@/components/Home/Header.vue";
 import AsideL from "@/components/Home/AsideL";
 import Main from "@/components/Home/Main.vue";
 import AsideR from "@/components/Home/AsideR.vue";
-import UserApi from "../api/services/message";
 import { Drag } from "@/util/Drag";
 import { TweenMax, Power4 } from "gsap";
 import { mapGetters } from "vuex";
+import UserApi from "../api/services/message";
+import SystemApi from "../api/services2/system";
 import UserApi2 from "../api/services/project";
-
-import downloadTasks from "../components/download/downloadTasks.vue";
-import uploadTasks from "../components/UploadFiles/uploadTasks.vue";
-import openFiles from "../components/openFiles/openFiles.vue";
-import { fail } from "assert";
-
-import UserGroup from "../components/Dialog/UserGroup";
-import User from "../components/Dialog/User";
 
 export default {
   name: "home",
   data() {
     return {
+      menuList: [],
       leftMarginLeft: "250px",
-      mainMarginLeft: "20px",
+      mainMarginLeft: "0",
       asideLwidth: "22rem",
       Mainwidth: "42rem",
       leftToggle: true,
       rightToggle: true,
-      notify: [],
-      asideRwidth: "28rem",
-      asideREvent: null,
       defaultActive: "4",
       hideLeft: false,
-      userGroupData: {
-        switch: false,
-      },
-      userData: {
-        switch: false,
-      },
     };
   },
-  mounted() {
-  },
   computed: {
-    ...mapGetters("AdjustMenuWidth", ["TabsName", "switch"]),
     ...mapGetters("menu", ["navUrl", "tableHeight", "changeClientWidth"]),
-    ...mapGetters("home", ["asideRNotice", "asideRShowNotice"]),
     ModulePageNum() {
       return this.$store.getters.ModulePageNum;
     },
@@ -238,41 +216,36 @@ export default {
   watch: {
     hideLeft(newValue) {
       newValue
-        ? (this.mainMarginLeft = "270px")
-        : (this.mainMarginLeft = "20px");
-    },
-    // 只要这个值有变动，就隐藏asideR
-    asideRNotice() {
-      this.rightToggle = false;
-    },
-    // 只要这个值有变动，就显示asideR
-    asideRShowNotice() {
-      this.rightToggle = true;
+        ? (this.mainMarginLeft = "250px")
+        : (this.mainMarginLeft = "0");
     },
   },
   components: {
-    User,
-    UserGroup,
     Header,
     AsideL,
     Main,
     AsideR,
-    downloadTasks,
-    uploadTasks,
-    // testComponents,
-    openFiles,
+  },
+  mounted() {
+    this.getMenuList();
   },
   methods: {
-    // 原型代码
-    reGroupData(e) {
-      this.userGroupData.switch = e;
-    },
-    reUserData(e) {
-      this.userGroup.switch = e;
+    getMenuList() {
+      let data = {
+        parentId: "",
+      };
+      SystemApi.getMenuTreeList(data).then((res) => {
+        console.log(res);
+        if (res.code === 200) {
+          this.menuList = res.data
+        } else {
+          this.$message.error("获取菜单列表失败,", res.message);
+        }
+      });
     },
     // 点击菜单
     menuSelect(index) {
-      this.$store.commit("menu/GET_MENU_INDEX",index)
+      this.$store.commit("menu/GET_MENU_INDEX", index);
       switch (index) {
         case "6": {
           const { href } = this.$router.resolve({
@@ -289,7 +262,7 @@ export default {
           break;
         case "8-1":
           this.hideLeft = true;
-          this.$store.commit("setHeaderActiveIndex", 2);
+          this.$store.commit("setHeaderActiveIndex", 81);
           break;
         case "9-1":
           this.hideLeft = true;
@@ -307,20 +280,27 @@ export default {
           this.hideLeft = true;
           this.$store.commit("setHeaderActiveIndex", 1);
           break;
+        case "10-1":
+          this.hideLeft = true;
+          this.$store.commit("setHeaderActiveIndex", 101);
+          break;
         case "10-2":
-          this.userData.switch = true;
+          this.hideLeft = true;
+          this.$store.commit("setHeaderActiveIndex", 102);
           break;
         case "10-3":
-          this.userGroupData.switch = true;
+          this.hideLeft = true;
+          this.$store.commit("setHeaderActiveIndex", 103);
+          break;
+        case "11-3":
+          this.hideLeft = true;
+          this.$store.commit("setHeaderActiveIndex", 113);
           break;
         default:
           this.hideLeft = false;
-            this.$store.commit("setHeaderActiveIndex", 1);
+          this.$store.commit("setHeaderActiveIndex", 1);
           break;
       }
-    },
-    pageChange() {
-      this.$router.push({ path: "/" });
     },
     LeftMenuSwitch() {
       this.leftToggle = !this.leftToggle;
@@ -410,9 +390,9 @@ export default {
       }
       .el-main {
         background-color: #fff;
-        margin: 15px;
+        // margin: 15px;
         border-right: 1px solid #ebeef5;
-        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+        // box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
       }
       .el-aside#right {
         padding-left: 0;

@@ -1,11 +1,3 @@
-/*
- * @Author: CiFong
- * @Date: 2020-07-31 16:41:26
- * @LastEditors: CiFong
- * @LastEditTime: 2020-07-31 16:53:23
- * @Description: 请输入
- */
-
 /**
  * 換算時間
  * @param {Number} OriginalTime Sat Jan 11 2020 21:08:19 GMT+0800 (中國標準時間)

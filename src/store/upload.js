@@ -267,7 +267,7 @@ export default {
 
                 // createDocByFileName 返回成功操作
                 if (res.success) {
-                    if (res.msg === 'ConfirmUpgrade') {
+                    if (res.message === 'ConfirmUpgrade') {
                         if (!allUpgrade && !allCover) {
                             let result = await makeDialog({
                                 title: '确认文件替换',
@@ -366,11 +366,11 @@ export default {
                         file: {
                             ...state.fileList[i],
                             status: tasksStatus.REMOVE,
-                            msg: res.msg
+                            msg: res.message
                         }
                     })
                     Message.error({
-                        message: `创建文档失败：${ res.msg }`
+                        message: `创建文档失败：${ res.message }`
                     })
                 }
             }
@@ -392,7 +392,7 @@ export default {
                     state.fileList[i].confirmUpgrade
                 )
                 if (res.success) {
-                    if (!res.msg) {
+                    if (!res.message) {
                         commit("UPDATE_FILE_LIST", {
                             i,
                             file: {
@@ -409,11 +409,11 @@ export default {
                         file: {
                             ...state.fileList[i],
                             status: tasksStatus.REMOVE,
-                            msg: res.msg
+                            msg: res.message
                         }
                     })
                     Message.error({
-                        message: `创建文档失败：${ res.msg }`
+                        message: `创建文档失败：${ res.message }`
                     })
                 }
             }
@@ -512,11 +512,11 @@ export default {
                         file: {
                             ...state.fileList[i],
                             status: tasksStatus.REMOVE,
-                            msg: res.msg
+                            msg: res.message
                         }
                     })
                     Message.error({
-                        message: `创建文件${state.fileList[i].rawFile.name}失败：${res.msg}`,
+                        message: `创建文件${state.fileList[i].rawFile.name}失败：${res.message}`,
                     });
                 }
             }
@@ -650,8 +650,8 @@ export default {
                                 break;
                             } else {
                                 // 如果返回的data里是空的，大概就是不能上传一模一样的文件
-                                if (res.msg.length === 0) {
-                                    res.msg = "系统存在完全相同文件，请勿重复上传。";
+                                if (res.message.length === 0) {
+                                    res.message = "系统存在完全相同文件，请勿重复上传。";
                                 }
                                 // 上传失败
                                 commit("UPDATE_UPLOAD_LIST", {
@@ -659,11 +659,11 @@ export default {
                                     file: {
                                         ...state.uploadList[i],
                                         status: tasksStatus.PAUSE,
-                                        msg: res.msg
+                                        msg: res.message
                                     }
                                 })
                                 Message.error({
-                                    message: `文件${ state.uploadList[i].rawFile.name }上传失败：${ res.msg }`,
+                                    message: `文件${ state.uploadList[i].rawFile.name }上传失败：${ res.message }`,
                                 });
                                 // 开始下一个文件的上传
                                 continue uploadListLoop;
@@ -781,11 +781,11 @@ export default {
                         file: {
                             ...state.uploadList[i],
                             status: tasksStatus.PAUSE,
-                            msg: `${state.uploadList[i].O_filename}上传完回调失败：${res.msg}`
+                            msg: `${state.uploadList[i].O_filename}上传完回调失败：${res.message}`
                         }
                     })
                     Message.warning({
-                        message: `${ state.uploadList[i].O_filename }上传完回调失败：${res.msg}`
+                        message: `${ state.uploadList[i].O_filename }上传完回调失败：${res.message}`
                     })
                 }
             }

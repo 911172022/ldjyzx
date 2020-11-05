@@ -39,8 +39,8 @@ export default {
             commit('PTYPE', ProjectKeyWord)
             commit('KTYPE', ProjectKeyWord)
             UserApi.getDocList(ProjectKeyWord, filterJson, page, limit).then(res => {
-                if (filterJson !== '' && res.msg !== '') {
-                    Message({ message: res.msg, type: 'error' })
+                if (filterJson !== '' && res.message !== '') {
+                    Message({ message: res.message, type: 'error' })
                 }
                 commit('GET_DOC_LIST', res.data)
                 const total = res.total

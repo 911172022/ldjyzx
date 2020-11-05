@@ -1,15 +1,15 @@
 <template>
   <div>
-    <!-- <div class="btn-box" v-if="isTreeClick"> -->
     <div class="btn-box">
+      <!-- <div class="btn-box" v-if="isTreeClick"> -->
       <el-dropdown @command="handleCommand">
         <el-button type="primary">
-          用户组操作<i class="el-icon-arrow-down el-icon--right"></i>
+          单位操作<i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="add">新建用户组</el-dropdown-item>
-          <el-dropdown-item command="delete">删除用户组</el-dropdown-item>
-          <el-dropdown-item command="update">编辑用户组</el-dropdown-item>
+          <el-dropdown-item command="add">新建单位</el-dropdown-item>
+          <el-dropdown-item command="delete">删除单位</el-dropdown-item>
+          <el-dropdown-item command="update">编辑单位</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
       <el-button type="primary" v-if="isTreeClick" @click="addUserToDept">添加成员</el-button>
@@ -20,7 +20,7 @@
           <!-- <div class="UG-search">
             <el-input
               placeholder="搜索用户"
-              v-model="searchValue"
+              v-model="OldFilterText"
               prefix-icon="el-icon-search"
             ></el-input>
           </div> -->
@@ -31,8 +31,8 @@
             :props="props"
             v-loading="treeLoading"
             @node-click="treeClick"
-            node-key="groupId"
-            :default-expanded-keys="[2]"
+            node-key="departmentId"
+            :default-expanded-keys="[1]"
           ></el-tree>
         </div>
         <div class="UG-table" style="flex: 1">
@@ -72,7 +72,7 @@
         <el-form-item>
           <el-checkbox v-model="checked">是否设为一级分类</el-checkbox>
         </el-form-item>
-        <el-form-item label="用户组名称" prop="name">
+        <el-form-item label="单位名称" prop="name">
           <el-input v-model.trim="NewUserGroupForm.name" autocomplete="off" />
         </el-form-item>
       </el-form>
@@ -100,7 +100,7 @@
       append-to-body
       :before-close="handleClose"
     >
-      <User :groupId="departmentId" name="用户组" />
+      <User :departmentId="departmentId" name="单位" />
       <div slot="footer" class="dialog-footer">
         <el-button type="primary">提交</el-button>
         <el-button @click="userVisible = false">取消</el-button>
@@ -116,7 +116,6 @@ import { Doc_TreeIconChange } from "@/util/Common";
 export default {
   data() {
     return {
-      searchValue: "",
       dialogTitle: "",
       departmentId: "",
 
@@ -134,6 +133,28 @@ export default {
       userList: [],
       isUpdate: false,
 
+      OldFilterText: "",
+      NewFilterText: "",
+      TimeId: -1,
+      isLoaingUser: true,
+      isLoaingGroup: true,
+      // 组织机构
+      // 舊用戶組列表
+      OldnodeKeyword: "Root",
+      OldgroupKeyword: "",
+      OldUserGroupText: "",
+      // 舊用戶列表
+      OlduserKeyword: "",
+
+      // 新用戶組列表
+      NewnodeKeyword: "Root",
+      NewgroupKeyword: "",
+      NewUserGroupText: "",
+      NewUserGroupChildren: {},
+      // 新用戶列表
+      NewUserList: [],
+      userKeyword: "",
+
       // 新建用戶組
       innerVisible: false,
       userVisible: false,
@@ -141,9 +162,7 @@ export default {
         name: "",
       },
       rules: {
-        name: [
-          { required: true, message: "请输入用户组名称", trigger: "blur" },
-        ],
+        name: [{ required: true, message: "请输入单位名称", trigger: "blur" }],
       },
     };
   },
@@ -154,12 +173,12 @@ export default {
     },
   },
   mounted() {
-    this.getGroupList();
+    this.getDepartmentList();
   },
   methods: {
     handleClose() {
       this.userVisible = false;
-      this.getUserByGroup();
+      this.getUserByDepartment();
     },
     resetForm() {
       this.$refs["NewUserGroupForm"].resetFields();
@@ -168,7 +187,7 @@ export default {
     addUserToDept() {
       this.userVisible = true;
     },
-    // 用户组操作的下拉
+    // 单位操作的下拉
     handleCommand(e) {
       switch (e) {
         case "add":
@@ -184,18 +203,19 @@ export default {
           break;
       }
     },
-    // 点击用户组获取用户列表
+    // 点击单位获取用户列表
     treeClick(e) {
       this.isTreeClick = true;
-      this.departmentId = e.groupId;
-      this.getUserByGroup();
+      this.departmentId = e.departmentId;
+      this.getUserByDepartment();
     },
-    getUserByGroup() {
+    // 获取单位下的用户
+    getUserByDepartment() {
       this.tableLoading = true;
       let data = {
-        groupId: this.departmentId,
+        departmentId: this.departmentId,
       };
-      UserApi.getGroupUserList(data).then((res) => {
+      UserApi.getDepartmentUserList(data).then((res) => {
         if (res.code === 200) {
           this.userList = res.data;
           this.tableLoading = false;
@@ -205,21 +225,21 @@ export default {
         }
       });
     },
-    // 获取用户组树列表
-    getGroupList() {
+    // 获取单位树列表
+    getDepartmentList() {
       this.treeLoading = true;
-      UserApi.getGroupList().then((res) => {
+      UserApi.getDepartmentList().then((res) => {
         if (res.code === 200) {
           this.treeData = res.data;
           this.treeLoading = false;
-          this.getUserByGroup();
+          this.getUserByDepartment();
         } else {
           this.treeLoading = false;
           this.$message.error("获取用户组信息失败,", res.message);
         }
       });
     },
-    // 新建用户组
+    // 新建单位
     NewUserGroup(formName, type) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -231,40 +251,40 @@ export default {
               parentId: this.departmentId,
               name: this.NewUserGroupForm.name,
             };
-            UserApi.addGroup(data).then((res) => {
+            UserApi.addDepartment(data).then((res) => {
               if (res.code === 200) {
-                this.$message.success("新增用户组成功");
+                this.$message.success("新增单位成功");
                 this.NewUserGroupForm.name = "";
                 this.innerVisible = false;
-                this.getGroupList();
+                this.getDepartmentList();
               } else {
-                this.$message.success("新增用户组失败,", res.message);
+                this.$message.success("新增单位失败,", res.message);
               }
             });
           } else {
             let data = {
               name: this.NewUserGroupForm.name,
-              groupId: this.departmentId,
+              departmentId: this.departmentId,
             };
-            UserApi.updateGroup(data).then((res) => {
+            UserApi.updateDepartment(data).then((res) => {
               if (res.code === 200) {
-                this.$message.success("修改用户组成功");
+                this.$message.success("修改单位成功");
                 this.NewUserGroupForm.name = "";
                 this.innerVisible = false;
-                this.getGroupList();
+                this.getDepartmentList();
               } else {
-                this.$message.success("修改用户组失败,", res.message);
+                this.$message.success("修改单位失败,", res.message);
               }
             });
           }
         }
       });
     },
-    // 删除用户组
+    // 删除单位
     OpenDeleteHandle(e) {
       let vm = this;
-      if (!vm.departmentId) return vm.prompt("請选择用户组", "error");
-      this.$confirm("此操作将永久删除该用户组, 是否继续?", "提示", {
+      if (!vm.departmentId) return vm.prompt("請选择单位", "error");
+      this.$confirm("此操作将永久删除该单位, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -272,45 +292,45 @@ export default {
         let data = {
           id: this.departmentId,
         };
-        UserApi.deleteGroup(data).then((res) => {
+        UserApi.deleteDepartment(data).then((res) => {
           if (res.code === 200) {
             this.$message.success("删除成功");
-            this.getGroupList();
+            this.getDepartmentList();
           } else {
             this.$message.error("删除失败,", res.message);
           }
         });
       });
     },
-    // 删除用户组内的用户
+    // 删除单位内的用户
     handleDelete(e) {
-      this.$confirm("此操作将把用户从该用户组剔除, 是否继续?", "提示", {
+      this.$confirm("此操作将把用户从该单位剔除, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
         let data = {
-          groupId: this.departmentId,
+          departmentId: this.departmentId,
           userId: e.userId,
         };
-        UserApi.deleteUserByGroup(data).then((res) => {
+        UserApi.deleteUserByDepartment(data).then((res) => {
           if (res.code === 200) {
             this.$message.success("删除成功");
-            this.getUserByGroup();
+            this.getUserByDepartment();
           } else {
             this.$message.error("删除失败,", res.message);
           }
         });
       });
     },
-    // 修改用户组信息
+    // 修改单位信息
     openDialog(e) {
       this.innerVisible = true;
       if (e == "add") {
-        this.dialogTitle = "新建用户组";
+        this.dialogTitle = "新建单位";
         this.isUpdate = false;
       } else {
-        this.dialogTitle = "编辑用户组";
+        this.dialogTitle = "编辑单位";
         this.isUpdate = true;
       }
     },

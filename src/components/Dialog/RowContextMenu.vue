@@ -394,7 +394,7 @@ export default {
                 this.rawFileList = []
                 vm.resetForm("editFileForm");
             } else {
-                vm.$message({ message: res.msg, type: "error" });
+                vm.$message({ message: res.message, type: "error" });
             }
         },
         // 啟動流程
@@ -430,7 +430,7 @@ export default {
                     );
                     if (res.success) isSuccess = true;
                     else {
-                        (isSuccess = false), (msg = res.msg);
+                        (isSuccess = false), (msg = res.message);
                     }
                 }
                 if (isSuccess)

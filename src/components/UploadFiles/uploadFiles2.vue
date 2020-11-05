@@ -426,7 +426,7 @@ export default {
         // createDocByFileName 返回成功操作
         if (res.success) {
           // 该文件是重复文件，重复文件接下来要询问用户怎么操作，升版还是覆盖
-          if (res.msg === "ConfirmUpgrade") {
+          if (res.message === "ConfirmUpgrade") {
             this.fileList[i].isDuplicate = true;
           }
           // 该文件不是重复文件
@@ -444,9 +444,9 @@ export default {
           // this.fileList[i].pause = true;
           // 从这里就有错的，该直接踢出
           this.fileList[i].remove = true;
-          this.fileList[i].msg = res.msg;
+          this.fileList[i].msg = res.message;
           this.$message({
-            message: `创建文件${this.fileList[i].rawFile.name}失败：${res.msg}`,
+            message: `创建文件${this.fileList[i].rawFile.name}失败：${res.message}`,
             type: "error",
             duration: 10000,
           });
@@ -559,9 +559,9 @@ export default {
           // this.fileList[i].pause = true;
           // 错误的话将文件踢出
           this.fileList[i].remove = true;
-          this.fileList[i].msg = res.msg;
+          this.fileList[i].msg = res.message;
           this.$message({
-            message: `创建文件${this.fileList[i].rawFile.name}失败：${res.msg}`,
+            message: `创建文件${this.fileList[i].rawFile.name}失败：${res.message}`,
             type: "error",
             duration: 10000,
           });
@@ -624,9 +624,9 @@ export default {
           // this.fileList[i].pause = true;
           // 直接将文件踢出
           this.fileList[i].remove = true;
-          this.fileList[i].msg = res.msg;
+          this.fileList[i].msg = res.message;
           this.$message({
-            message: `创建文件${this.fileList[i].rawFile.name}失败：${res.msg}`,
+            message: `创建文件${this.fileList[i].rawFile.name}失败：${res.message}`,
             type: "error",
             duration: 10000,
           });
@@ -785,14 +785,14 @@ export default {
                 break;
               } else {
                 // 如果返回的data里是空的，大概就是不能上传一模一样的文件
-                if (res.msg.length === 0) {
-                  res.msg = "系统存在完全相同文件，请勿重复上传。";
+                if (res.message.length === 0) {
+                  res.message = "系统存在完全相同文件，请勿重复上传。";
                 }
                 // 上传失败
                 this.fileList[i].pause = true;
-                this.fileList[i].msg = res.msg;
+                this.fileList[i].msg = res.message;
                 this.$message({
-                  message: `文件${this.fileList[i].rawFile.name}上传失败：${res.msg}`,
+                  message: `文件${this.fileList[i].rawFile.name}上传失败：${res.message}`,
                   type: "error",
                   duration: 10000,
                 });
@@ -886,7 +886,7 @@ export default {
           if (res2.success) {
             // 收文弹窗
             if (res2.msg === "GetDocument" || res2.msg === "FyGetDocument") {
-              this.InTrayType = res.msg;
+              this.InTrayType = res.message;
               this.docKeyWord = this.fileList[i].Keyword;
             }
           } else {
@@ -896,9 +896,9 @@ export default {
           this.fileList[i].pause = true;
           this.fileList[
             i
-          ].msg = `${this.fileList[i].O_filename}上传完回调失败：${res.msg}`;
+          ].msg = `${this.fileList[i].O_filename}上传完回调失败：${res.message}`;
           this.$message({
-            message: `${this.fileList[i].O_filename}上传完回调失败：${res.msg}`,
+            message: `${this.fileList[i].O_filename}上传完回调失败：${res.message}`,
             type: "warning",
             duration: 6000,
           });
@@ -907,9 +907,9 @@ export default {
         this.fileList[i].pause = true;
         this.fileList[
           i
-        ].msg = `${this.fileList[i].O_filename}上传完回调失败：${res.msg}`;
+        ].msg = `${this.fileList[i].O_filename}上传完回调失败：${res.message}`;
         this.$message({
-          message: `${this.fileList[i].O_filename}上传完回调失败：${res.msg}`,
+          message: `${this.fileList[i].O_filename}上传完回调失败：${res.message}`,
           type: "warning",
           duration: 6000,
         });

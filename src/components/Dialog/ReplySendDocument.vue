@@ -142,7 +142,7 @@ export default {
         this.$store.commit('workflow/CLEAR_WORKFLOW')
       } else {
         this.$message({
-          message: res.msg,
+          message: res.message,
           type: 'error'
         })
       }

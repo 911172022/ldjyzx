@@ -1,15 +1,5 @@
 <template>
   <div class="asideL">
-    <el-row>
-      <el-col :span="24" class="btn-wrapper">
-        <el-button size="small" type="primary" @click="dialogFormVisible = true"
-          >新建根目录</el-button
-        >
-        <!-- <el-button size="small" type="primary" icon="el-icon-user" @click="openUser">用户</el-button> -->
-        <!-- <el-button size="small" type="primary" icon="el-icon-user-solid" @click="openUserGroup">用户组</el-button> -->
-      </el-col>
-    </el-row>
-    <div class="asideLLine" />
     <!-- <el-scrollbar v-loading="loading"> -->
     <div class="asideLTreeOuter" @contextmenu.prevent="contextMenuClickTest">
       <!-- <div class="asideLTreeOuter" @contextmenu.prevent="contextMenuClick"> -->
@@ -18,23 +8,8 @@
         :props="props"
         @node-contextmenu="contextMenuClickTest"
       ></el-tree>
-      <!-- <el-tree
-          v-if="isReset"
-          :props="props"
-          :load="loadNode"
-          class="asideLTree Common-Tree-Icon"
-          lazy
-          highlight-current
-          ref="DocList"
-          @node-click="handleNodeClick"
-          node-key="projectId"
-          @node-contextmenu="contextMenuClick"
-          :default-expanded-keys="beforeNode"
-          :render-content="renderContent"
-        ></el-tree> -->
     </div>
     <!-- </el-scrollbar> -->
-    <!-- </template> -->
     <!-- 右键功能 -->
     <div
       v-if="menuVisible"
@@ -580,7 +555,7 @@ export default {
         // this.handleNodeClick(data);
       } else {
         this.$message({
-          title: `获取文档路径失败：${res.msg}`,
+          title: `获取文档路径失败：${res.message}`,
         });
       }
     },
@@ -595,7 +570,7 @@ export default {
         vm.rightData.options = res2.data[0].storagelist;
         this.NewUserGroupChildren = undefined;
       } else {
-        this.$message({ message: res.msg, type: "error" });
+        this.$message({ message: res.message, type: "error" });
         return;
       }
       vm.rightData.switch = true;

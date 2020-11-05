@@ -336,7 +336,6 @@ import { mapGetters } from "vuex";
 import { BASE_URL, VIEW_DOC } from "../../const";
 import {
   File_Download,
-  windowDownloadFile,
   setDragEventListener,
   makeDialog,
 } from "@/util/Common";
@@ -512,7 +511,7 @@ export default {
       };
     },
     tableHeightLocal() {
-      let height = document.body.clientHeight - 300;
+      let height = document.body.clientHeight - 250;
       return height;
     },
   },
@@ -745,7 +744,7 @@ export default {
             // 模拟点击了文件预览(AsideR.vue)
             vm.$store.commit("doc/GO_TO_PREVIEW");
           } else return vm._$ErrorMessage();
-        } else return vm.$message.error(res.msg);
+        } else return vm.$message.error(res.message);
       } else return vm.$message.error("请选择文件");
     },
     // async _$fileDownload() {
@@ -755,7 +754,7 @@ export default {
     // 		let webHttp = `${VIEW_DOC}${BASE_URL}/${res.data[0].path}`;
     // 		window.open(`${webHttp}`, "_blank");
     // 	} else {
-    // 		this.$message.error(res.msg);
+    // 		this.$message.error(res.message);
     // 	}
     // },
     _$ErrorMessage() {
@@ -872,7 +871,7 @@ export default {
             fileName
           );
         } else {
-          this.$message.error(res.msg);
+          this.$message.error(res.message);
         }
       });
     },
@@ -893,10 +892,10 @@ export default {
           "?p=" +
           para;
 
-        windowDownloadFile(url, docKeyword);
+        // windowDownloadFile(url, docKeyword);
       } else {
         this.$message.error({
-          message: `下载文件失败：${res.msg}`,
+          message: `下载文件失败：${res.message}`,
         });
       }
     },

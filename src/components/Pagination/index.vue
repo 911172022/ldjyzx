@@ -12,6 +12,7 @@
             :total="pagination.total"
             :page-sizes="pagination.pageSizes"
             @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
           />
         </div>
       </el-col>
@@ -28,6 +29,9 @@ export default {
     };
   },
   methods: {
+    handleSizeChange(e) {
+      this.$emit("sizeChange", e);
+    },
     changePage(pageNum) {
       this.$emit("changepage", pageNum);
     },

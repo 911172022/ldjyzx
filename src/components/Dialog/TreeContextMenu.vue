@@ -747,7 +747,7 @@ export default {
                         this.isStatus = 3;
                     } else {
                         this.$message({
-                            message: res.msg,
+                            message: res.message,
                             type: "error"
                         });
                     }
@@ -1259,7 +1259,7 @@ export default {
             if (res.success) {
                 this.cancelHandle();
             } else {
-                this.$message({ message: res.msg, type: "error" });
+                this.$message({ message: res.message, type: "error" });
             }
         },
         // 复制创建目录 - 删除子节点
@@ -1344,7 +1344,7 @@ export default {
                     });
                 } else {
                     this.$message({
-                        message: res.msg,
+                        message: res.message,
                         type: "error"
                     });
                 }
@@ -1371,7 +1371,7 @@ export default {
                 SQLString
             );
             if (!res.success) {
-                this.$message({ message: res.msg, type: "error" });
+                this.$message({ message: res.message, type: "error" });
             } else {
                 this.$message({ message: "新建查询成功", type: "success" });
                 this.StateName = "add";
@@ -1432,7 +1432,7 @@ export default {
                     this.NodeData.text = res.data[0].text;
                 } else {
                     this.$message({
-                        message: res.msg,
+                        message: res.message,
                         type: "error"
                     });
                 }
@@ -1462,10 +1462,10 @@ export default {
                     this.StateName = "del";
                     this.cancelHandle();
                 } else if (res.data[0].state === "seleSureDel") {
-                    this.delmsg = res.msg;
+                    this.delmsg = res.message;
                 }
             } else {
-                this.$message({ message: res.msg, type: "error" });
+                this.$message({ message: res.message, type: "error" });
                 this.cancelHandle();
             }
         },
@@ -1549,7 +1549,7 @@ export default {
                     );
                     if (res2.success) num += 1;
                 } else {
-                    return vm.$message({ message: res.msg, type: "error" });
+                    return vm.$message({ message: res.message, type: "error" });
                 }
             }
             if (num === domains.length) {

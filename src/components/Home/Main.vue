@@ -3,24 +3,21 @@
     <template v-if="ModulePageNum === 1">
       <DMMain />
     </template>
-    <template v-else-if="ModulePageNum === 2">
+    <template v-else-if="ModulePageNum === 81">
       <Announcement />
     </template>
-    <!-- <template v-else-if="ModulePageNum === 2">
-      <Echarts />
+    <template v-else-if="ModulePageNum === 101">
+      <Department />
     </template>
-    <template v-else-if="ModulePageNum === 3">
-      <PWMain />
+    <template v-else-if="ModulePageNum === 102">
+      <User />
     </template>
-    <template v-else-if="ModulePageNum === 4">
-      <PerWMain />
+    <template v-else-if="ModulePageNum === 103">
+      <UserGroup />
     </template>
-    <template v-else-if="ModulePageNum === 5">
-      <LDMain />
+    <template v-else-if="ModulePageNum === 113">
+      <SystemType />
     </template>
-    <template v-else-if="ModulePageNum === 6">
-      <DSMain />
-    </template> -->
     <template v-else-if="ModulePageNum === 7">
       <Echart />
     </template>

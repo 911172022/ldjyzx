@@ -109,7 +109,7 @@ export default {
         const res = await UserApi3.CreateDocByFileName(this.ProjectKeyWord, fileList[i].name, confirmUpgrade)
         if (res.success) {
           // 有重复
-          if (res.msg === 'ConfirmUpgrade') {
+          if (res.message === 'ConfirmUpgrade') {
             st = true
             if (fileList[i].raw) {
               vm.DuplicateFiles.push(fileList[i].raw)
@@ -153,7 +153,7 @@ export default {
         if (res.success) {
           vm.nServerFullFileNames.push(res.data[0].ServerFullFileName)
         } else {
-          vm.$message({ message: res.msg, type: 'error' })
+          vm.$message({ message: res.message, type: 'error' })
         }
       }
       vm.httpRequest()
@@ -193,11 +193,11 @@ export default {
             vm.$message({ message: '上传成功', type: 'success' })
             // 在收文文件夹上传时 触发
             UserApi3.afterCreateNewDocEvent(nDuplicateKeywords[i]).then(res => {
-              // if (res.success && res.msg !== "") {
+              // if (res.success && res.message !== "") {
               //   this.InTrayData.switch = true
               //   this.InTrayData.docKeyWord = nDuplicateKeywords[i]
               // }
-               if (res.success && res.msg !== "") {
+               if (res.success && res.message !== "") {
                 this.FyInTrayData.switch = true
                 this.FyInTrayData.docKeyWord = nDuplicateKeywords[i]
               }
@@ -267,7 +267,7 @@ export default {
         if (res.success) {
           vm.ServerFullFileNames.push(res.data[0].ServerFullFileName)
         } else {
-          vm.$message({ message: res.msg, type: 'error' })
+          vm.$message({ message: res.message, type: 'error' })
         }
       }
       vm.httpRequest2()

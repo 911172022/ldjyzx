@@ -1,22 +1,9 @@
 <template>
   <div>
     <el-row class="header">
-      <!-- <el-col :span="1"></el-col>
-      <el-col :span="2">
-        <i
-          style="font-size: 20px; cursor: pointer"
-          :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
-          @click="collapseMenu"
-        ></i>
-      </el-col> -->
       <el-col class="UserPanel" :span="24">
         <div class="user-wrapper">
-          <div>
-            <!-- <el-avatar
-                            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-                            style="vertical-align: middle;margin-right: 10px;"
-                        ></el-avatar> -->
-          </div>
+          <div></div>
           <el-dropdown trigger="click">
             <div
               class="el-dropdown-link"
@@ -49,20 +36,6 @@
       :before-close="handleClose"
       append-to-body
     >
-      <!-- 剪裁组件弹窗 -->
-      <el-dialog
-        title="剪裁组件"
-        :visible.sync="cropperModel"
-        width="800px"
-        :modal="false"
-      >
-        <Cropper
-          :img-file="file"
-          ref="vueCropper"
-          :fixedNumber="fixedNumber"
-          @upload="upload"
-        />
-      </el-dialog>
       <el-form
         :model="userForm"
         ref="userForm"
@@ -71,38 +44,17 @@
         label-width="100px"
       >
         <el-row :gutter="20">
-          <el-col :span="24" style="text-align: center">
-            <div>
-              <el-avatar
-                :size="120"
-                :src="avatarSrc"
-                @error="errorHandler"
-                style="border: 1px #fafafa solid"
-              >
-                <img class="img" src="../../assets/imgerror.png" />
-              </el-avatar>
-              <el-upload
-                action="#"
-                list-type="picture"
-                :auto-upload="false"
-                :show-file-list="false"
-                :on-change="handleCrop"
-              >
-                <el-button
-                  type="primary"
-                  icon="el-icon-camera"
-                  circle
-                  style="position: absolute; top: 90px; left: 55%; padding: 8px"
-                />
-              </el-upload>
-            </div>
-          </el-col>
           <el-col :span="12">
             <el-form-item label="用户名">
-              <el-input v-model="userForm.O_username" disabled />
+              <el-input v-model="userForm.account" readonly />
             </el-form-item>
           </el-col>
           <el-col :span="12">
+            <el-form-item label="姓名">
+              <el-input v-model="userForm.username" />
+            </el-form-item>
+          </el-col>
+          <!-- <el-col :span="12">
             <el-form-item label="旧密码" prop="OldPassword">
               <el-input
                 v-model="userForm.OldPassword"
@@ -110,12 +62,7 @@
                 show-password
               />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="手机号" prop="Phone">
-              <el-input v-model.number="userForm.Phone" />
-            </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :span="12">
             <el-form-item label="新密码" prop="NewPassword">
               <el-input
@@ -123,11 +70,6 @@
                 placeholder="请再次输入新密码"
                 show-password
               />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="电子邮箱">
-              <el-input v-model="userForm.O_email" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -265,35 +207,29 @@
         :current-page.sync="currentPage"
       />
     </el-dialog>
-    <PermissionList
-      :dialogObj="PermissionData"
-      @reData="rePData"
-      @reUser="reUser(arguments)"
-    />
   </div>
 </template>
 <script>
-import UserApi from "../../api/services/user";
+import UserApi from "../../api/services2/user";
 import UserApi2 from "../../api/services/file";
 import recycleApi from "../../api/services/recycle";
 import { isTelephoneValid } from "../../util/Regular";
-import Cropper from "../Cropper";
-import PermissionList from "../Dialog/PermissionList-PM2";
 import { mapGetters } from "vuex";
 import { TimeChange } from "../../util/Time";
-
+import { loginOut } from "@/api/Login";
 export default {
   data() {
     return {
       isCollapse: false,
       userName: "",
-      sysName: "艾三维协同系统",
+      sysName: "劳动就业管理中心",
       sysUserName: "账号管理",
       sysUserAvatar: "",
       dialogVisible: false, // 个人中心弹窗
       // 个人中心
       userForm: {
-        O_username: "",
+        account: "",
+        username: "",
         O_userdesc: "",
         O_email: "",
         Phone: "",
@@ -348,10 +284,10 @@ export default {
             message: "请输入新密码",
             trigger: "blur",
           },
-          { min: 5, max: 25, message: "长度在 5 到 25个字符" },
+          { min: 6, max: 25, message: "长度在 6 到 25个字符" },
           {
-            pattern: /^(\w){5,25}$/,
-            message: "只能输入5-25个字母、数字、下划线",
+            pattern: /^(\w){6,25}$/,
+            message: "只能输入6-25个字母、数字、下划线",
           },
         ],
         NewPassword2: [
@@ -360,10 +296,10 @@ export default {
             message: "请输入新密码",
             trigger: "blur",
           },
-          { min: 5, max: 25, message: "长度在 5 到 25个字符" },
+          { min: 6, max: 25, message: "长度在 6 到 25个字符" },
           {
-            pattern: /^(\w){5,25}$/,
-            message: "只能输入5-25个字母、数字、下划线",
+            pattern: /^(\w){6,25}$/,
+            message: "只能输入6-25个字母、数字、下划线",
           },
           {
             validator: (rule, value, callback) => {
@@ -384,7 +320,6 @@ export default {
       imageUrl: "", // 单图情况框内图片链接
       uploadList: [], // 上传图片列表
       cropperModel: false, // 剪裁组件弹窗
-      fixedNumber: [1, 1],
       avatarSrc: "",
       errorHandler: true,
       ServerFullFileName: "",
@@ -415,20 +350,6 @@ export default {
       selectedUser: "全部",
     };
   },
-  components: {
-    Cropper,
-    PermissionList,
-  },
-  mounted() {
-    let username =
-      localStorage.getItem("username") || sessionStorage.getItem("username");
-    this.sysUserName = username || this.sysUserName;
-  },
-  updated() {
-    if (this.$refs.vueCropper) {
-      this.$refs.vueCropper.Update();
-    }
-  },
   computed: {
     ...mapGetters(["UserKeyword"]),
     activeIndex() {
@@ -436,6 +357,17 @@ export default {
     },
   },
   methods: {
+    // 点击个人中心获取个人信息
+    getMyInfo() {
+      UserApi.getMyInfo().then((res) => {
+        if (res.code === 200) {
+          this.userForm.account = res.data.account;
+          this.userForm.username = res.data.username;
+        } else {
+          this.$message.error("获取个人信息失败,", res.message);
+        }
+      });
+    },
     pageNum2(e) {
       this.page = e;
       this.getRecycleList();
@@ -467,7 +399,7 @@ export default {
         } else {
           this.$message({
             type: "error",
-            message: res.msg,
+            message: res.message,
           });
         }
       });
@@ -488,13 +420,13 @@ export default {
             if (res.success) {
               this.$message({
                 type: "success",
-                message: res.msg,
+                message: res.message,
               });
               this.getRecycleList();
             } else {
               this.$message({
                 type: "error",
-                message: res.msg,
+                message: res.message,
               });
             }
           });
@@ -614,7 +546,7 @@ export default {
           } else {
             this.$message({
               type: "error",
-              message: res.msg,
+              message: res.message,
             });
           }
         })
@@ -628,7 +560,7 @@ export default {
       this.errorHandler = true;
       this.RecycleBinVisible = false;
       this.userForm = {
-        O_username: "",
+        username: "",
         O_userdesc: "",
         O_email: "",
         Phone: "",
@@ -645,12 +577,12 @@ export default {
       if (OldPassword !== "" || NewPassword !== "") {
         const res = await UserApi.setUserPassword(OldPassword, NewPassword);
         if (!res.success) {
-          this.$message({ message: res.msg, type: "error" });
+          this.$message({ message: res.message, type: "error" });
           return;
         }
       }
       let { UserKeyword } = this,
-        UserCode = this.userForm.O_username,
+        UserCode = this.userForm.username,
         UserDesc = this.userForm.O_userdesc,
         UserEmail = this.userForm.O_email,
         UserType = this.userForm.UserType,
@@ -674,32 +606,25 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.editPersonalCenter();
-        } else {
-          console.log("error submit!!");
-          return false;
+          let data = {
+            password: this.userForm.NewPassword,
+            confirmPassword: this.userForm.NewPassword2,
+          };
+          UserApi.updatePwd(data).then((res) => {
+            if (res.code === 200) {
+              this.$message.success("修改密码成功");
+              this.dialogVisible = false;
+            } else {
+              this.$message.error(res.message);
+            }
+          });
         }
       });
     },
     // 开启个人中心
     async PersonalCenter() {
       this.dialogVisible = true;
-      // let { UserKeyword } = this;
-      // const res = await UserApi.getUserInfo(UserKeyword);
-      // if (res.success) {
-      //     this.userForm.O_username = res.data[0].O_username;
-      //     this.userForm.O_userdesc = res.data[0].O_userdesc;
-      //     this.userForm.O_email = res.data[0].O_email;
-      //     this.userForm.UserType = res.data[0].UserType;
-      //     this.userForm.UserStatus = res.data[0].UserFlags;
-      //     if (res.data[0].Phone)
-      //         this.userForm.Phone = Number(res.data[0].Phone);
-      //     let FileName = `${res.data[0].O_username}.jpg`;
-      //     this.avatarSrc = `BMP/${FileName}?timestamp=${Date.now()}`;
-      //     if (this.avatarSrc) {
-      //         this.errorHandler = false;
-      //     }
-      // }
+      this.getMyInfo();
     },
     // 点击弹出剪裁框
     handleCrop(file) {
@@ -716,7 +641,7 @@ export default {
       if (file.name) {
         let fileSize = file.size,
           ModifyDate = TimeChange(file.raw.lastModifiedDate),
-          ServerFileName = `BMP/${this.userForm.O_username}.jpg`;
+          ServerFileName = `BMP/${this.userForm.username}.jpg`;
         let ObjectKeyword = "",
           CreateDate = "";
         const res = await UserApi2.beforeUploadFile(
@@ -809,25 +734,19 @@ export default {
     //退出登录
     logout: function () {
       var vm = this;
-      vm.$confirm("确认退出吗?", "提示", {
-        //type: 'warning'
-      })
-        .then(() => {
-          vm.$store.commit("REMOVE_USER");
-          vm.$notify.closeAll();
-          // 将跳转放到mutation中
-        })
-        .catch(() => {});
+      vm.$confirm("确认退出吗?", "提示", {}).then(() => {
+        loginOut().then((res) => {
+          if (res.code === 200) {
+            this.$message.success("退出成功");
+            this.$store.commit("SET_TOKEN", "");
+            localStorage.removeItem("LOGIN")
+            this.$router.push("/");
+          } else {
+            this.$message.error(res.message, "退出失败");
+          }
+        });
+      });
     },
-    //CDMS退出跳转回到广建EPC登录界面  2020.4.14 郭晓富修改
-    // 这个方法放到插件里
-    // jumpToGJEPCLoginPage(){
-    //           let jumpUrl = 'http://jhcdms.f3322.net:8098?logtype=logout';
-    //           console.log(jumpUrl);
-    //
-    //           //window.location.href = 'http://jhcdms.f3322.net:8090/#/home/Doc-Management';
-    //           window.location.href = jumpUrl;
-    // }
   },
 };
 </script>

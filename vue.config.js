@@ -1,70 +1,25 @@
-/*
- * @Author: CiFong
- * @Date: 2020-04-03 13:51:19
- * @LastEditors: CiFong
- * @LastEditTime: 2020-05-09 15:31:28
- * @Description: 请输入
- */
+const publicPath = process.env.NODE_ENV === "production" ? "/" : "/";
+
 module.exports = {
-  outputDir: process.env.outputDir,
-  runtimeCompiler: true,
+  publicPath: publicPath,
+  // 如果你不需要使用eslint，把lintOnSave设为false即可
+  // lintOnSave: false,
+  // 设为false打包时不生成.map文件
+  productionSourceMap: false,
+  // 这里写你调用接口的基础路径，来解决跨域，如果设置了代理，那你本地开发环境的axios的baseUrl要写为 '' ，即空字符串
   devServer: {
-    //port: 42380, // 端口号
+    host: "0.0.0.0",
     port: 8080,
     proxy: {
-      '/WebApi': {
-        target: "http://jhcdms.f3322.net:81",
-        // target: 'http://jhcdms.f3322.net:8099',
-        // target: "http://192.168.10.200:81",
-        // target: 'http://106.75.71.90',
-        // target:'http://localhost',
-        //target: 'http://192.168.110.1',
-        // target: 'http://i3vmsweb.i3vgroup.cn',
-        // target: "http://jhcdms.f3322.net:8090",
-        // target: "http://jhcdms.f3322.net:8098",
-        // target: "http://localhost:80",
-        secure: false,
+      "/arch": {
+        // 目标 API 地址
+        target: 'http://192.168.0.86:8085/',  // 增文电脑IP
+        // 将主机标头的原点更改为目标URL
         changeOrigin: true,
         pathRewrite: {
-          '^/WebApi': 'WebApi', //重写,
+          "^/arch": "/arch"
         }
-      },
-      // // 引用bos3d预览时需要
-      // "/Bos3d": {
-      //   target: "http://bos3d.bimwinner.com",
-      //   secure: false,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     "^/Bos3d": "Bos3d"
-      //   }
-      // },
-      // "/bos": {
-      //   target: 'http://139.9.215.236:8080',
-      //   secure: false,
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     "^/bos": ''
-      //   }
-      // },
-      '/BMP': {
-        target: "http://jhcdms.f3322.net:81",
-        // target: "http://192.168.10.200:81",
-        // target: 'http://106.75.71.90',
-        //target: 'http://192.168.110.1',
-        //target:'http://localhost',
-        // target: "http://jhcdms.f3322.net:8090",
-        // target: 'http://i3vmsweb.i3vgroup.cn',
-        // target: "http://jhcdms.f3322.net:8098",
-        secure: false,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/BMP': 'BMP', //重写,
-        }
-      },
+      }
     }
-  },
-  /**
-   * @see https://cli.vuejs.org/zh/config/#publicpath
-   */
-  publicPath: './'
-}
+  }
+};
