@@ -79,4 +79,15 @@ html {
     // overflow-y: hidden;
     height: 100%;
 }
+.flex-row {
+    justify-content: space-between;
+    .left {
+        display: flex;
+        justify-content: space-between;
+    }
+    .right {
+        display: flex;
+        justify-content: space-between;
+    }
+}
 </style>

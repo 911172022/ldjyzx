@@ -34,6 +34,11 @@ export default {
       },
     };
     vm.editor.create();
+    if(vm.content) {
+      vm.editor.txt.html(this.content)
+    } else {
+      vm.editor.txt.html("")
+    }
   },
   methods: {
     getHtml() {

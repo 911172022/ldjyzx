@@ -63,7 +63,7 @@
       :current-page.sync="pageNum"
     />
     <!-- 新增，修改用户 -->
-    <el-dialog :title="dialogTitle" :visible.sync="userFormOpen" width="30%">
+    <el-dialog :title="dialogTitle" :visible.sync="userFormOpen" append-to-body width="30%">
       <el-form :model="userForm" :rules="rules" ref="userForm">
         <el-form-item
           label="账户:"
@@ -220,18 +220,14 @@ export default {
           UserApi.addUserByDepartment(data).then((res) => {
             if (res.code === 200) {
               this.$message.success("加入成功");
-            } else {
-              this.$message.error(res.message);
-            }
+            } 
           });
           break;
         case "用户组":
           UserApi.addUserByGroup(data2).then((res) => {
             if (res.code === 200) {
               this.$message.success("加入成功");
-            } else {
-              this.$message.error(res.message);
-            }
+            } 
           });
           break;
         default:
@@ -258,9 +254,7 @@ export default {
           if (res.code === 200) {
             this.$message.success("删除用户成功");
             this.getUserList();
-          } else {
-            this.$message.error("删除用户失败,", res.message);
-          }
+          } 
         });
       });
     },
@@ -312,7 +306,6 @@ export default {
         this.loading = false;
       } else {
         this.loading = false;
-        this.$message.error("获取用户列表失败,", res.message);
       }
     },
     // 用户弹窗 - 取消按钮
@@ -326,7 +319,6 @@ export default {
     // 用户列表 - 删除
     async deleteUser() {
       let vm = this;
-      vm.resetForm();
       vm.$message({
         message: "删除成功",
         type: "success",
@@ -348,9 +340,7 @@ export default {
               if (res.code === 200) {
                 this.$message.success("添加用户成功");
                 this.cancelHandle(formName);
-              } else {
-                this.$message.error("添加用户失败,", res.message);
-              }
+              } 
             });
           }
           if (e == "userSave") {
@@ -365,9 +355,7 @@ export default {
               if (res.code === 200) {
                 this.$message.success("编辑用户成功");
                 this.cancelHandle(formName);
-              } else {
-                this.$message.error("编辑用户成功,", res.message);
-              }
+              } 
             });
           }
         }

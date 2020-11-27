@@ -1,18 +1,18 @@
 <template>
   <div>
     <div class="btn-box">
-      <!-- <div class="btn-box" v-if="isTreeClick"> -->
-      <el-dropdown @command="handleCommand">
-        <el-button type="primary">
-          单位操作<i class="el-icon-arrow-down el-icon--right"></i>
-        </el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="add">新建单位</el-dropdown-item>
-          <el-dropdown-item command="delete">删除单位</el-dropdown-item>
-          <el-dropdown-item command="update">编辑单位</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-button type="primary" v-if="isTreeClick" @click="addUserToDept">添加成员</el-button>
+      <el-button type="primary" @click="openDialog('add')" size="small"
+        >新建单位</el-button
+      >
+      <el-button type="primary" @click="openDialog('update')" size="small"
+        >编辑单位</el-button
+      >
+      <el-button type="primary" @click="OpenDeleteHandle" size="small"
+        >删除单位</el-button
+      >
+      <el-button type="primary" @click="addUserToDept" size="small"
+        >添加成员</el-button
+      >
     </div>
     <div class="copyModule">
       <div style="overflow: hidden" class="flex-row">
@@ -33,6 +33,8 @@
             @node-click="treeClick"
             node-key="departmentId"
             :default-expanded-keys="[1]"
+            @node-contextmenu="contextMenuClickTest"
+            :render-content="renderContent"
           ></el-tree>
         </div>
         <div class="UG-table" style="flex: 1">
@@ -60,6 +62,25 @@
       </div>
     </div>
 
+    <div
+      v-if="menuVisible"
+      class="rightMenu"
+      ref="rightMenu"
+      :style="styleObject"
+    >
+      <ul class="rightMenu-ul">
+        <li
+          v-for="(item, index) in MenuListFilter"
+          :key="index"
+          class="rightMenu-li"
+          :class="item.State === 'Enabled' ? '' : 'RM-disabled'"
+          @click="getMenuRight(item)"
+        >
+          {{ item.Name }}
+        </li>
+      </ul>
+    </div>
+
     <el-dialog
       width="90%"
       class="width-25"
@@ -70,7 +91,7 @@
     >
       <el-form :model="NewUserGroupForm" :rules="rules" ref="NewUserGroupForm">
         <el-form-item>
-          <el-checkbox v-model="checked">是否设为一级分类</el-checkbox>
+          <el-checkbox v-model="checked">是否设为一级目录</el-checkbox>
         </el-form-item>
         <el-form-item label="单位名称" prop="name">
           <el-input v-model.trim="NewUserGroupForm.name" autocomplete="off" />
@@ -164,6 +185,13 @@ export default {
       rules: {
         name: [{ required: true, message: "请输入单位名称", trigger: "blur" }],
       },
+      menuVisible: false,
+      styleObject: {
+        top: 0,
+        left: 0,
+        opacity: 0,
+        position: "fixed",
+      },
     };
   },
   computed: {
@@ -176,6 +204,89 @@ export default {
     this.getDepartmentList();
   },
   methods: {
+    getMenuRight(e) {
+      switch (e.Name) {
+        case "新建单位":
+          this.openDialog("add");
+          break;
+        case "删除单位":
+          this.OpenDeleteHandle();
+          break;
+        case "编辑单位":
+          this.openDialog("update");
+          break;
+        case "添加成员":
+          this.addUserToDept();
+          break;
+        default:
+          break;
+      }
+    },
+    // 取消右键
+    foo() {
+      // 取消鼠标监听事件
+      let vm = this;
+      vm.menuVisible = false;
+      vm.styleObject.opacity = 0;
+      vm.styleObject.top = 0;
+      vm.styleObject.left = 0;
+      document.removeEventListener("mousedown", vm.foo);
+    },
+    // 右键功能
+    contextMenuClickTest(MouseEvent, object, Node) {
+      let vm = this;
+      this.menuVisible = false;
+      this.menuVisible = true;
+      this.treeClick(object);
+      this.MenuListFilter = [
+        {
+          Name: "新建单位",
+          State: "Enabled",
+          categoryId: object.categoryId,
+        },
+        {
+          Name: "删除单位",
+          State: "Enabled",
+          categoryId: object.categoryId,
+        },
+        {
+          Name: "编辑单位",
+          State: "Enabled",
+          categoryId: object.categoryId,
+        },
+        {
+          Name: "添加成员",
+          State: "Enabled",
+          categoryId: object.categoryId,
+        },
+      ];
+      vm.len = this.MenuListFilter.length * 33;
+      vm.styleObject.opacity = 1;
+
+      // 窗口高度
+      let windowHeight = document.body.clientHeight;
+      // 窗口宽度
+      // let windowWidth = document.body.clientWidth
+
+      if (this.MenuListFilter.length === 1) {
+        vm.styleObject.top = MouseEvent.clientY - 80 + "px";
+        vm.styleObject.left = MouseEvent.clientX + 30 + "px";
+      } else {
+        // 要注意视窗高度和鼠标点击的y是否能完全容纳menu
+        if (windowHeight - MouseEvent.clientY > this.len) {
+          this.styleObject.top = MouseEvent.clientY + "px";
+        } else {
+          this.styleObject.top =
+            MouseEvent.clientY -
+            (this.len - (windowHeight - MouseEvent.clientY)) +
+            "px";
+        }
+
+        vm.styleObject.left = MouseEvent.clientX + 30 + "px";
+      }
+      document.addEventListener("click", vm.foo);
+    },
+
     handleClose() {
       this.userVisible = false;
       this.getUserByDepartment();
@@ -187,25 +298,8 @@ export default {
     addUserToDept() {
       this.userVisible = true;
     },
-    // 单位操作的下拉
-    handleCommand(e) {
-      switch (e) {
-        case "add":
-          this.openDialog("add");
-          break;
-        case "delete":
-          this.OpenDeleteHandle();
-          break;
-        case "update":
-          this.openDialog("update");
-          break;
-        default:
-          break;
-      }
-    },
     // 点击单位获取用户列表
     treeClick(e) {
-      this.isTreeClick = true;
       this.departmentId = e.departmentId;
       this.getUserByDepartment();
     },
@@ -221,7 +315,6 @@ export default {
           this.tableLoading = false;
         } else {
           this.tableLoading = false;
-          this.$message.error("获取用户列表失败,", res.message);
         }
       });
     },
@@ -235,7 +328,6 @@ export default {
           this.getUserByDepartment();
         } else {
           this.treeLoading = false;
-          this.$message.error("获取用户组信息失败,", res.message);
         }
       });
     },
@@ -296,8 +388,6 @@ export default {
           if (res.code === 200) {
             this.$message.success("删除成功");
             this.getDepartmentList();
-          } else {
-            this.$message.error("删除失败,", res.message);
           }
         });
       });
@@ -317,8 +407,6 @@ export default {
           if (res.code === 200) {
             this.$message.success("删除成功");
             this.getUserByDepartment();
-          } else {
-            this.$message.error("删除失败,", res.message);
           }
         });
       });
@@ -338,6 +426,15 @@ export default {
     // 提示
     prompt(message, type) {
       this.$message({ message, type });
+    },
+    renderContent(h, { node }) {
+      let style = `padding-left: 5px;`;
+      return (
+        <span class="tree_row">
+          <span></span>
+          <span style={style}>{node.label}</span>
+        </span>
+      );
     },
   },
 };

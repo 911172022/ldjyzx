@@ -1,22 +1,33 @@
 <template>
   <div>
     <div class="mainContainer">
-      <el-form class="mainSearch" :inline="true" :model="formInline">
-        <!-- <el-form-item>
-				<el-input size="small" v-model="ProjectShowPath" style="width: 100%;" size="small" />
-			</el-form-item> -->
+      <el-form
+        class="mainSearch"
+        @submit.native.prevent
+        :inline="true"
+        :model="formInline"
+      >
         <el-form-item>
           <el-input
             size="small"
-            v-model="formInline.user"
+            v-model="formInline.searchContent"
             placeholder="搜一搜，找得更快"
             prefix-icon="el-icon-search"
             @keyup.enter.native="SearchHandle"
           />
         </el-form-item>
         <el-form-item>
+          <el-button type="primary" size="small" @click="searchAll"
+            >全文检索</el-button
+          >
+          <el-button type="primary" size="small" @click="highSearch"
+            >高级搜索</el-button
+          >
           <el-button size="small" type="primary" @click="SearchHandle"
             >查询</el-button
+          >
+          <el-button size="small" type="primary" @click="resetSearch"
+            >清除搜索条件</el-button
           >
         </el-form-item>
       </el-form>
@@ -28,12 +39,14 @@
             <el-button size="small" type="primary" @click="sendDocument"
               >添加</el-button
             >
-            <el-button size="small" type="primary">查重</el-button>
-            <el-button size="small" type="primary">销毁</el-button>
-            <el-button size="small" type="primary">打印</el-button>
-            <el-button size="small" type="primary">导出Excel</el-button>
-            <el-button size="small" type="primary">批量修改</el-button>
-            <el-button size="small" type="primary">开放</el-button>
+            <!-- <el-button @click="addSerialNumber">test</el-button> -->
+            <!-- <el-button size="small" type="primary">查重</el-button> -->
+            <!-- <el-button size="small" type="primary">打印</el-button> -->
+            <el-button size="small" type="primary" @click="exportExcel"
+              >导出Excel</el-button
+            >
+            <!-- <el-button size="small" type="primary">批量修改</el-button> -->
+            <!-- <el-button size="small" type="primary">开放</el-button> -->
           </div>
         </el-col>
       </el-row>
@@ -46,13 +59,12 @@
           <p v-else>放开上传</p>
         </div>
         <el-table
-          :data="tableData"
-          @cell-dblclick="tableDoubleClick"
+          :data="DocList"
+          id="DocList"
           ref="DocList"
           class="mainTable"
           :height="tableHeightLocal"
           border
-          row-key="Keyword"
           :load="tableLoad"
           lazy
           highlight-current-row
@@ -61,97 +73,22 @@
           @row-click="handleCurrentChange"
           @selection-change="handleSelectionChange"
           @row-contextmenu="contextMenuClick"
-          :default-sort="{ prop: 'date', order: 'descending' }"
         >
-          <el-table-column type="selection" width="55" align="center" />
+          <!-- <el-table-column
+            v-if="DocListHead.length > 0"
+            type="selection"
+            width="55"
+            align="center"
+          /> -->
           <el-table-column
-            prop="Term"
-            label="保管期限"
+            v-for="(item, index) in DocListHead"
+            :key="index"
+            :prop="item.fieldName"
+            :label="item.label"
+            sortable
+            show-overflow-tooltip
             max-width="5%"
             min-width="130"
-            sortable
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="Mulu"
-            label="目录"
-            max-width="5%"
-            min-width="100"
-            sortable
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="Num"
-            label="案卷号"
-            max-width="5%"
-            min-width="100"
-            sortable
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="Title"
-            label="案卷题名"
-            max-width="25%"
-            min-width="350"
-            sortable
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="Type"
-            label="案卷类型"
-            max-width="5%"
-            min-width="150"
-            sortable
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="MainWord"
-            label="主题词"
-            max-width="5%"
-            min-width="150"
-            sortable
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="ByWord"
-            label="并列题命"
-            max-width="5%"
-            min-width="150"
-            sortable
-            show-overflow-tooltip
-          />
-          <!-- <el-table-column
-            max-width="15%"
-            min-width="150"
-            sortable
-            show-overflow-tooltip
-          >
-            <template slot-scope="scope">
-              <el-button
-                @click="fileDownloadTable(scope.row.Keyword)"
-                size="mini"
-                >打开</el-button
-              >
-              <el-button size="mini" @click="PreviewHandle(scope.row.Keyword)"
-                >预览</el-button
-              >
-            </template>
-          </el-table-column> -->
-          <el-table-column
-            prop="Creater"
-            label="创建者"
-            sortable
-            max-width="7.5%"
-            min-width="150"
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="O_credatetime"
-            label="创建时间"
-            sortable
-            max-width="7.5%"
-            min-width="150"
-            show-overflow-tooltip
           />
         </el-table>
       </div>
@@ -175,145 +112,28 @@
         </ul>
       </div>
       <!-- 右键菜单 -->
-      <RowContextMenu :dialogObj="rightData" @reData="reData(arguments)" />
       <!-- 分页 -->
       <pagination
         :pagination="pagination"
         @changepage="pageNum2"
+        @sizeChange="changeSize"
         :current-page.sync="currentPage"
       />
-      <!-- 二级弹窗 - 增加用户/用户组 -->
-      <PermissionList
-        :dialogObj="PermissionData"
-        @reData="rePData"
-        @reUser="reUser(arguments)"
-      />
-      <!-- 发文 -->
+
+      <!-- 添加 -->
       <el-dialog
-        title="添加发文"
+        title="添加"
         :visible.sync="SendDocumentData.switch"
-        width="45%"
+        width="55%"
       >
-        <el-form :model="fileForm" ref="fileForm" label-width="100px">
-          <el-form-item label="文件题名">
-            <el-input size="small" />
-          </el-form-item>
-          <el-form-item label="并列题名">
-            <el-input size="small" />
-          </el-form-item>
-          <el-form-item label="副题名">
-            <el-input size="small" />
-          </el-form-item>
-          <el-row :gutter="40">
-            <el-col :span="12">
-              <el-form-item label="成文单位" prop="theme">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="文件编号">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="分类号">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="主题词">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="人名">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="页数">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="文件流水号">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="机构问题">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="录入人">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="录入时间" class="date" prop="date">
-                <el-date-picker
-                  size="small"
-                  type="date"
-                  placeholder="选择时间"
-                  v-model="fileForm.date"
-                ></el-date-picker>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="签发人">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="文件时间" class="date" prop="date">
-                <el-date-picker
-                  size="small"
-                  type="date"
-                  placeholder="选择时间"
-                  v-model="fileForm.date"
-                ></el-date-picker>
-              </el-form-item>
-              <el-form-item label="密级">
-                <el-select size="small">
-                  <el-option label="一般">一般</el-option>
-                  <el-option label="紧急">紧急</el-option>
-                  <el-option label="保密">保密</el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="文件类型" prop="fileType">
-                <el-select size="small" v-model="fileForm.fileType">
-                  <el-option
-                    label="EM_电子可修改版"
-                    value="EM_电子可修改版"
-                  ></el-option>
-                  <el-option label="P_打印件" value="P_打印件"></el-option>
-                  <el-option label="O_原件" value="O_原件"></el-option>
-                  <el-option label="C_拷贝盘" value="C_拷贝盘"></el-option>
-                  <el-option
-                    label="E_电子版(.pdf)"
-                    value="E_电子版(.pdf)"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="保管期限" class="date" prop="date">
-                <el-date-picker
-                  size="small"
-                  type="date"
-                  placeholder="选择时间"
-                  v-model="fileForm.date"
-                ></el-date-picker>
-              </el-form-item>
-              <el-form-item label="附注">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="主送机关">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="抄送机关">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="份数">
-                <el-input size="small" />
-              </el-form-item>
-              <el-form-item label="收文时间" class="date" prop="date">
-                <el-date-picker
-                  size="small"
-                  type="date"
-                  placeholder="选择时间"
-                  v-model="fileForm.date"
-                ></el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-        <span slot="footer" class="footerBtn">
-          <el-button @click="SendDocumentData.switch = false">取消</el-button>
-          <el-button type="primary" @click="SendDocumentData.switch = false"
-            >确定</el-button
-          >
-        </span>
+        <FileForm
+          :formList="formList"
+          categoryId="15"
+          @cancel="cancel"
+          @submitFileForm="submitFileForm"
+        ></FileForm>
       </el-dialog>
+
       <uploadFiles3
         projectKeyword
         :autoUpload="false"
@@ -322,75 +142,54 @@
       >
         <div ref="replaceFile"></div>
       </uploadFiles3>
+
+      <!-- 档案详情 -->
+      <el-drawer
+        title="档案详情"
+        :visible.sync="fileDetailShow"
+        size="90%"
+        append-to-body
+      >
+        <FileDetail
+          v-if="fileDetailShow"
+          :dataInfo="dataObject"
+          @cancel="fileFormCancel"
+          @submit="submitFileDetail"
+        ></FileDetail>
+      </el-drawer>
+
+      <!-- 高级搜索弹窗 -->
+      <el-dialog title="高级搜索" :visible.sync="searchVisible" width="55%">
+        <FileForm
+          :formList="DocListHead"
+          categoryId="15"
+          @cancel="fileFormCancel"
+          @submitFileForm="submitHighSearch"
+        ></FileForm>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
-import UserApi from "../../api/services/workflow";
-import UserApi3 from "../../api/services/doc";
-import UserApi4 from "../../api/services/dbsource";
-import { VersionIcon } from "../../util/VersionIcon";
-import PermissionList from "../Dialog/PermissionList-PM2";
-import { mapGetters } from "vuex";
-import { BASE_URL, VIEW_DOC } from "../../const";
-import {
-  File_Download,
-  setDragEventListener,
-  makeDialog,
-} from "@/util/Common";
-import { statusIcon } from "../../util/AddTypeIcon";
-// import {connectionWebSocket} from '@/util/WebSocket'
+import ArchivesApi from "@/api/services2/archives";
+import ArchivesApi2 from "@/api/services2/archives2";
+import ArchivesApi3 from "@/api/services2/archives3";
 
+import UserApi3 from "../../api/services/doc";
+import { VersionIcon } from "../../util/VersionIcon";
+import { mapGetters } from "vuex";
+import { setDragEventListener } from "@/util/Common";
+import FileSaver from "file-saver";
+import XLSX from "xlsx";
 export default {
   data() {
     return {
-      // 原型代码
-      fileForm: {
-        num: "",
-        unit: "",
-        serialNum: "",
-        isSend: "是",
-        isSecrecy: "是",
-        purpose: "1_按需求提交",
-        date: new Date(),
-        idea: "",
-        fileType: "EM_电子可修改版",
-        way: "邮寄",
-        version: "中文",
-      },
-      tableData: [
-        {
-          Type: "会计案卷",
-          ByWord: "",
-          MainWord: "",
-          Term: "永久",
-          Mulu: "D1-01",
-          Num: "0078",
-          Title: "关于2017年1-12月事业在职人员工资的发放表",
-          Creater: "邹粤",
-          O_credatetime: "2020-10-12",
-        },
-        {
-          Type: "会计案卷",
-          ByWord: "",
-          MainWord: "",
-          Term: "15年",
-          Mulu: "D4-01",
-          Num: "0121",
-          Title: "关于2017年1-12月事业离退休人员离退休费的发放表",
-          Creater: "邹粤",
-          O_credatetime: "2020-10-11",
-        },
-      ],
+      dataObject: {},
 
-      // 发文收文按钮控制
-      box: true,
-      getDocumentShow: false,
-      sendDocumentShow: false,
-      GetDocumentData: {
-        switch: false,
-      },
+      // 生成表单的数组
+      formList: [],
+
       SendDocumentData: {
         switch: false,
       },
@@ -401,49 +200,22 @@ export default {
       // id: "",
       // 搜索框数据
       formInline: {
-        user: "",
-        region: "",
+        searchContent: "",
       },
       // table 多选数据
       multipleSelection: [],
       // 左侧选单 - 右键
       menuVisible: false,
+      fileDetailShow: false,
+      searchVisible: false,
       // 右键菜单样式
       styleObject: {
         top: 0,
         left: 0,
         opacity: 0,
       },
-      // 右键菜单控制
-      rightData: {
-        switch: false,
-      },
-      // 用了新的upload组件之后这些都废弃
-      // UploadFiles: [], //  上传文件列表
-      // uploadVisible: false,
-      // colors: [{
-      // 		color: "#409eff",
-      // 		percentage: 0
-      // 	},
-      // 	{
-      // 		color: "#6f7ad3",
-      // 		percentage: 100
-      // 	}
-      // ],
-      // uploadSelection: [], // 上传checkbox
-      // 开始上传中
-      // Uploading: false,
       DocKeyword: "",
-      // 二级弹窗 - 增加用户/用户组
-      PermissionData: {
-        switch: false,
-      },
-      // 返回流程
-      reProcessData: {},
-      // 右键替换文件
-      isReplaceFile: false,
-      // 上傳文件
-      // beforeFile: null,
+
       MenuList: [],
       len: 0,
       pid: "",
@@ -457,33 +229,22 @@ export default {
       // 文件拖拽
       dragStatus: false,
       dragEnterDiv: false,
+
+      // searchType 查询类型 0简单 1高级 2全文
+      searchType: "",
+      searchForm: {},
+      archId: "",
     };
-  },
-  components: {
-    PermissionList,
   },
   computed: {
     ...mapGetters("doc", [
       "DocList",
       "pagination",
-      "ProjectKeyWord",
-      "ProjectShowPath",
-      // 2020.4.20-1
-      "projectKey",
-      "modelKey",
-      // 用于刷新
-      "refreshList",
-      "DocBaseAttr",
+      "DocListHead",
+      "categoryId",
+      "menuType",
     ]),
-    ...mapGetters("menu", [
-      "tableHeight",
-      "isPreview",
-      "isTable",
-      "PreviewImgURL",
-      "PreviewDocURL",
-      "Type",
-      "PreviewVideoURL",
-    ]),
+    ...mapGetters("menu", ["isTable", "menuIndex"]),
     // 拖拽上传的mask
     dragMaskStyle() {
       if (this.dragEnterDiv) {
@@ -496,22 +257,8 @@ export default {
         };
       }
     },
-    statusIcon() {
-      return statusIcon;
-    },
-    // 真正的文件状态
-    realFileStatus() {
-      return function (i) {
-        if (i.O_dmsstatus_DESC === "检出") {
-          if (i.FLocker != this.$store.state.userData.userkeyword) {
-            return "锁定";
-          }
-        }
-        return i.O_dmsstatus_DESC;
-      };
-    },
     tableHeightLocal() {
-      let height = document.body.clientHeight - 250;
+      let height = document.body.clientHeight - 270;
       return height;
     },
   },
@@ -525,12 +272,6 @@ export default {
     this.$nextTick(() => {
       this.setDrag(true);
     });
-    // 监听屏幕大小，来刷新iframe的高度
-    if (!this.refreshList) {
-      setTimeout(() => {
-        this.$store.commit("doc/SET_REFRESH_LIST");
-      }, 20);
-    }
   },
   watch: {
     // 拖拽事件监听
@@ -546,90 +287,513 @@ export default {
         });
       }
     },
-
-    // 个人消息附件跳转过来
-    AttachmentDocData: {
-      handler(newValue) {
-        if (newValue) {
-          setTimeout(() => {
-            this.handleCurrentChange(newValue);
-          }, 200);
-        }
-      },
-    },
-    Type: {
-      handler(newValue) {
-        if (newValue == "HX_SendDocument") {
-          console.log("发文");
-          this.sendDocumentShow = true;
-          this.getDocumentShow = false;
-        } else if (newValue == "HX_CreateCompany") {
-          console.log("收文");
-          this.getDocumentShow = true;
-          this.sendDocumentShow = false;
-        } else {
-          this.sendDocumentShow = false;
-          this.getDocumentShow = false;
-        }
-      },
-    },
-    refreshList(newValue, oldValue) {
-      this.$nextTick(() => {
-        this.setDrag(newValue);
-      });
-      if (newValue) {
-        this.$nextTick(() => {
-          this.tableHeightLocal = document.getElementById(
-            "uploadDrop"
-          ).clientHeight;
-        });
-      }
-      if (!newValue && oldValue) {
-        setTimeout(() => {
-          this.$store.commit("doc/SET_REFRESH_LIST");
-        }, 20);
-      }
-    },
   },
   methods: {
+    addSerialNumber(value) {
+      var num = "0401";
+      var length = num.length;
+      var time = 0;
+      var arr = num.split("");
+      for (let i = 0; i < length; i++) {
+        arr.forEach((item, index) => {
+          if (item == 0 && index == 0) {
+            arr.splice(0, 1);
+            time += 1;
+            console.log(arr);
+          } else {
+            num = arr.join("");
+          }
+        });
+      }
+      num++;
+      let str = "0";
+      for (let j = 0; j < time; j++) {
+        str += str;
+      }
+      str = str.slice(0, time);
+      return str + num;
+    },
+    exportExcel() {
+      var wb = XLSX.utils.table_to_book(document.querySelector("#DocList"));
+      /* get binary string as output */
+      var wbout = XLSX.write(wb, {
+        bookType: "xlsx",
+        bookSST: true,
+        type: "array",
+      });
+      try {
+        //table.xlsx默认导出文件名，在弹出文件夹框的时候可修改保存
+        FileSaver.saveAs(
+          new Blob([wbout], { type: "application/octet-stream" }),
+          "table.xlsx"
+        );
+      } catch (e) {
+        if (typeof console !== "undefined") console.log(e, wbout);
+      }
+      return wbout;
+    },
+    // 重置搜索条件
+    resetSearch() {
+      this.formInline.searchContent = "";
+      this.searchForm = {};
+      this.updateList();
+    },
+    updateList() {
+      let data = {
+        categoryId: this.categoryId,
+        content: "",
+        pageNum: 1,
+        pageSize: this.pagination.pageSize,
+        searchItem: {},
+        searchType: this.searchType,
+      };
+      let vm = this;
+      switch (vm.menuType) {
+        case 0:
+          // 未归
+          vm.$store.dispatch("doc/getunFiledList", data);
+          break;
+        case "正式":
+          // 预归
+          vm.$store.dispatch("doc/getunFiledList2", data);
+          break;
+        case "临时":
+          vm.$store.dispatch("doc/getunFiledList22", data);
+          break;
+        case "审核案卷":
+          // 审核
+          this.$store.dispatch("doc/getunFiledList3", data);
+          break;
+        case "审核文件":
+          this.$store.dispatch("doc/getunFiledList444", data);
+          break;
+        case "审核资料":
+          this.$store.dispatch("doc/getunFiledList333", data);
+          break;
+        default:
+          break;
+      }
+    },
+    // 销毁操作
+    deleteArch() {
+      let data = {
+        archId: this.archId,
+      };
+      let vm = this;
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        switch (vm.menuType) {
+          case 0:
+            // 未归
+            ArchivesApi.deleteArch(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("销毁成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "正式":
+            // 预归
+            ArchivesApi2.deleteArch4(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("销毁成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "临时":
+            ArchivesApi2.deleteArch4(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("销毁成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "审核案卷":
+            // 审核
+            ArchivesApi3.deleteArch(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("销毁成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "审核文件":
+            ArchivesApi3.deleteArch4(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("销毁成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "审核资料":
+            ArchivesApi3.deleteArch3(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("销毁成功");
+                vm.updateList();
+              }
+            });
+            break;
+          default:
+            break;
+        }
+      });
+    },
+    // 逻辑删除
+    updateIsDelete() {
+      let data = {
+        archId: this.archId,
+      };
+      let vm = this;
+      this.$confirm("此操作将删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        switch (vm.menuType) {
+          case 0:
+            // 未归
+            ArchivesApi.updateIsDelete(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("删除成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "正式":
+            ArchivesApi2.updateIsDelete4(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("删除成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "临时":
+            ArchivesApi2.updateIsDelete4(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("删除成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "审核案卷":
+            // 审核
+            ArchivesApi3.updateIsDelete(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("删除成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "审核文件":
+            ArchivesApi3.updateIsDelete4(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("删除成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "审核资料":
+            ArchivesApi3.updateIsDelete3(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("删除成功");
+                vm.updateList();
+              }
+            });
+            break;
+          default:
+            break;
+        }
+      });
+    },
+    // 高级搜索
+    highSearch() {
+      this.searchVisible = true;
+    },
+    // 获取自定义表单列表
+    getFileFormList() {
+      let data = {
+        categoryId: this.categoryId,
+      };
+      let vm = this;
+      switch (vm.menuType) {
+        case 0:
+          // 未归
+          ArchivesApi.getFileForm(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "正式":
+          ArchivesApi2.getFileForm4(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "临时":
+          ArchivesApi2.getFileForm4(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "审核案卷":
+          // 审核
+          ArchivesApi3.getFileForm(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "审核文件":
+          ArchivesApi3.getFileForm4(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "审核资料":
+          ArchivesApi3.getFileForm3(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    cancel(e) {
+      this.SendDocumentData.switch = e;
+    },
+    fileFormCancel(e) {
+      this.fileDetailShow = e;
+      this.searchVisible = e;
+    },
+    // 保存档案详情
+    submitFileDetail(form) {
+      let data = {
+        archId: this.archId,
+        data: form,
+      };
+      let vm = this;
+      switch (vm.menuType) {
+        case 0:
+          // 未归
+          ArchivesApi.updateArch(data).then((res) => {
+            if (res.code === 200) {
+              this.$message.success("提交成功");
+              this.updateList();
+            }
+          });
+          break;
+        case "正式":
+          ArchivesApi2.updateArch4(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "临时":
+          ArchivesApi2.updateArch4(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "审核案卷":
+          // 审核
+          ArchivesApi3.updateArch4(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "审核文件":
+          ArchivesApi3.updateArch4(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "审核资料":
+          ArchivesApi3.updateArch3(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    // 全文检索
+    searchAll() {
+      let vm = this;
+      if (this.formInline.searchContent) {
+        this.searchType = 2;
+      } else {
+        this.searchType = "";
+      }
+      let data = {
+        categoryId: this.categoryId,
+        content: this.formInline.searchContent,
+        pageNum: this.currentPage,
+        pageSize: this.pagination.pageSize,
+        searchItem: {},
+        searchType: this.searchType,
+      };
+      switch (vm.menuType) {
+        case 0:
+          // 未归
+          vm.$store.dispatch("doc/getunFiledList", data);
+          break;
+        case "正式":
+          // 预归
+          vm.$store.dispatch("doc/getunFiledList2", data);
+          break;
+        case "临时":
+          vm.$store.dispatch("doc/getunFiledList22", data);
+          break;
+        case "审核案卷":
+          // 审核
+          this.$store.dispatch("doc/getunFiledList3", data);
+          break;
+        case "审核文件":
+          this.$store.dispatch("doc/getunFiledList444", data);
+          break;
+        case "审核资料":
+          this.$store.dispatch("doc/getunFiledList333", data);
+          break;
+        default:
+          break;
+      }
+    },
+    // 提交高级搜索
+    submitHighSearch(form) {
+      let vm = this;
+      this.searchForm = form;
+      this.searchType = 1;
+      let data = {
+        categoryId: this.categoryId,
+        content: "",
+        pageNum: this.currentPage,
+        pageSize: this.pagination.pageSize,
+        searchItem: form,
+        searchType: this.searchType,
+      };
+      switch (vm.menuType) {
+        case 0:
+          // 未归
+          vm.$store.dispatch("doc/getunFiledList", data);
+          break;
+        case "正式":
+          // 预归
+          vm.$store.dispatch("doc/getunFiledList2", data);
+          break;
+        case "临时":
+          vm.$store.dispatch("doc/getunFiledList22", data);
+          break;
+        case "审核案卷":
+          // 审核
+          this.$store.dispatch("doc/getunFiledList3", data);
+          break;
+        case "审核文件":
+          this.$store.dispatch("doc/getunFiledList444", data);
+          break;
+        case "审核资料":
+          this.$store.dispatch("doc/getunFiledList333", data);
+          break;
+        default:
+          break;
+      }
+      this.fileFormCancel();
+    },
+    // 提交表单
+    submitFileForm(form, id) {
+      this.loading = true;
+      let data = {
+        categoryId: id,
+        data: form,
+      };
+      let vm = this;
+      switch (vm.menuType) {
+        case 0:
+          // 未归
+          ArchivesApi.addFileForm(data).then((res) => {
+            if (res.code === 200) {
+              vm.$message.success("提交成功");
+              vm.fileFormCancel();
+              vm.updateList();
+            }
+            vm.loading = false;
+          });
+          break;
+        case "正式":
+          // 预归
+          ArchivesApi2.addFileForm(data).then((res) => {
+            if (res.code === 200) {
+              vm.$message.success("提交成功");
+              vm.fileFormCancel();
+              vm.updateList();
+            }
+            vm.loading = false;
+          });
+          break;
+        case "临时":
+          ArchivesApi2.addFileForm2(data).then((res) => {
+            if (res.code === 200) {
+              vm.$message.success("提交成功");
+              vm.fileFormCancel();
+              vm.updateList();
+            }
+            vm.loading = false;
+          });
+          break;
+
+        case "审核案卷":
+          // 审核
+          ArchivesApi3.addFileForm(data).then((res) => {
+            if (res.code === 200) {
+              vm.$message.success("提交成功");
+              vm.fileFormCancel();
+              vm.updateList();
+            }
+            vm.loading = false;
+          });
+          break;
+        case "审核文件":
+          ArchivesApi3.addFileForm4(data).then((res) => {
+            if (res.code === 200) {
+              vm.$message.success("提交成功");
+              vm.fileFormCancel();
+              vm.updateList();
+            }
+            vm.loading = false;
+          });
+          break;
+        case "审核资料":
+          ArchivesApi3.addFileForm3(data).then((res) => {
+            if (res.code === 200) {
+              vm.$message.success("提交成功");
+              vm.fileFormCancel();
+              vm.updateList();
+            }
+            vm.loading = false;
+          });
+          break;
+        default:
+          break;
+      }
+    },
     sendDocument() {
       this.SendDocumentData.switch = true;
-    },
-    /* ------------------------------------------------------------ */
-    // 搞文件状态的
-    // 用户点击文件状态为锁定的文档
-    async unlockFile(i) {
-      console.log(i);
-      if (this.realFileStatus(i) != "锁定") {
-        return;
-      }
-
-      let res = await makeDialog({
-        title: "提示",
-        content: `该文件正在被 “${
-          i.FLocker
-        }” 在 “${"模拟xx机器"}” 机器上编辑，是否需要放弃编辑？`,
-        operation: [
-          {
-            text: "确认",
-            value: true,
-          },
-          {
-            text: "取消",
-            value: false,
-          },
-        ],
-      });
-
-      if (res.success) {
-        if (res.result) {
-          this.$store.dispatch({
-            type: "doc/setDocStatus",
-            docKeyword: i.Keyword,
-            status: "检入",
-          });
-        }
-      }
+      this.getFileFormList();
     },
     /* ------------------------------------------------------------ */
     // 设置拖拽事件监听
@@ -684,10 +848,6 @@ export default {
       );
     },
     /* ------------------------------------------------------------ */
-    // 行的双击事件
-    tableDoubleClick(row) {
-      // this.fileDownloadTable(row.Keyword);
-    },
     /* ------------------------------------------------------------ */
     async PreviewHandle(docKeyword) {
       let vm = this;
@@ -708,14 +868,6 @@ export default {
             str === "JPEG" ||
             str === "JPGE"
           ) {
-            // this.$store.commit("menu/GET_NAVURL", "");
-            // this.$store.commit("menu/ISPREVIEW", true);
-            // this.$store.commit("menu/ISTABLE", false);
-            // this.$store.commit(
-            //   "menu/GET_PREVIEWIMG_URL",
-            //   `${BASE_URL}/${res.data[0].path}`
-            // );
-            // window.open(`${BASE_URL}/${res.data[0].path}`, "_blank");
             // 2020.4.15-3
             //  转到文件预览
             vm.$store.commit("doc/GO_TO_PREVIEW");
@@ -730,35 +882,10 @@ export default {
             str === "TXT" ||
             str === "MP4"
           ) {
-            // this.$store.commit("menu/GET_NAVURL", "");
-            // this.$store.commit("menu/ISPREVIEW", false);
-            // this.$store.commit("menu/ISTABLE", false);
-            // this.$store.commit(
-            //   "menu/GET_PREVIEWDOC_URL",
-            //   `${BASE_URL}/${res.data[0].path}`
-            // );
-            // await vm._$fileDownload()
-            // window.open(`${BASE_URL}/${res.data[0].path}`, "_blank");
-            // 2020.4.1-3
-            // 不要重新打开一个窗口来预览
-            // 模拟点击了文件预览(AsideR.vue)
             vm.$store.commit("doc/GO_TO_PREVIEW");
           } else return vm._$ErrorMessage();
         } else return vm.$message.error(res.message);
       } else return vm.$message.error("请选择文件");
-    },
-    // async _$fileDownload() {
-    // 	let RefDocKeyword = "";
-    // 	const res = await UserApi3.fileDownload(this.DocKeyword, RefDocKeyword);
-    // 	if (res.success) {
-    // 		let webHttp = `${VIEW_DOC}${BASE_URL}/${res.data[0].path}`;
-    // 		window.open(`${webHttp}`, "_blank");
-    // 	} else {
-    // 		this.$message.error(res.message);
-    // 	}
-    // },
-    _$ErrorMessage() {
-      this.$message.error("文件暂不支持预览，请直接下载查看");
     },
     async tableLoad(tree, treeNode, resolve) {
       let rdata = [],
@@ -823,159 +950,61 @@ export default {
     },
     // 搜索
     async SearchHandle() {
-      let vm = this,
-        { ProjectKeyWord } = vm,
-        filterJson = [],
-        page = 1,
-        limit = 50;
-      filterJson.push(
-        {
-          name: "o_itemname",
-          value: `(o_itemname LIKE '%${this.formInline.user}%' or o_itemdesc LIKE '%${this.formInline.user}%' )`,
-        },
-        {
-          name: "searchAttr",
-          value: "true",
-        },
-        {
-          name: "filterstr",
-          value: this.formInline.user,
-        }
-      );
-      filterJson = JSON.stringify(filterJson);
-      this.$store.dispatch("doc/getDocList", {
-        ProjectKeyWord,
-        filterJson,
-        page,
-        limit,
-      });
-    },
-    // 下载
-    async fileDownload() {
-      // 如果要做批量下载，选中的文档在this.ChooseProfessionData.docKeyWord里
-
-      // 批量下载
-      let choose = this.ChooseProfessionData.docKeyWord.map((i) => i.Keyword);
-      if (choose.length <= 0) {
-        this.$message.error("请选择文件");
-      }
-      choose.forEach(async (i) => {
-        const res = await UserApi3.fileDownload(i, "");
-        if (res.success) {
-          var prePath = res.data[0].prePath;
-          var fileName = res.data[0].filename;
-          var para = res.data[0].para;
-          // 2020.4.21-4
-          File_Download(
-            `${BASE_URL}/${prePath}${encodeURIComponent(fileName)}?p=${para}`,
-            fileName
-          );
-        } else {
-          this.$message.error(res.message);
-        }
-      });
-    },
-    // 表格内的下载
-    async fileDownloadTable(docKeyword) {
-      const res = await UserApi3.fileDownload(docKeyword, "");
-      if (res.success) {
-        var prePath = res.data[0].prePath;
-        var fileName = res.data[0].filename;
-        var para = res.data[0].para;
-
-        //组装文件下载路径
-        var url =
-          BASE_URL +
-          "/" +
-          prePath +
-          encodeURIComponent(fileName) +
-          "?p=" +
-          para;
-
-        // windowDownloadFile(url, docKeyword);
-      } else {
-        this.$message.error({
-          message: `下载文件失败：${res.message}`,
-        });
-      }
-    },
-    // 開啟添加用戶彈窗
-    openPermissionList() {
-      this.PermissionData.switch = true;
-    },
-    // 添加用戶彈窗 返回
-    rePData(e) {
-      this.PermissionData.switch = e;
-    },
-    async reUser(e) {
       let vm = this;
-      if (e[2] !== undefined) {
-        let DocList = vm.DocKeyword,
-          WfKeyword = vm.reProcessData.o_code,
-          userlist = e[2];
-        const res = await UserApi.startNewWorkFlow(
-          DocList,
-          WfKeyword,
-          userlist
-        );
-        if (res.success) {
-          const filterJson = "",
-            page = 1,
-            limit = 50;
-          let { ProjectKeyWord } = vm;
-          vm.$store.dispatch("doc/getDocList", {
-            ProjectKeyWord,
-            filterJson,
-            page,
-            limit,
-          });
-        }
+      if (this.formInline.searchContent) {
+        this.searchType = 0;
+      } else {
+        this.searchType = "";
+      }
+      let data = {
+        categoryId: this.categoryId,
+        content: this.formInline.searchContent,
+        pageNum: this.currentPage,
+        pageSize: this.pagination.pageSize,
+        searchItem: {},
+        searchType: this.searchType,
+      };
+      let data2 = {
+        categoryId: this.categoryId,
+      };
+      switch (vm.menuType) {
+        case 0:
+          // 未归
+          vm.$store.dispatch("doc/getunFiledList", data);
+          break;
+        case "正式":
+          // 预归
+          vm.$store.dispatch("doc/getunFiledList2", data);
+          break;
+        case "临时":
+          vm.$store.dispatch("doc/getunFiledList22", data);
+          break;
+        case "审核案卷":
+          // 审核
+          this.$store.dispatch("doc/getunFiledList3", data);
+          break;
+        case "审核文件":
+          this.$store.dispatch("doc/getunFiledList444", data);
+          break;
+        case "审核资料":
+          this.$store.dispatch("doc/getunFiledList333", data);
+          break;
+        default:
+          break;
       }
     },
-    tableSelect(val, row) {
-      // let vm = this;
-      // vm.DocKeyword = "";
-      // if (row !== null) {
-      //   vm.DocKeyword = row.Keyword;
-      // }
-    },
+
+    tableSelect(val, row) {},
     // 点击列表
-    handleCurrentChange(val) {
-      // let vm = this;
-      // if (val) {
-      //   vm.$refs.DocList.clearSelection();
-      //   vm.DocKeyword = val.Keyword;
-      //   this.$nextTick(() => {
-      //     vm.$refs.DocList.toggleRowSelection(val);
-      //   });
-      //   vm.$store.dispatch("doc/getDocBaseAttr", val.Keyword);
-      //   // if (val.Keyword === vm.DocKeyword) return
-      // }
-    },
+    handleCurrentChange(val) {},
     // 多选列表
-    handleSelectionChange(val) {
-      // let vm = this;
-      // this.multipleSelection = val;
-      // this.ChooseProfessionData.docKeyWord = val;
-      // // 2020.4.15-4
-      // if (val.length > 0) {
-      //   vm.$store.dispatch("doc/getDocBaseAttr", val[val.length - 1].Keyword);
-      // }
-      // 2020.4.27-2
-    },
+    handleSelectionChange(val) {},
     // 替换文件式的上传文件
     replaceFile(fileList) {
       if (fileList.length === 1) {
         let file = fileList[0];
         let filename = this.multipleSelection[this.multipleSelection.length - 1]
           .Title;
-        // for(let i in this.DocBaseAttr) {
-        //     if (this.DocBaseAttr[i].AttrCode === "O_filename") {
-        //         filename = this.DocBaseAttr[i].AttrValue
-        //         break
-        //     }
-        // }
-        // filename = filename.split('.')[0]
         if (file.name.split(".").length > 1) {
           filename = filename + "." + file.name.split(".").pop();
         }
@@ -992,34 +1021,53 @@ export default {
     },
     // 右键列表
     openRight(e) {
-      const { href } = this.$router.resolve({
-        name: "file-detail",
-        // query: {
-        //   id: 1,
-        // },
-      });
-      window.open(href, "_blank");
-    },
-    reData(e) {
-      if (e[1].o_code !== undefined && e[1].text == "专业成品校审流程") {
-        this.reProcessData = e[1];
-        this.openChooseProfession();
-      } else if (e[1].o_code !== undefined) {
-        this.reProcessData = e[1];
-        this.openPermissionList();
-      } else {
-        const filterJson = "",
-          page = 1,
-          limit = 50;
-        let { ProjectKeyWord } = this;
-        this.$store.dispatch("doc/getDocList", {
-          ProjectKeyWord,
-          filterJson,
-          page,
-          limit,
-        });
+      this.archId = e.archId;
+      switch (e.Name) {
+        case "查看详情":
+          this.dataObject = {
+            categoryId: this.categoryId,
+            archId: e.archId,
+          };
+          this.getFileDetail(this.dataObject);
+          this.fileDetailShow = true;
+          break;
+        case "销毁":
+          this.deleteArch();
+          break;
+        case "删除":
+          this.updateIsDelete();
+          break;
+        default:
+          break;
       }
-      this.rightData.switch = e[0];
+    },
+    getFileDetail(data) {
+      let vm = this;
+      switch (vm.menuType) {
+        case 0:
+          // 未归
+          this.$store.dispatch("doc/getArchInfo", data);
+          break;
+        case "正式":
+          // 预归
+          this.$store.dispatch("doc/getArchInfo2", data);
+          break;
+        case "临时":
+          this.$store.dispatch("doc/getArchInfo2", data);
+          break;
+        case "审核案卷":
+          // 审核
+          this.$store.dispatch("doc/getArchInfo3", data);
+          break;
+        case "审核文件":
+          this.$store.dispatch("doc/getArchInfo444", data);
+          break;
+        case "审核资料":
+          this.$store.dispatch("doc/getArchInfo333", data);
+          break;
+        default:
+          break;
+      }
     },
     // 左侧选单 - 右键
     contextMenuClick(row, column, event) {
@@ -1032,6 +1080,17 @@ export default {
         {
           Name: "查看详情",
           State: "Enabled",
+          archId: row.archId,
+        },
+        {
+          Name: "销毁",
+          State: "Enabled",
+          archId: row.archId,
+        },
+        {
+          Name: "删除",
+          State: "Enabled",
+          archId: row.archId,
         },
       ];
       vm.len = vm.MenuList.length * 33;
@@ -1057,96 +1116,84 @@ export default {
       vm.styleObject.left = 0;
       document.removeEventListener("click", vm.foo);
     },
-    // 分页
+    // 页码变化
     pageNum2(e) {
-      let page = e,
-        { ProjectKeyWord } = this;
-      const filterJson = "",
-        limit = 50;
-      this.$store.dispatch("doc/getDocList", {
-        ProjectKeyWord,
-        filterJson,
-        page,
-        limit,
-      });
-    },
-    // 预览上一个
-    async previewPrevious() {
-      let list = this.DocList.map((item) => item.Keyword);
-      // 找出当前DocKeyword的位置
-      let index = list.indexOf(this.previewKeyword);
-      if (index == 0) {
-        this.$message({
-          message: "正在预览第一个",
-          type: "warning",
-        });
-      } else {
-        for (let i = index - 1; i >= 0; i--) {
-          // 只预览能预览的文件
-          // 上一个的Keyword
-          let keyword = list[i];
-          // 预览上一个预览下一个应该不影响当前选中的选项，只更改Main的preview和右边
-          let res = await UserApi3.previewDoc(keyword);
-          if (res.success) {
-            if (res.data[0].filetype === "common") {
-              this.previewKeyword = keyword;
-              this.handleCurrentChange(this.DocList[i]);
-              this.$store.commit("doc/GO_TO_PREVIEW");
-              return;
-            } else {
-              continue;
-            }
-          } else {
-            continue;
-          }
-        }
-        this.$message({
-          message: "没有可预览文件",
-          type: "warning",
-        });
+      let vm = this;
+      this.currentPage = e;
+      let data = {
+        categoryId: this.categoryId,
+        content: this.formInline.searchContent,
+        pageNum: e,
+        pageSize: this.pagination.pageSize,
+        searchItem: this.searchForm,
+        searchType: this.searchType,
+      };
+      let data2 = {
+        categoryId: this.categoryId,
+      };
+      switch (vm.menuType) {
+        case 0:
+          // 未归
+          vm.$store.dispatch("doc/getunFiledList", data);
+          break;
+        case "正式":
+          // 预归
+          vm.$store.dispatch("doc/getunFiledList2", data);
+          break;
+        case "临时":
+          vm.$store.dispatch("doc/getunFiledList22", data);
+          break;
+        case "审核案卷":
+          // 审核
+          this.$store.dispatch("doc/getunFiledList3", data);
+          break;
+        case "审核文件":
+          this.$store.dispatch("doc/getunFiledList444", data);
+          break;
+        case "审核资料":
+          this.$store.dispatch("doc/getunFiledList333", data);
+          break;
+        default:
+          break;
       }
     },
-    // 预览下一个
-    async previewNext() {
-      let list = this.DocList.map((item) => item.Keyword);
-      // 找出当前DocKeyword的位置
-      let index = list.indexOf(this.previewKeyword);
-      if (index == list.length - 1) {
-        this.$message({
-          message: "正在预览最后一个",
-          type: "warning",
-        });
-      } else {
-        for (let i = index + 1; i < list.length; i++) {
-          // 只预览能预览的文件
-          // 上一个的Keyword
-          let keyword = list[i];
-          // 预览上一个预览下一个应该不影响当前选中的选项，只更改Main的preview和右边
-          let res = await UserApi3.previewDoc(keyword);
-          if (res.success) {
-            if (res.data[0].filetype === "common") {
-              this.previewKeyword = keyword;
-              this.handleCurrentChange(this.DocList[i]);
-              this.$store.commit("doc/GO_TO_PREVIEW");
-              return;
-            } else {
-              continue;
-            }
-          } else {
-            continue;
-          }
-        }
-        this.$message({
-          message: "没有可预览文件",
-          type: "warning",
-        });
+    // 每页显示数量变化
+    changeSize(e) {
+      let vm = this;
+      this.$store.commit("doc/GET_DOC_PAGE_SIZE", e);
+      let data = {
+        categoryId: this.categoryId,
+        content: this.formInline.searchContent,
+        pageNum: this.currentPage,
+        pageSize: this.pagination.pageSize,
+        searchItem: this.searchForm,
+        searchType: this.searchType,
+      };
+      switch (vm.menuType) {
+        case 0:
+          // 未归
+          vm.$store.dispatch("doc/getunFiledList", data);
+          break;
+        case "正式":
+          // 预归
+          vm.$store.dispatch("doc/getunFiledList2", data);
+          break;
+        case "临时":
+          vm.$store.dispatch("doc/getunFiledList22", data);
+          break;
+        case "审核案卷":
+          // 审核
+          this.$store.dispatch("doc/getunFiledList3", data);
+          break;
+        case "审核文件":
+          this.$store.dispatch("doc/getunFiledList444", data);
+          break;
+        case "审核资料":
+          this.$store.dispatch("doc/getunFiledList333", data);
+          break;
+        default:
+          break;
       }
-    },
-    // 退出预览
-    exitPreview() {
-      this.$store.commit("menu/ISTABLE", true);
-      this.$store.commit("doc/CHANGE_ACTIVENAME", "c");
-      this.$store.commit("home/ASIDER_SHOW_CONTROL");
     },
   },
 };

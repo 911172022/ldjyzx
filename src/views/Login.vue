@@ -19,6 +19,7 @@
                 ref="ruleForm"
                 label-position="left"
                 label-width="0px"
+                @submit.native.prevent
                 class="login-container"
               >
                 <h1 class="title">欢迎登陆</h1>
@@ -69,7 +70,6 @@
 
 <script>
 import { login } from "../api/Login";
-import User from "../entity/User";
 
 export default {
   data() {
@@ -87,11 +87,23 @@ export default {
       systemType: "1", // 1是管理平台，2是利用平台
     };
   },
+  mounted() {
+    this.keyDownEnter();
+  },
   methods: {
+    keyDownEnter() {
+      document.onkeydown = (e) => {
+        //按下回车提交
+        let key = window.event.keyCode;
+        //事件中keycode=13为回车事件
+        if (key == 13) {
+          this.onSubmit();
+        }
+      };
+    },
     onSubmit() {
       let vm = this;
       vm.logining = true;
-      vm.logining = false;
       vm.$refs.ruleForm.validate((valid) => {
         if (valid) {
           let loginParams = {
@@ -101,16 +113,18 @@ export default {
           };
           login(loginParams).then((res) => {
             if (res.code === 200) {
-              localStorage.setItem("LOGIN",res.data)
+              localStorage.setItem("LOGIN", res.data);
               this.$store.commit("SET_TOKEN", res.data);
               this.$message.success("登录成功");
-              this.$router.push({ path: "/home" });
-            } else {
-              this.$message.error(res.message, "登录失败");
+              if (this.systemType == 1) {
+                this.$router.push({ path: "/home" });
+              } else {
+                this.$router.push({ path: "/search" });
+              }
             }
+            vm.logining = false;
           });
         }
-        vm.logining = false;
       });
     },
   },
@@ -135,7 +149,7 @@ export default {
         box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1),
           -1px 0 2px rgba(0, 0, 0, 0.05);
         .left {
-          background: rgba(0,0,0, 0.8);
+          background: rgba(0, 0, 0, 0.8);
           // background: rgba(82, 143, 253, 0.8);
           height: calc(75vh - 80px);
           padding: 40px;

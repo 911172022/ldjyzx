@@ -1,18 +1,18 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import store from "../store";
+// import store from "../store";
 import Home from "../views/Home.vue";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
-import { Message } from "element-ui";
-import UserApi from "../api/services/user";
+// import { Message } from "element-ui";
+// import UserApi from "../api/services/user";
 Vue.use(VueRouter);
 
 const routes = [
   {
     path: "/home",
     name: "home",
-    redirect: { name: "DocManagement" }, // 根目录默认跳转到“文档管理”
+    redirect: { name: "DocManagement" },
     component: Home,
     meta: { title: "文档管理", auth: true },
     children: [
@@ -59,6 +59,12 @@ const routes = [
     path: "/file-detail",
     name: "file-detail",
     component: () => import("../views/FileDetails.vue"),
+    meta: { title: "文件详情" }
+  },
+  {
+    path: "/form",
+    name: "form",
+    component: () => import("../components/form/index.vue"),
     meta: { title: "文件详情" }
   }
 ];

@@ -26,7 +26,7 @@
               <el-menu-item-group>
                 <el-menu-item index="1-3">案卷管理</el-menu-item>
                 <el-menu-item index="1-2">卷内管理</el-menu-item>
-                <el-menu-item index="1-1">归档管理</el-menu-item>
+                <el-menu-item index="1-1">归档文件管理</el-menu-item>
                 <el-menu-item index="1-4">资料管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
@@ -37,7 +37,7 @@
               <el-menu-item-group>
                 <el-menu-item index="2-3">案卷管理</el-menu-item>
                 <el-menu-item index="2-2">卷内管理</el-menu-item>
-                <el-menu-item index="2-1">归档管理</el-menu-item>
+                <el-menu-item index="2-1">归档文件管理</el-menu-item>
                 <el-menu-item index="2-4">资料管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
@@ -48,7 +48,7 @@
               <el-menu-item-group>
                 <el-menu-item index="3-3">案卷管理</el-menu-item>
                 <el-menu-item index="3-2">审核日志</el-menu-item>
-                <el-menu-item index="3-1">归档管理</el-menu-item>
+                <el-menu-item index="3-1">归档文件管理</el-menu-item>
                 <el-menu-item index="3-4">资料管理</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
@@ -60,7 +60,7 @@
             </template>
             <el-menu-item-group>
               <el-menu-item index="5-1">开放列表</el-menu-item>
-              <el-menu-item index="5-2">开放日志</el-menu-item>
+              <!-- <el-menu-item index="5-2">开放日志</el-menu-item> -->
             </el-menu-item-group>
           </el-submenu>
           <el-menu-item index="6">
@@ -78,24 +78,16 @@
             </template>
             <el-menu-item-group>
               <el-menu-item index="8-1">公告管理</el-menu-item>
-              <el-menu-item index="8-2">数据汇总</el-menu-item>
+              <!-- <el-menu-item index="8-2">数据汇总</el-menu-item> -->
               <el-menu-item index="8-3">数据备份与恢复</el-menu-item>
               <el-menu-item index="8-4">数据查重</el-menu-item>
               <el-menu-item index="8-5">数据导入</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
-          <el-submenu index="9">
-            <template slot="title">
-              <i class="el-icon-reading"></i>
-              <span slot="title">全宗管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="9-1">全宗增加</el-menu-item>
-              <el-menu-item index="9-2">全宗修改</el-menu-item>
-              <el-menu-item index="9-3">全宗打印</el-menu-item>
-              <el-menu-item index="9-4">全宗历史沿革</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
+          <el-menu-item index="9">
+            <i class="el-icon-reading"></i>
+            <span slot="title">全宗管理</span>
+          </el-menu-item>
           <el-submenu index="10">
             <template slot="title">
               <i class="el-icon-s-help"></i>
@@ -114,10 +106,9 @@
               <span slot="title">系统设置</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="11-1">模板维护</el-menu-item>
-              <el-menu-item index="11-2">档号设置</el-menu-item>
+              <!-- <el-menu-item index="11-1">模板维护</el-menu-item> -->
               <el-menu-item index="11-3">分类维护</el-menu-item>
-              <el-menu-item index="11-4">报表打印</el-menu-item>
+              <!-- <el-menu-item index="11-4">报表打印</el-menu-item> -->
               <el-menu-item index="11-5">报表管理</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
@@ -215,9 +206,7 @@ export default {
   },
   watch: {
     hideLeft(newValue) {
-      newValue
-        ? (this.mainMarginLeft = "250px")
-        : (this.mainMarginLeft = "0");
+      newValue ? (this.mainMarginLeft = "250px") : (this.mainMarginLeft = "0");
     },
   },
   components: {
@@ -227,7 +216,7 @@ export default {
     AsideR,
   },
   mounted() {
-    this.getMenuList();
+    // this.getMenuList();
   },
   methods: {
     getMenuList() {
@@ -235,9 +224,8 @@ export default {
         parentId: "",
       };
       SystemApi.getMenuTreeList(data).then((res) => {
-        console.log(res);
         if (res.code === 200) {
-          this.menuList = res.data
+          this.menuList = res.data;
         } else {
           this.$message.error("获取菜单列表失败,", res.message);
         }
@@ -245,8 +233,25 @@ export default {
     },
     // 点击菜单
     menuSelect(index) {
+      console.log(index);
       this.$store.commit("menu/GET_MENU_INDEX", index);
       switch (index) {
+        case "11-1":
+          this.hideLeft = true;
+          this.$store.commit("setHeaderActiveIndex", 111);
+          break;
+        case "8-4":
+          this.hideLeft = true;
+          this.$store.commit("setHeaderActiveIndex", 84);
+          break;
+        case "10-4":
+          this.hideLeft = true;
+          this.$store.commit("setHeaderActiveIndex", 104);
+          break;
+        case "5-1":
+          this.hideLeft = false;
+          this.$store.commit("setHeaderActiveIndex", 51);
+          break;
         case "6": {
           const { href } = this.$router.resolve({
             name: "search",
@@ -264,21 +269,17 @@ export default {
           this.hideLeft = true;
           this.$store.commit("setHeaderActiveIndex", 81);
           break;
-        case "9-1":
+        case "8-3":
           this.hideLeft = true;
-          this.$store.commit("setHeaderActiveIndex", 1);
+          this.$store.commit("setHeaderActiveIndex", 83);
           break;
-        case "9-2":
+        case "8-5":
           this.hideLeft = true;
-          this.$store.commit("setHeaderActiveIndex", 1);
+          this.$store.commit("setHeaderActiveIndex", 85);
           break;
-        case "9-3":
+        case "9":
           this.hideLeft = true;
-          this.$store.commit("setHeaderActiveIndex", 1);
-          break;
-        case "9-4":
-          this.hideLeft = true;
-          this.$store.commit("setHeaderActiveIndex", 1);
+          this.$store.commit("setHeaderActiveIndex", 9);
           break;
         case "10-1":
           this.hideLeft = true;
@@ -296,6 +297,10 @@ export default {
           this.hideLeft = true;
           this.$store.commit("setHeaderActiveIndex", 113);
           break;
+        case "11-5":
+          this.hideLeft = true;
+          this.$store.commit("setHeaderActiveIndex", 115);
+          break;
         default:
           this.hideLeft = false;
           this.$store.commit("setHeaderActiveIndex", 1);
@@ -308,7 +313,7 @@ export default {
     enter: function (el, done) {
       done;
       TweenMax.to(el, 0.6, {
-        width: 15 + "%",
+        width: 250 + "px",
         paddingLeft: 15 + "px",
         ease: Power4.easeOut,
       });

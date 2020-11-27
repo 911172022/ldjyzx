@@ -442,21 +442,9 @@
         <el-button type="primary" @click="removeUser">确 定</el-button>
       </span>
     </el-dialog>
-    <PermissionList
-      :dialogObj="PermissionData"
-      @reData="rePData"
-      @reUser="reUser(arguments)"
-    />
-    <TemplateSelection
-      :dialogObj="TemplateData"
-      @reData="reTData"
-      @reTemplate="reTemplate"
-    />
   </div>
 </template>
 <script>
-import PermissionList from "../Dialog/PermissionList-PM2";
-import TemplateSelection from "../Dialog/TemplateSelection";
 import UserApi from "../../api/services/project";
 import UserApi3 from "../../api/services/doc";
 import { mapGetters } from "vuex";
@@ -494,10 +482,6 @@ export default {
       previewAble: false,
       filePreviewTip: "",
     };
-  },
-  components: {
-    PermissionList,
-    TemplateSelection,
   },
   computed: {
     ...mapGetters("doc", [
@@ -692,8 +676,6 @@ export default {
             `${BASE_URL}/${res.data[0].path}`
           );
           // this.isPreview = false;
-          // this.PreviewDoc = `${BASE_URL}/${res.data[0].path}`;
-          // this.PreviewDoc = await this._$fileDownload();
         } else if (
           str === "MP4" ||
           str === "WMV" ||
@@ -742,21 +724,6 @@ export default {
         this.$store.commit("menu/ISTABLE", false);
       }
     },
-    // async _$fileDownload() {
-    //     let RefDocKeyword = "",
-    //         Doc = "";
-    //     const res = await UserApi3.fileDownload(
-    //         this.DocKeyword,
-    //         RefDocKeyword
-    //     );
-    //     if (res.success) {
-    //         Doc = `${VIEW_DOC}${BASE_URL}/${res.data[0].path}`;
-    //         return Doc;
-    //     } else {
-    //         this.$message.error(res.message);
-    //         return;
-    //     }
-    // },
     _$isLoading() {
       setTimeout(() => {
         this.loading = false;

@@ -1,6 +1,6 @@
 <template>
   <div class="search-container">
-    <div class="nav-menu">
+    <!-- <div class="nav-menu">
       <div class="nav-menu-item">
         <i class="el-icon-star-off"></i>
         收藏
@@ -13,7 +13,7 @@
         <i class="el-icon-switch-button"></i>
         退出
       </div>
-    </div>
+    </div> -->
     <div class="search-box">
       <el-checkbox v-model="checked" class="checkAll"
         >是否进行全文检索</el-checkbox
@@ -27,12 +27,14 @@
           v-model="searchValue"
           placeholder="可按关键字模糊搜索,多个关键字用','隔开;展开高级搜索可使用更多搜索条件"
         >
-          <el-button type="primary" slot="append">搜索</el-button>
+          <el-button type="primary" slot="append" @click="search"
+            >搜索</el-button
+          >
         </el-input>
       </div>
       <!-- <transition name="fade"> -->
       <div class="table-list" v-show="!isAdvanced">
-        <div>
+        <div v-if="hasData">
           <el-table
             ref="multipleTable"
             :data="tableData"
@@ -64,7 +66,7 @@
             :current-page.sync="currentPage"
           />
         </div>
-        <div v-if="false" class="search-nothing">
+        <div v-else class="search-nothing">
           <span>非常抱歉,找不到和您查询相关的内容或信息</span>
           <p>您可进行下列操作</p>
           <p>1.检查所检索的字词是否为档案的属性</p>
@@ -253,7 +255,7 @@ export default {
     return {
       pagination: {
         pageSize: 1,
-        total: 100,
+        total: 2,
         pageSizes: [10, 20, 30, 50],
       },
       currentPage: 1,
@@ -322,7 +324,7 @@ export default {
         fileType: "文书案卷",
         title: "广州市教育装备中心1985-2015年档案利用实例",
       },
-
+      hasData: false,
       tableData: [
         {
           title: "关于2017年1-12月事业在职人员工资的发放表",
@@ -343,6 +345,7 @@ export default {
       ],
     };
   },
+
   methods: {
     pageNum2(e) {},
     fieldChange(e) {
@@ -351,6 +354,19 @@ export default {
     dateChange() {},
     advancedSearch() {
       this.isAdvanced = !this.isAdvanced;
+    },
+    search() {
+      if (this.searchValue) {
+        this.tableData.forEach((item) => {
+          if (item.title.indexOf(this.searchValue) !== -1) {
+            this.hasData = true;
+          } else {
+            this.hasData = false;
+          }
+        });
+      } else {
+        this.hasData = false;
+      }
     },
   },
 };

@@ -1,357 +1,283 @@
-import UserApi from '../api/services/doc'
-import UserApi2 from '../api/services/project'
-import { AddTypeIcon } from '../util/AddTypeIcon'
-import { Message } from 'element-ui'
+import ArchivesApi from "../api/services2/archives"; //未归
+import ArchivesApi2 from "../api/services2/archives2"; // 归档
+import ArchivesApi3 from "../api/services2/archives3"; // 审核
+import { AddTypeIcon } from "../util/AddTypeIcon";
+import { Message } from "element-ui";
 
 export default {
-    namespaced: true,
-    state: {
-        ProjectKeyWord: '',
-        DocList: [],
-        pagination: {
-            total: 0,
-            pageSize: 0
-        },
-        ProjectShowPath: '',
-        ProjectBaseAttr: [],
-        ProjectAttrData: [],
-        RightList: [],
-        DocKeyword: '',
-        DocBaseAttr: [],
-        DocAttrData: [],
-        tabsName: {
-            DirectoryName: true
-        },
-        activeName: 'a',
-        Keyword: '',
-        List: [],
-        GoToPreview: true,
-        // 模型预览
-        modelKey: null,
-        projectKey: null,
-        bos3dModelShow: false,
-        projectModel: null,
-        // 用户刷新列表
-        refreshList: true,
+  namespaced: true,
+  state: {
+    // 请求列表时，接口返回中会有一个对象，把那个放到该数组中
+    extraField: [],
+    DocListHead: [],
+    DocList: [],
+    pagination: {
+      total: 0,
+      pageSize: 40
     },
-    actions: {
-        getDocList({ commit }, { ProjectKeyWord, filterJson, page, limit }) {
-            commit('PTYPE', ProjectKeyWord)
-            commit('KTYPE', ProjectKeyWord)
-            UserApi.getDocList(ProjectKeyWord, filterJson, page, limit).then(res => {
-                if (filterJson !== '' && res.message !== '') {
-                    Message({ message: res.message, type: 'error' })
-                }
-                commit('GET_DOC_LIST', res.data)
-                const total = res.total
-                commit('GET_DOC_TOTAL', { total, limit })
-
-            })
-        },
-        getDocBaseAttr({ commit }, DocKeyword) {
-            commit('DTYPE', DocKeyword)
-            commit('KTYPE', DocKeyword)
-            UserApi.getDocBaseAttr(DocKeyword).then(res => {
-                commit('GET_DOC_BASEATTR', res.data)
-                commit('AdjustMenuWidth/AM_WIDTH', '', { root: true })
-            })
-        },
-        getDocAttrData({ commit }, DocKeyword) {
-            UserApi.getDocAttrData(DocKeyword).then(res => {
-                commit('GET_DOC_ATTRDATA', res.data)
-            })
-        },
-        getDocRightList({ commit }, DocKeyword) {
-            UserApi.getDocRightList(DocKeyword).then(res => {
-                commit('GET_RIGHTLIST', res.data)
-            })
-        },
-        getProjectShowPath({ commit }, ProjectKeyword) {
-            UserApi2.getProjectShowPath(ProjectKeyword).then(res => {
-                commit('GET_PROJECT_SHOWPATH', res.data[0].path)
-            }).catch(err => {
-                // 2020.4.16 不知道什么bug
-                console.log(err)
-            })
-        },
-        getProjectBaseAttr({ commit }, ProjectKeyword) {
-            UserApi2.getProjectBaseAttr(ProjectKeyword).then(res => {
-                commit('GET_PROJECT_BASEATTR', res.data)
-                commit('AdjustMenuWidth/AM_WIDTH', '', { root: true })
-            })
-        },
-        getProjectAttrData({ commit }, ProjectKeyword) {
-            UserApi2.getProjectAttrData(ProjectKeyword).then(res => {
-                commit('GET_PROJECT_ATTRDATA', res.data)
-            })
-        },
-        getProjectRightList({ commit }, ProjectKeyword) {
-            UserApi2.getProjectRightList(ProjectKeyword).then(res => {
-                commit('GET_RIGHTLIST', res.data)
-            })
-        },
-        // 设置检出状态
-        setCheckOut({ commit }, payload) {
-            commit('SET_CHECKOUT', payload.docKeyword);
-            return Promise.resolve()
-        },
-
-        /**
-         * 设置文档的状态
-         * @param {*} param0 
-         * @param {Object} payload
-         * {
-         *  docKeyword: 接受以,分割的文档关键字
-         *  status: 要改成的状态，直接状态的中文
-         *          -   检入
-         *          -   检出
-         *          -   已打开
-         *          -   只读
-         *          -   输出
-         *          -   最终状态
-         *          -   锁定
-         * } 
-         */
-        async setDocStatus({ commit, dispatch }, payload) {
-            commit("SET_DOC_STATUS", payload)
-
-            if (payload.status === '检出' || payload.status === '只读') {
-                // 增添到打开的文件那里
-                let res = await UserApi.getDocBaseAttr(payload.docKeyword)
-                let file = {}
-                for (let j in res.data) {
-                    file[res.data[j].AttrCode] = res.data[j].AttrValue
-                }
-                file.Keyword = payload.docKeyword
-                dispatch({
-                    type: 'home/addOpenFile',
-                    ...file
-                }, {
-                    root: true
-                })
-            } else {
-                // 移除已打开文件 openFileLists
-                dispatch({
-                    type: 'home/removeOpenFile',
-                    Keyword: payload.docKeyword
-                }, {
-                    root: true
-                })
+    categoryId: "",
+    // 存放查看详情
+    archInfo: {},
+    // 用户刷新列表
+    refreshList: true,
+    // 0未归 1案卷 2归档 3资料
+    menuType: ""
+  },
+  actions: {
+    // 获取未归档案列表
+    getunFiledList({ commit }, data) {
+      ArchivesApi.getunFiledList(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
             }
-
-
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
         }
+      });
     },
-    mutations: {
-        // 设置检出状态
-        SET_CHECKOUT(state, status) {
-            let docKeyword = status.split(',')
-            state.DocList.forEach(i => {
-                if (docKeyword.includes(i.Keyword)) {
-                    i.O_dmsstatus_DESC = '检出'
-                }
-            })
-        },
-        /**
-         * 设置文档的状态
-         * @param {*} state
-         * @param {Object} status
-         * {
-         *  docKeyword: 接受以,分割的文档关键字
-         *  status: 要改成的状态，直接状态的中文
-         *          -   检入
-         *          -   检出
-         *          -   已打开
-         *          -   只读
-         *          -   输出
-         *          -   最终状态
-         *          -   锁定
-         * } 
-         */
-        SET_DOC_STATUS(state, status) {
-            let docKeyword = status.docKeyword.split(',')
-            state.DocList.forEach(i => {
-                if (docKeyword.includes(i.Keyword)) {
-                    i.O_dmsstatus_DESC = status.status
-                    if (status.locker) {
-                        i.FLocker = status.locker
-                    }
-                }
-            })
-        },
+    // 获取未归档案列表表头
+    getunFiledListHead({ commit }, data) {
+      ArchivesApi.getunFiledListHead(data).then(res => {
+        if (res.code === 200) {
+          let result = res.data.map(item => {
+            let obj = {
+              label: item.label,
+              fieldName: item.fieldName,
+              isMain: item.isMain,
+              textValue: ""
+            };
+            return obj;
+          });
+          commit("GET_DOC_LIST_HEAD", result);
+        }
+      });
+    },
+    // 查看档案详情--未归
+    getArchInfo({ commit }, data) {
+      ArchivesApi.getArchInfo(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    },
 
-        GO_TO_PREVIEW(state) {
-            state.GoToPreview = !state.GoToPreview;
-        },
-        PTYPE(state, status) {
-            state.ProjectKeyWord = status
-        },
-        DTYPE(state, status) {
-            state.DocKeyword = status
-        },
-        KTYPE(state, status) {
-            state.Keyword = status
-        },
-        LIST(state, status) {
-            let arr = []
-            status.forEach(item => {
-                let imgUrl = AddTypeIcon(item.name)
-                arr.push({
-                    name: item.name,
-                    src: imgUrl
-                })
-            })
-            state.List = arr
-        },
-        GET_DOC_LIST(state, status) {
-            let arr = []
-            status.forEach(item => {
-                let imgUrl = AddTypeIcon(item.O_filename)
-                arr.push({
-                    ...item,
-                    src: imgUrl
-                })
-            })
-            state.refreshList = false
-            state.DocList = arr
-        },
-        SET_REFRESH_LIST(state) {
-            state.refreshList = true
-        },
-        GET_DOC_TOTAL(state, { total, limit }) {
-            state.pagination.total = total
-            state.pagination.pageSize = limit
-        },
-        GET_PROJECT_SHOWPATH(state, status) {
-            state.ProjectShowPath = status
-        },
-        // 点击目录请求
-        GET_PROJECT_BASEATTR(state, status) {
-            // 目录属性
-            let arr = status.filter((item) => item.Visible === 'True')
-            state.ProjectBaseAttr = arr
-            // Tabs 标签页
-            state.tabsName = {}
-            state.tabsName.O_WorkFlowno = false
-            status.forEach((item) => {
-                // 判断是否有目录属性
-                if (item.AttrName === '目录名') {
-                    state.tabsName.DirectoryName = true
-                    state.activeName = 'a'
-                    // 判断是否有目录附加属性
-                } else if (item.AttrCode === 'AttrDataCount') {
-                    const num = Number(item.AttrValue)
-                    if (num > 1) {
-                        state.tabsName.AttrDataCount = true
-                    }
-                    // 判断是否有流程
-                } else if (item.AttrCode === 'O_WorkFlowno') {
-                    if (item.AttrValue) {
-                        state.tabsName.O_WorkFlowno = true
-                    }
-                    // 判断是否有权限列表
-                } else if (item.AttrCode === 'isAdmin') {
-                    if (item.AttrValue === 'True') {
-                        state.tabsName.isAdmin = true
-                    }
-                }
-            })
-        },
-        // 2020.4.20-1
-        // 判断是否需要模型预览
-        SET_MODEL_PREVIEW(state, status) {
-            state.bos3dModelShow = status.control
-            if (status.control) {
-                state.modelKey = status.bosModelKey
-                state.projectKey = status.bosProjectKey
-                state.projectModel = status.projectModel
-            } else {
-                state.modelKey = null
-                state.projectKey = null
-                state.projectModel = null
+    // 获取档案列表--正式库——归档
+    getunFiledList2({ commit }, data) {
+      ArchivesApi2.getunFiledList(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
             }
-        },
-        GET_PROJECT_ATTRDATA(state, status) {
-            state.ProjectAttrData = []
-            let arr = status.filter(item => item.TempAttrType === 3 || item.TempAttrType === 4)
-            state.ProjectAttrData = arr
-        },
-        GET_RIGHTLIST(state, status) {
-            status.pop()
-            state.RightList = status
-        },
-        // 增加权限列表用户时回调
-        ADD_PERMISSION_USER(state, status) {
-            state.RightList = status
-        },
-        // 点击文件请求
-        GET_DOC_BASEATTR(state, status) {
-            // 文档属性
-            let arr = status.filter(item => item.Visible === 'True')
-            state.DocBaseAttr = arr
-            // Tabs 标签页
-            state.tabsName = {}
-            state.tabsName.O_WorkFlowno2 = false
-            status.forEach((item) => {
-                if (item.AttrCode === 'O_filename') {
-                    // 判断是否有是文件属性
-                    if (item.AttrName === '文件名') {
-                        state.tabsName.fileName = true
-                        state.activeName = 'c'
-                    }
-                    // 判断是否有文档浏览
-                    if (item.AttrValue) {
-                        state.tabsName.O_filename = true
-                    }
-                    // 判断是否有文档附加属性
-                } else if (item.AttrCode === 'AttrDataCount') {
-                    const num = Number(item.AttrValue)
-                    if (num > 1) {
-                        state.tabsName.AttrDataCount2 = true
-                    }
-                    // 判断是否有流程
-                } else if (item.AttrCode === 'O_WorkFlowno') {
-                    if (item.AttrValue !== '') {
-                        state.tabsName.O_WorkFlowno2 = true
-                    }
-                    // 判断是否有权限列表
-                } else if (item.AttrCode === 'isAdmin') {
-                    if (item.AttrValue === 'True') {
-                        state.tabsName.isAdmin = true
-                    }
-                }
-            })
-        },
-        GET_DOC_ATTRDATA(state, status) {
-            state.DocAttrData = []
-            let arr = status.filter(item => item.TempAttrType === 3 || item.TempAttrType === 4)
-            state.DocAttrData = arr
-        },
-        CHANGE_ACTIVENAME(state, status) {
-            state.activeName = status
-        },
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
     },
-    getters: {
-        List: state => state.List,
-        DocList: state => state.DocList,
-        pagination: state => state.pagination,
-        ProjectKeyWord: state => state.ProjectKeyWord,
-        DocKeyword: state => state.DocKeyword,
-        ProjectShowPath: state => state.ProjectShowPath,
-        ProjectBaseAttr: state => state.ProjectBaseAttr,
-        ProjectAttrData: state => state.ProjectAttrData,
-        RightList: state => state.RightList,
-        DocBaseAttr: state => state.DocBaseAttr,
-        DocAttrData: state => state.DocAttrData,
-        tabsName: state => state.tabsName,
-        activeName: state => state.activeName,
-        Keyword: state => state.Keyword,
-        // 2020.4.20-1
-        modelKey: state => state.modelKey,
-        projectKey: state => state.projectKey,
-        bos3dModelShow: state => state.bos3dModelShow,
-        projectModel: state => state.projectModel,
-        // 用于刷新列表
-        refreshList: state => state.refreshList
+    // 获取档案列表--临时库——归档
+    getunFiledList22({ commit }, data) {
+      ArchivesApi2.getunFiledList2(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+    // 获取档案列表表头——归档
+    getunFiledListHead2({ commit }, data) {
+      ArchivesApi2.getunFiledListHead4(data).then(res => {
+        if (res.code === 200) {
+          let result = res.data.map(item => {
+            let obj = {
+              label: item.label,
+              fieldName: item.fieldName,
+              isMain: item.isMain,
+              textValue: ""
+            };
+            return obj;
+          });
+          commit("GET_DOC_LIST_HEAD", result);
+        }
+      });
+    },
+    // 查看档案详情-- 归档
+    getArchInfo2({ commit }, data) {
+      ArchivesApi2.getArchInfo4(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    },
+
+    // 获取档案列表-- 审核案卷
+    getunFiledList3({ commit }, data) {
+      ArchivesApi3.getunFiledList(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+    // 获取档案列表表头-- 审核案卷
+    getunFiledListHead3({ commit }, data) {
+      ArchivesApi3.getunFiledListHead(data).then(res => {
+        if (res.code === 200) {
+          let result = res.data.map(item => {
+            let obj = {
+              label: item.label,
+              fieldName: item.fieldName,
+              isMain: item.isMain,
+              textValue: ""
+            };
+            return obj;
+          });
+          commit("GET_DOC_LIST_HEAD", result);
+        }
+      });
+    },
+    // 查看档案详情-- 审核案卷
+    getArchInfo3({ commit }, data) {
+      ArchivesApi3.getArchInfo(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    },
+    // 获取档案列表--审核资料
+    getunFiledList333({ commit }, data) {
+      ArchivesApi3.getunFiledList3(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+    // 获取档案列表表头--审核资料
+    getunFiledListHead333({ commit }, data) {
+      ArchivesApi3.getunFiledListHead3(data).then(res => {
+        if (res.code === 200) {
+          let result = res.data.map(item => {
+            let obj = {
+              label: item.label,
+              fieldName: item.fieldName,
+              isMain: item.isMain,
+              textValue: ""
+            };
+            return obj;
+          });
+          commit("GET_DOC_LIST_HEAD", result);
+        }
+      });
+    },
+    // 查看档案详情--审核资料
+    getArchInfo333({ commit }, data) {
+      ArchivesApi3.getArchInfo3(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    },
+    // 获取档案列表--审核文件
+    getunFiledList444({ commit }, data) {
+      ArchivesApi3.getunFiledList4(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+    // 获取档案列表表头--审核文件
+    getunFiledListHead444({ commit }, data) {
+      ArchivesApi3.getunFiledListHead4(data).then(res => {
+        if (res.code === 200) {
+          let result = res.data.map(item => {
+            let obj = {
+              label: item.label,
+              fieldName: item.fieldName,
+              isMain: item.isMain,
+              textValue: ""
+            };
+            return obj;
+          });
+          commit("GET_DOC_LIST_HEAD", result);
+        }
+      });
+    },
+    // 查看档案详情--审核文件
+    getArchInfo444({ commit }, data) {
+      ArchivesApi3.getArchInfo4(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    },
+  },
+  mutations: {
+    GET_DOC_LIST(state, status) {
+      state.DocList = status;
+    },
+    GET_DOC_TOTAL(state, status) {
+      state.pagination.total = status;
+    },
+    GET_DOC_PAGE_SIZE(state, status) {
+      state.pagination.pageSize = status;
+    },
+    GET_DOC_LIST_HEAD(state, status) {
+      state.DocListHead = status;
+    },
+    GET_CATEGORYID(state, status) {
+      state.categoryId = status;
+    },
+    GET_ARCH_INFO(state, status) {
+      state.archInfo = status;
+    },
+    GET_MENU_TYPE(state, status) {
+      state.menuType = status;
     }
-}
+  },
+  getters: {
+    DocList: state => state.DocList,
+    DocListHead: state => state.DocListHead,
+    pagination: state => state.pagination,
+    categoryId: state => state.categoryId,
+    refreshList: state => state.refreshList,
+    archInfo: state => state.archInfo,
+    menuType: state => state.menuType
+  }
+};

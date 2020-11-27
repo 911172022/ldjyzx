@@ -13,6 +13,7 @@ module.exports = {
     proxy: {
       "/arch": {
         // 目标 API 地址
+        // target: 'http://192.168.0.75:8085/',  // 锦荣电脑IP
         target: 'http://192.168.0.86:8085/',  // 增文电脑IP
         // 将主机标头的原点更改为目标URL
         changeOrigin: true,

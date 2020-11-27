@@ -1,39 +1,58 @@
 <template>
   <div>
     <el-form :model="form" ref="form" :rules="rules" :label-width="labelWidth">
-      <div v-for="(item, index) in formDataList" :key="index">
-        <el-form-item
-          :label="item.textName"
-          :prop="item.textKey"
-          v-if="item.textType === 'input'"
-        >
-          <el-input v-model="item.textValue" placeholder="请输入" />
-        </el-form-item>
-        <el-form-item
-          :label="item.textName"
-          :prop="item.textKey"
-          v-else-if="item.textType === 'select'"
-        >
-          <el-select placeholder="请选择" v-model="item.textValue">
-            <el-option
-              v-for="(item, index) in item.options"
-              :key="index"
-              :value="item.value"
-              :label="item.label"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          :label="item.textName"
-          :prop="item.textKey"
-          v-else-if="item.textType === 'date'"
-        >
-          <el-date-picker v-model="item.textValue" type="date" placeholder="请选择">
-          </el-date-picker>
-        </el-form-item>
-      </div>
       <el-form-item>
-        <el-button type="primary" @click="submit">提交</el-button>
+        <el-checkbox
+          v-model="checked"
+          label="开启继承注入"
+          border
+        ></el-checkbox>
+      </el-form-item>
+      <el-row :gutter="10">
+        <el-col :span="12" v-for="(item, index) in formList" :key="index">
+          <el-form-item
+            :label="item.textName || item.label"
+            :prop="item.textKey || null"
+          >
+            <el-input
+              v-if="item.textType === 'input'"
+              v-model="item.textValue"
+              size="small"
+              placeholder="请输入"
+            />
+            <el-select
+              v-else-if="item.textType === 'select'"
+              placeholder="请选择"
+              size="small"
+              v-model="item.textValue"
+            >
+              <el-option
+                v-for="(item, index) in item.options"
+                :key="index"
+                :value="item.value"
+                :label="item.label"
+              ></el-option>
+            </el-select>
+            <el-date-picker
+              v-else-if="item.textType === 'date'"
+              size="small"
+              v-model="item.textValue"
+              type="date"
+              placeholder="请选择"
+            >
+            </el-date-picker>
+            <el-input v-else v-model="item.textValue" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-form-item>
+        <el-button
+          type="primary"
+          style="width: 200px"
+          v-loading="loading"
+          @click="submit"
+          >提交</el-button
+        >
       </el-form-item>
     </el-form>
   </div>
@@ -41,133 +60,146 @@
 
 <script>
 import { format } from "@/util/Time.js";
+import ArchivesApi from "@/api/services2/archives";
 export default {
   props: {
     labelWidth: {
       type: String,
       default: "100px",
     },
+    formList: Array,
+    categoryId: {
+      type: [String, Number],
+    },
   },
   data() {
     return {
-      formDataList: [
-        {
-          textName: "标题",
-          textKey: "title",
-          textType: "input",
-          required: false,
-          textValue: "",
-        },
-        {
-          textName: "月份",
-          textKey: "month",
-          textType: "select",
-          textValue: "",
-          options: [
-            { value: 1, label: "一月" },
-            { value: 2, label: "二月" },
-            { value: 3, label: "三月" },
-          ],
-          required: false,
-        },
-        {
-          textName: "姓名",
-          textKey: "name",
-          textType: "input",
-          required: false,
-          textValue: "",
-        },
-        {
-          textName: "年龄",
-          textKey: "age",
-          textType: "input",
-          required: false,
-          textValue: "",
-        },
-        {
-          textName: "性别",
-          textKey: "sex",
-          textType: "select",
-          options: [
-            { value: 0, label: "男" },
-            { value: 1, label: "女" },
-          ],
-          required: false,
-          textValue: "",
-        },
-        {
-          textName: "出生年月",
-          textKey: "date",
-          textType: "date",
-          required: true,
-          textValue: "1997-06-09",
-        },
-      ],
+      form: {},
+      rules: {},
+      loading: false,
+      checked: false,
     };
+  },
+  watch: {
+    formList: {
+      handler(newValue) {
+        if (newValue.length > 0) {
+          newValue.forEach((item, index) => {
+            if (item.textType) {
+              if (item.textType === "date") {
+                let date = format(item.textValue, "yyyy-MM-dd");
+                this.form[item.textKey] = date;
+              } else {
+                this.form[item.textKey] = item.textValue || "";
+              }
+            } else {
+              this.form[item.fieldName] = "";
+            }
+
+            if (item.required) {
+              switch (item.textType) {
+                case "input":
+                  this.rules[item.textKey] = [
+                    {
+                      required: true,
+                      message: `请输入${item.textName}`,
+                      trigger: "blur",
+                    },
+                  ];
+                  break;
+                case "select":
+                  this.rules[item.textKey] = [
+                    {
+                      required: true,
+                      message: `请选择${item.textName}`,
+                      trigger: "blur",
+                    },
+                  ];
+                  break;
+                // case "date":
+                //   this.rules[item.textKey] = [
+                //     {
+                //       required: true,
+                //       message: `请选择${item.textName}`,
+                //       trigger: "change",
+                //       type:"string"
+                //     },
+                //   ];
+                //   break;
+                default:
+                  this.rules = {};
+                  break;
+              }
+            }
+          });
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   methods: {
     submit() {
       let vm = this;
+      vm.loading = true;
+      // this.cancel();
       vm.$refs.form.validate((valid) => {
         if (valid) {
-          console.log(this.form);
+          vm.formList.map((item) => {
+            if (item.textKey) {
+              vm.form[item.textKey] = item.textValue;
+            } else {
+              vm.form[item.fieldName] = item.textValue;
+            }
+          });
+          vm.$emit("submitFileForm", vm.form, vm.categoryId);
+          this.cancel();
+          vm.loading = false;
         }
       });
     },
-  },
-  computed: {
-    form() {
-      let form = {};
-      this.formDataList.forEach((item, index) => {
-        if (item.textType === "date") {
-          let date = format(item.value, "yyyy-MM-dd");
-          form[item.textKey] = date;
-          console.log(date);
-        } else {
-          form[item.textKey] = item.value;
-        }
-      });
-      return form;
-    },
-    rules() {
-      let rules = {};
-      this.formDataList.forEach((item, index) => {
-        if (item.required) {
-          switch (item.textType) {
-            case "input":
-              rules[item.textKey] = [
-                {
-                  required: true,
-                  message: `请输入${item.textName}`,
-                  trigger: "blur",
-                },
-              ];
-              break;
-            case "select":
-              rules[item.textKey] = [
-                {
-                  required: true,
-                  message: `请选择${item.textName}`,
-                  trigger: "change",
-                },
-              ];
-              break;
-            case "date":
-              rules[item.textKey] = [
-                {
-                  required: true,
-                  message: `请选择${item.textName}`,
-                  trigger: "change",
-                },
-              ];
-              break;
-            default:
-              rules = {};
-              break;
+    cancel() {
+      let vm = this;
+      if (!this.checked) {
+        this.$refs.form.resetFields();
+        this.$emit("cancel", false);
+      } else {
+        this.$emit("cancel", true);
+        let form = {};
+        vm.formList.forEach((item) => {
+          if (item.textKey == "serialNumber") {
+            form[item.textKey] = this.addSerialNumber(item.textValue);
+          } else {
+            form[item.textKey] = item.textValue;
           }
-        }
-      });
-      return rules;
+        });
+        vm.form = Object.assign({}, form);
+        console.log(vm.form);
+      }
+    },
+    addSerialNumber(value) {
+      var num = value;
+      var length = num.length;
+      var time = 0;
+      var arr = num.split("");
+      for (let i = 0; i < length; i++) {
+        arr.forEach((item, index) => {
+          if (item == 0 && index == 0) {
+            arr.splice(0, 1);
+            time += 1;
+            console.log(arr);
+          } else {
+            num = arr.join("");
+          }
+        });
+      }
+      num++;
+      let str = "0";
+      for (let j = 0; j < time; j++) {
+        str += str;
+      }
+      str = str.slice(0, time);
+      return str + num;
     },
   },
 };

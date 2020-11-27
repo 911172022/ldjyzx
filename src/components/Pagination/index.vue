@@ -6,7 +6,6 @@
           <el-pagination
             background
             :current-page="pageNum"
-            :pager-count="5"
             :page-size="pagination.pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="pagination.total"

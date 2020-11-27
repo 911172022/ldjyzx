@@ -6,6 +6,9 @@
     <template v-else-if="ModulePageNum === 81">
       <Announcement />
     </template>
+    <template v-else-if="ModulePageNum === 83">
+      <BackUp />
+    </template>
     <template v-else-if="ModulePageNum === 101">
       <Department />
     </template>
@@ -18,23 +21,43 @@
     <template v-else-if="ModulePageNum === 113">
       <SystemType />
     </template>
+    <template v-else-if="ModulePageNum === 115">
+      <BaoBiao />
+    </template>
     <template v-else-if="ModulePageNum === 7">
       <Echart />
+    </template>
+    <template v-else-if="ModulePageNum === 9">
+      <AllCaseNo />
+    </template>
+    <template v-else-if="ModulePageNum === 85">
+      <DataManage />
+    </template>
+    <template v-else-if="ModulePageNum === 51">
+      <OpenMain />
+    </template>
+    <template v-else-if="ModulePageNum === 104">
+      <OpenLog />
+    </template>
+    <template v-else-if="ModulePageNum === 111">
+      <Template />
+    </template>
+    <template v-else-if="ModulePageNum === 84">
+      <DataList />
     </template>
   </div>
 </template>
 <script>
-
 export default {
   computed: {
-    ModulePageNum () {
-      return this.$store.getters.ModulePageNum
-    }
+    ModulePageNum() {
+      return this.$store.getters.ModulePageNum;
+    },
   },
   mounted() {
-    console.log("main")
-  }
-}
+    console.log("main");
+  },
+};
 </script>
 <style lang="scss">
 .content-wrapper {
@@ -45,11 +68,11 @@ export default {
   display: flex;
   flex-direction: column;
 }
-.content-wrapper>div{
+.content-wrapper > div {
   overflow: auto;
   flex: 1;
 }
 </style>
 <style lang="scss">
-  @import "@/scss/main";
+@import "@/scss/main";
 </style>

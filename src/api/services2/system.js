@@ -71,7 +71,7 @@ export default {
     return request({
       url: "sys/category/updateProperty",
       method: "post",
-      params: data,
+      data: data,
       headers: {
         "Content-Type": "application/json"
       }
@@ -88,4 +88,103 @@ export default {
       }
     });
   },
+  // 查看类别属性
+  getTypeAttr(data) {
+    return request({
+      url: "sys/category/queryProperty",
+      method: "post",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 添加类别号
+  addTypeNum(data) {
+    return request({
+      url: "/sys/category/addCategoryNumber",
+      method: "post",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 修改类别号
+  editTypeNum(data) {
+    return request({
+      url: "/sys/category/updateCategoryNumber",
+      method: "post",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 删除类别号
+  deleteTypeNum(data) {
+    return request({
+      url: "/sys/category/deleteCategoryNumber",
+      method: "post",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 查看类别号列表
+  getTypeNumList(data) {
+    return request({
+      url: "/sys/category/categoryNumber/list",
+      method: "get",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 档号设置：类别档号显示
+  getArchNo(data) {
+    return request({
+      url: "/sys/category/archNo/get",
+      method: "get",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 	档号设置：类别档号设置
+  setArchNo(data) {
+    return request({
+      url: "/sys/category/archNo/option",
+      method: "post",
+      data: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 档号设置：类别字段显示
+  archNoList(data) {
+    return request({
+      url: "/sys/category/params/list",
+      method: "post",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 查看分类简单信息
+  getSimpleList(data) {
+    return request({
+      url: "/sys/category/simpleList",
+      method: "get",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  }
 };

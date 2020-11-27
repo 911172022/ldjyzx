@@ -1,10 +1,10 @@
 <template>
   <div class="asideROuter">
-    <template v-if="ModulePageNum === 1">
+    <!-- <template v-if="ModulePageNum === 1">
       <DMAsideR />
-    </template>
-    <template v-else-if="ModulePageNum === 2">
-      <!-- <PMAsideR /> -->
+    </template> -->
+    <!-- <template v-else-if="ModulePageNum === 2">
+      <PMAsideR />
     </template>
     <template v-else-if="ModulePageNum === 3">
       <PWAsideR />
@@ -17,7 +17,7 @@
     </template>
     <template v-else-if="ModulePageNum === 6">
       <DSAsideR />
-    </template>
+    </template> -->
     <!-- <template v-else-if="ModulePageNum === 7">
       <NAsideR />
     </template> -->

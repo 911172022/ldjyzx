@@ -341,7 +341,7 @@ export default {
       // 最后执行上传任务的用户是谁
       localStorage.setItem(
         "lastUploadUserName",
-        sessionStorage.getItem("username")
+        localStorage.getItem("username")
       );
     },
     /* ------------------------------------------------------------ */

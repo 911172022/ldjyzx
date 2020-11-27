@@ -4,10 +4,17 @@
     <div class="asideLTreeOuter" @contextmenu.prevent="contextMenuClickTest">
       <!-- <div class="asideLTreeOuter" @contextmenu.prevent="contextMenuClick"> -->
       <el-tree
+        class="UG-tree-filter Common-Tree-Icon"
         :data="treeData"
+        v-loading="treeLoading"
+        highlight-current
+        node-key="categoryId"
+        @node-click="treeClick"
         :props="props"
         @node-contextmenu="contextMenuClickTest"
-      ></el-tree>
+        :render-content="renderContent"
+      >
+      </el-tree>
     </div>
     <!-- </el-scrollbar> -->
     <!-- 右键功能 -->
@@ -29,146 +36,12 @@
         </li>
       </ul>
     </div>
-    <el-dialog title="新增目录" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
-        <el-form-item label="目录名称">
-          <el-input v-model="form.name"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false"
-          >确 定</el-button
-        >
-      </div>
-    </el-dialog>
-    <el-dialog title="创建发文" :visible.sync="getFileData.switch" width="45%">
-      <el-form :model="fileForm" ref="fileForm">
-        <el-form-item label="文件题名">
-          <el-input />
-        </el-form-item>
-        <el-form-item label="并列题名">
-          <el-input />
-        </el-form-item>
-        <el-form-item label="副题名">
-          <el-input />
-        </el-form-item>
-
-        <el-row :gutter="40">
-          <el-col :span="12">
-            <el-form-item label="成文单位" prop="theme">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="文件编号">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="分类号">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="主题词">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="人名">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="页数">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="文件流水号">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="机构问题">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="录入人">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="录入时间" class="date" prop="date">
-              <el-date-picker
-                type="date"
-                placeholder="选择时间"
-                v-model="fileForm.date"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="签发人">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="文件时间" class="date" prop="date">
-              <el-date-picker
-                type="date"
-                placeholder="选择时间"
-                v-model="fileForm.date"
-              ></el-date-picker>
-            </el-form-item>
-            <el-form-item label="密级">
-              <el-select>
-                <el-option label="一般">一般</el-option>
-                <el-option label="紧急">紧急</el-option>
-                <el-option label="保密">保密</el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="文件类型" prop="fileType">
-              <el-select v-model="fileForm.fileType">
-                <el-option
-                  label="EM_电子可修改版"
-                  value="EM_电子可修改版"
-                ></el-option>
-                <el-option label="P_打印件" value="P_打印件"></el-option>
-                <el-option label="O_原件" value="O_原件"></el-option>
-                <el-option label="C_拷贝盘" value="C_拷贝盘"></el-option>
-                <el-option
-                  label="E_电子版(.pdf)"
-                  value="E_电子版(.pdf)"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="保管期限" class="date" prop="date">
-              <el-date-picker
-                type="date"
-                placeholder="选择时间"
-                v-model="fileForm.date"
-              ></el-date-picker>
-            </el-form-item>
-            <el-form-item label="附注">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="主送机关">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="抄送机关">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="份数">
-              <el-input />
-            </el-form-item>
-            <el-form-item label="收文时间" class="date" prop="date">
-              <el-date-picker
-                type="date"
-                placeholder="选择时间"
-                v-model="fileForm.date"
-              ></el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <span slot="footer" class="footerBtn">
-        <el-button @click="getFileData.switch = false">取消</el-button>
-        <el-button type="primary" @click="getFileData.switch = false"
-          >确定</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 <script>
+import SystemApi from "../../api/services2/system";
 import UserApi from "../../api/services/project";
-import UserApi2 from "../../api/services/user";
-import UserApi3 from "../../api/services/doc";
-import UserApi4 from "../../api/services/workflow";
 import UserApi5 from "../../api/services/dbsource";
-import PermissionList from "../Dialog/PermissionList-PM2";
 import { Doc_TreeIconChange } from "@/util/Common";
 import { mapGetters } from "vuex";
 
@@ -197,33 +70,15 @@ export default {
         switch: false,
       },
 
-      // cascaderProps: {
-      //     value: "id",
-      //     label: "text"
-      // },
-      // cascaderData: {},
-      // cascaderOptions: [],
       treeMenuData: [],
-      // isMenu是啥？？没改过isMenu的值
-      // isMenu: false,
-      // cascaderModel: "",
+
       // 控制目录树显示loading
       loading: true,
-      // 用户点击的右键菜单的内容，switch控制dialog显示，其它数据控制显示什么表单什么内容
-      rightData: {
-        switch: false,
-        editForm: {},
-      },
-      userData: {
-        switch: false,
-      },
-      userGroupData: {
-        switch: false,
-      },
-      collapsed: false,
+
       // 左侧选单 - 配置选项（element-ui 树形控件配置项）
       props: {
-        label: "text",
+        children: "list",
+        label: "name",
         isLeaf: "leaf",
       },
       // 左侧选单 - 右键
@@ -236,169 +91,85 @@ export default {
       },
       projectId: "",
       NewUserGroupChildren: {},
-      // node: {},
-      // resolve: {},
-      // isFirst: true,
+
       // 记录右键点得是哪个project
       contextMenuObj: {},
+
       // 上次節點位置（element-ui默认展开得节点的key的数组）
       beforeNode: [],
-      // 返回流程
-      reProcessData: {},
-      // 二级弹窗 - 增加用户/用户组
-      PermissionData: {
-        title: null,
-        switch: false,
-      },
-      MenuList: [],
+
       // 右键列表的长度
       len: 0,
 
       isReset: true,
 
-      // 6.15 方圆鹤洞项目流程预留
-      // 显示方圆鹤洞定制流程开关
-      FYHDShowDialog: false,
-      // 用户选择的流程 id
-      FYHDProcessId: "",
-      treeData: [
-        {
-          text: "文件类型",
-          value: "1",
-          children: [
-            {
-              text: "文书类型",
-              value: "1-1",
-              children: [
-                {
-                  value: "1-1-1",
-                  text: "收文",
-                },
-                {
-                  value: "1-1-2",
-                  text: "发文",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          text: "科技类型",
-          value: "2",
-        },
-        {
-          text: "会计类型",
-          value: "3",
-        },
-      ],
+      treeData: [],
+      treeLoading: false,
+      searchType: "",
     };
-  },
-  components: {
-    PermissionList,
   },
   computed: {
     ...mapGetters("menu", ["menuIndex"]),
+    ...mapGetters("doc", ["pagination", "menuType"]),
   },
   watch: {
     menuIndex: {
       handler(newValue) {
-        console.log(newValue);
-        if (newValue == "4") {
-          this.treeData = [
-            {
-              text: "文件类型",
-              value: "1",
-              children: [
-                {
-                  text: "文书类型",
-                  value: "1-1",
-                  children: [
-                    {
-                      value: "1-1-1",
-                      text: "收文",
-                    },
-                    {
-                      value: "1-1-2",
-                      text: "发文",
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              text: "科技类型",
-              value: "2",
-            },
-            {
-              text: "会计类型",
-              value: "3",
-            },
-          ];
-        } else {
-          this.treeData = [
-            {
-              text: "案卷类型",
-              value: "1",
-              children: [
-                {
-                  text: "文书案卷",
-                },
-                {
-                  text: "科技案卷",
-                  value: "1-2",
-                },
-                {
-                  text: "会计案卷",
-                  value: "1-3",
-                },
-                {
-                  text: "基建案卷",
-                  value: "1-4",
-                },
-                {
-                  text: "设备案卷",
-                  value: "1-5",
-                },
-                {
-                  text: "声像案卷",
-                  value: "1-6",
-                },
-                {
-                  text: "实物案卷",
-                  value: "1-7",
-                },
-                {
-                  text: "照片案卷",
-                  value: "1-8",
-                },
-              ],
-            },
-          ];
+        switch (newValue) {
+          case "4":
+            this.$store.commit("doc/GET_MENU_TYPE", 0);
+            this.getTypeTreeList(0);
+            break;
+          case "1-3":
+            this.$store.commit("doc/GET_MENU_TYPE", "临时");
+            this.getTypeTreeList(1);
+            break;
+          case "1-2":
+            this.$store.commit("doc/GET_MENU_TYPE", "临时");
+            this.getTypeTreeList(1);
+            break;
+          case "1-1":
+            this.$store.commit("doc/GET_MENU_TYPE", "临时");
+            this.getTypeTreeList(2);
+            break;
+          case "1-4":
+            this.$store.commit("doc/GET_MENU_TYPE", "临时");
+            this.getTypeTreeList(3);
+            break;
+          case "2-3":
+            this.$store.commit("doc/GET_MENU_TYPE", "正式");
+            this.getTypeTreeList(1);
+            break;
+          case "2-2":
+            this.$store.commit("doc/GET_MENU_TYPE", "正式");
+            this.getTypeTreeList(1);
+            break;
+          case "2-1":
+            this.$store.commit("doc/GET_MENU_TYPE", "正式");
+            this.getTypeTreeList(2);
+            break;
+          case "2-4":
+            this.$store.commit("doc/GET_MENU_TYPE", "正式");
+            this.getTypeTreeList(3);
+            break;
+          case "3-3":
+            this.$store.commit("doc/GET_MENU_TYPE", "审核案卷");
+            this.getTypeTreeList(1);
+            break;
+          case "3-1":
+            this.$store.commit("doc/GET_MENU_TYPE", "审核文件");
+            this.getTypeTreeList(2);
+            break;
+          case "3-4":
+            this.$store.commit("doc/GET_MENU_TYPE", "审核资料");
+            this.getTypeTreeList(3);
+            break;
+          default:
+            break;
         }
       },
       deep: true,
       immediate: true,
-    },
-    // 个人消息附件跳转过来, 添加目录, 复制目录
-    // 刷新目录树，使用方法：
-    // this.$store.dispatch("project/REFRESH_TREE", true)
-    isRefreshTree: {
-      handler(newValue) {
-        if (newValue) {
-          this.isReset = false;
-          this.loading = true;
-          this.getProjectPath();
-          setTimeout(() => {
-            this.$store.commit("project/REFRESH_TREE", false);
-          }, 50);
-        }
-        this.$nextTick(() => {
-          this.isReset = true;
-          setTimeout(() => {
-            this.loading = false;
-          }, 5000);
-        });
-      },
     },
   },
   methods: {
@@ -498,31 +269,9 @@ export default {
     //     this.getProjectPath(nodeKeyword);
     // },
     // 開啟添加用戶彈窗
-    openPermissionList(title) {
-      this.PermissionData.title = title;
-      this.PermissionData.switch = true;
-    },
+
     // 添加用戶彈窗 返回
-    rePData(e) {
-      this.PermissionData.switch = e;
-    },
-    // 添加用戶彈窗 返回
-    async reUser(e) {
-      let vm = this;
-      if (e[2] !== undefined) {
-        let DocList = vm.projectId,
-          WfKeyword = vm.reProcessData.o_code,
-          userlist = e[2];
-        const res = await UserApi4.startNewWorkFlow(
-          DocList,
-          WfKeyword,
-          userlist
-        );
-        if (res.success) {
-          this.$message({ message: "添加流程成功", type: "success" });
-        }
-      }
-    },
+
     // 上次开启位置
     async getProjectPath() {
       let Keyword = "LastProject",
@@ -559,80 +308,6 @@ export default {
         });
       }
     },
-    // 新建根目录
-    async CreateNewRootProject() {
-      let vm = this,
-        Menu = "CreateNewRootProject",
-        action = "CreateProject";
-      const res = await UserApi.getMenuRight(vm.projectId, Menu);
-      if (res.success) {
-        const res2 = await UserApi.getProjectAttr(action, vm.projectId);
-        vm.rightData.options = res2.data[0].storagelist;
-        this.NewUserGroupChildren = undefined;
-      } else {
-        this.$message({ message: res.message, type: "error" });
-        return;
-      }
-      vm.rightData.switch = true;
-      vm.rightData.Id = "MS_CreateNewRootProject";
-      vm.rightData.dialogTitle = "新建根目录";
-      vm.rightData.projectId = this.projectId;
-    },
-    reData(e) {
-      let vm = this;
-      vm.rightData.switch = e[0];
-      if (e[1] === "del") {
-        return vm.$refs.DocList.remove(vm.projectId);
-      } else if (e[1] === "add") {
-        let data = {};
-        data.projectId = e[2].fullpath;
-        data.fullpath = e[2].fullpath;
-        data.text = e[2].text;
-        data.leaf = false;
-        if (vm.NewUserGroupChildren === undefined) {
-          // vm.node.childNodes = [] // 这里把子节点清空，是因为再次调用 loadNode 的时候会往 childNodes 里 push 节点，所以会有节点重复的情况。
-          // vm.loadNode(vm.node, vm.resolve)
-          // vm.node.loaded = false;
-          // vm.node.expand();
-          this.$store.commit("project/REFRESH_TREE", true);
-        } else {
-          data.fullpath = vm.NewUserGroupChildren.data.projectId;
-          // vm.$set(vm.NewUserGroupChildren, "isLeafByUser", false);
-          // vm.$refs.DocList.append(data, vm.projectId);
-          this.$store.commit("project/REFRESH_TREE", true);
-        }
-      } else if (e[1] === "edit") {
-        vm.$set(vm.contextMenuObj, "text", e[2]);
-      } else if (e[1] === "start") {
-        this.reProcessData = e[2];
-        // 设置选择用户、用户组的弹窗的名称
-        this.openPermissionList(this.reProcessData.text);
-      }
-      vm.contextMenuObj = {};
-    },
-    // 用户按钮
-    openUser() {
-      this.userData.switch = true;
-    },
-    reUserData(e) {
-      this.userData.switch = e;
-    },
-    // 用户组按钮
-    openUserGroup() {
-      this.userGroupData.switch = true;
-    },
-    reGroupData(e) {
-      this.userGroupData.switch = e;
-    },
-    showMenu(i, status) {
-      this.$refs.menuCollapsed.getElementsByClassName(
-        "submenu-hook-" + i
-      )[0].style.display = status ? "block" : "none";
-    },
-    handleAvatarSuccess(res, file) {
-      console.log(file.name);
-      console.log(URL.createObjectURL(file.raw));
-    },
     // 左侧选单 - 加载子树数据
     async loadNode(node, resolve) {
       // if (this.isFirst) {
@@ -668,21 +343,6 @@ export default {
       });
       resolve(rdata);
       this.loading = false;
-    },
-    // 目录树内容自定义渲染方式
-    // 修改，原代码编译报错：'store' is defined but never used
-    //  renderContent(h, { node, data, store }) {
-    renderContent(h, { node }) {
-      // 2020.4.15-7
-      // 2020.4.15-6
-      let style = `padding-left: 5px;`;
-      // <img src={data.icon} width="20px" style="vertical-align: text-bottom;" />
-      return (
-        <span class="tree_row">
-          <span></span>
-          <span style={style}>{node.label}</span>
-        </span>
-      );
     },
     // 左侧选单 - 节点被点击时的回调
     async handleNodeClick(data) {
@@ -748,22 +408,22 @@ export default {
       vm.styleObject.left = 0;
       document.removeEventListener("mousedown", vm.foo);
     },
-    //  原型代码
+    // 右键功能
     contextMenuClickTest(MouseEvent, object, Node) {
       console.log(object, Node);
       let vm = this;
       this.menuVisible = false;
       this.menuVisible = true;
-      this.MenuListFilter = [
-        {
-          Name: "新建目录",
-          State: "Enabled",
-        },
-        {
-          Name: "收文",
-          State: "Enabled",
-        },
-      ];
+      // this.MenuListFilter = [
+      //   {
+      //     Name: "新建目录",
+      //     State: "Enabled",
+      //   },
+      //   {
+      //     Name: "收文",
+      //     State: "Enabled",
+      //   },
+      // ];
       vm.len = this.MenuListFilter.length * 33;
       vm.styleObject.opacity = 1;
 
@@ -789,6 +449,93 @@ export default {
         vm.styleObject.left = MouseEvent.clientX + 30 + "px";
       }
       document.addEventListener("click", vm.foo);
+    },
+    renderContent(h, { node }) {
+      let style = `padding-left: 5px;`;
+      return (
+        <span class="tree_row">
+          <span></span>
+          <span style={style}>{node.label}</span>
+        </span>
+      );
+    },
+    // 获取分类目录树
+    getTypeTreeList(archType) {
+      this.treeLoading = true;
+      let data = {
+        archType: archType,
+      };
+      SystemApi.getTypeTreeList(data).then((res) => {
+        if (res.code === 200) {
+          this.treeData = res.data;
+          this.treeLoading = false;
+        } else {
+          this.treeLoading = false;
+        }
+      });
+    },
+    treeClick(e) {
+      let vm = this;
+      this.$store.commit("doc/GET_CATEGORYID", e.categoryId);
+      if (e.type !== 0) {
+        let data = {
+          categoryId: e.categoryId,
+          content: "",
+          pageNum: 1,
+          pageSize: this.pagination.pageSize,
+          searchItem: {},
+          searchType: this.searchType,
+        };
+        let data2 = {
+          categoryId: e.categoryId,
+        };
+        switch (vm.menuType) {
+          case 0:
+            // 未归
+            vm.$store.dispatch("doc/getunFiledList", data);
+            vm.$store.dispatch("doc/getunFiledListHead", data2);
+            break;
+          case "临时":
+            // 预归
+            vm.$store.dispatch("doc/getunFiledList22", data);
+            vm.$store.dispatch("doc/getunFiledListHead2", data2);
+            break;
+          // 归档
+          case "正式":
+            this.$store.dispatch("doc/getunFiledList2", data);
+            vm.$store.dispatch("doc/getunFiledListHead2", data2);
+            break;
+          case "审核案卷":
+            // 审核
+            this.$store.dispatch("doc/getunFiledList3", data);
+            vm.$store.dispatch("doc/getunFiledListHead3", data2);
+            break;
+          case "审核文件":
+            this.$store.dispatch("doc/getunFiledList444", data);
+            vm.$store.dispatch("doc/getunFiledListHead444", data2);
+            break;
+          case "审核资料":
+            this.$store.dispatch("doc/getunFiledList333", data);
+            vm.$store.dispatch("doc/getunFiledListHead333", data2);
+            break;
+          default:
+            break;
+        }
+      }
+    },
+    filterArchType(e) {
+      switch (e) {
+        case 0:
+          return (e = "未归");
+        case 1:
+          return (e = "案卷");
+        case 2:
+          return (e = "归档");
+        case 3:
+          return (e = "资料");
+        default:
+          break;
+      }
     },
   },
 };

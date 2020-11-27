@@ -3,7 +3,10 @@
     <template v-if="ModulePageNum === 1">
       <DMAsideL />
     </template>
-    <template v-else-if="ModulePageNum === 2">
+    <template v-if="ModulePageNum === 51">
+      <OpenLeft />
+    </template>
+    <!-- <template v-else-if="ModulePageNum === 2">
       <PMAsideL />
     </template>
     <template v-else-if="ModulePageNum === 3">
@@ -17,7 +20,7 @@
     </template>
     <template v-else-if="ModulePageNum === 6">
       <DSAsideL />
-    </template>
+    </template> -->
     <!-- <template v-else-if="ModulePageNum === 7">
       <NAsideL />
     </template> -->

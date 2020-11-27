@@ -16,9 +16,9 @@
               <el-dropdown-item @click.native="PersonalCenter">
                 <i class="el-icon-user-solid"></i> 个人中心
               </el-dropdown-item>
-              <el-dropdown-item @click.native="openRecycle">
+              <!-- <el-dropdown-item @click.native="openRecycle">
                 <i class="el-icon-delete"></i> 回收站
-              </el-dropdown-item>
+              </el-dropdown-item> -->
               <el-dropdown-item divided @click.native="logout"
                 >退出</el-dropdown-item
               >
@@ -363,9 +363,7 @@ export default {
         if (res.code === 200) {
           this.userForm.account = res.data.account;
           this.userForm.username = res.data.username;
-        } else {
-          this.$message.error("获取个人信息失败,", res.message);
-        }
+        } 
       });
     },
     pageNum2(e) {
@@ -614,8 +612,6 @@ export default {
             if (res.code === 200) {
               this.$message.success("修改密码成功");
               this.dialogVisible = false;
-            } else {
-              this.$message.error(res.message);
             }
           });
         }
@@ -741,9 +737,7 @@ export default {
             this.$store.commit("SET_TOKEN", "");
             localStorage.removeItem("LOGIN")
             this.$router.push("/");
-          } else {
-            this.$message.error(res.message, "退出失败");
-          }
+          } 
         });
       });
     },
