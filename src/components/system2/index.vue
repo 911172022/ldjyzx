@@ -70,6 +70,12 @@
                     size="mini"
                     >查看</el-button
                   >
+                  <el-button
+                    type="primary"
+                    @click="getFile(scope.row)"
+                    size="mini"
+                    >收藏</el-button
+                  >
                 </template>
               </el-table-column>
             </el-table>
@@ -667,6 +673,9 @@ export default {
     },
   },
   methods: {
+    getFile(e) {
+
+    },
     fileFormCancel(e) {
       this.fileDetailShow = e;
     },

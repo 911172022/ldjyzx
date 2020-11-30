@@ -1,8 +1,6 @@
 import ArchivesApi from "../api/services2/archives"; //未归
 import ArchivesApi2 from "../api/services2/archives2"; // 归档
 import ArchivesApi3 from "../api/services2/archives3"; // 审核
-import { AddTypeIcon } from "../util/AddTypeIcon";
-import { Message } from "element-ui";
 
 export default {
   namespaced: true,

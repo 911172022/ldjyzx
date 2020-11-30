@@ -70,6 +70,12 @@
                     size="mini"
                     >查看</el-button
                   >
+                  <el-button
+                    type="primary"
+                    @click="getFile(scope.row)"
+                    size="mini"
+                    >收藏</el-button
+                  >
                 </template>
               </el-table-column>
             </el-table>
@@ -667,6 +673,9 @@ export default {
     },
   },
   methods: {
+    getFile(e) {
+      console.log(e)
+    },
     fileFormCancel(e) {
       this.fileDetailShow = e;
     },
@@ -752,7 +761,9 @@ export default {
     getFileDetail(data) {
       this.$store.dispatch("doc/getArchInfo2", data);
     },
-    pageNum2(e) {},
+    pageNum2(e) {
+      console.log(e)
+    },
     fieldChange(e) {
       console.log(e);
     },
