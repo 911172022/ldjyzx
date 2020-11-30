@@ -56,17 +56,23 @@ const routes = [
     meta: { title: "搜索详情" }
   },
   {
+    path: "/search-system",
+    name: "search-system",
+    component: () => import("../components/system2/index.vue"),
+    meta: { title: "利用平台" }
+  },
+  {
+    path: "/collection",
+    name: "collection",
+    component: () => import("../components/system2/collection.vue"),
+    meta: { title: "收藏夹" }
+  },
+  {
     path: "/file-detail",
     name: "file-detail",
     component: () => import("../views/FileDetails.vue"),
     meta: { title: "文件详情" }
   },
-  {
-    path: "/form",
-    name: "form",
-    component: () => import("../components/form/index.vue"),
-    meta: { title: "文件详情" }
-  }
 ];
 
 const router = new VueRouter({

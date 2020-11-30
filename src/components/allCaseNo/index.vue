@@ -35,6 +35,13 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
+    <pagination
+      :pagination="pagination"
+      @changepage="pageNum2"
+      @sizeChange="changeSize"
+      :current-page.sync="pageNum"
+    />
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%">
       <el-form :model="form" ref="form" :rules="rules">
         <el-form-item label="全宗号" prop="num">
@@ -194,6 +201,14 @@ export default {
           }
         }
       });
+    },
+    pageNum2(e) {
+      this.pageNum = e;
+      this.getList();
+    },
+    changeSize(e) {
+      this.pagination.pageSize = e;
+      this.getList();
     },
   },
   computed: {

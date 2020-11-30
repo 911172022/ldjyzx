@@ -47,7 +47,7 @@
               </template>
               <el-menu-item-group>
                 <el-menu-item index="3-3">案卷管理</el-menu-item>
-                <el-menu-item index="3-2">审核日志</el-menu-item>
+                <!-- <el-menu-item index="3-2">审核日志</el-menu-item> -->
                 <el-menu-item index="3-1">归档文件管理</el-menu-item>
                 <el-menu-item index="3-4">资料管理</el-menu-item>
               </el-menu-item-group>
@@ -345,7 +345,7 @@ export default {
       color: #fff;
     }
     ul {
-      height: calc(100vh - 60px);
+      height: calc(100vh - 56px);
       overflow: auto;
     }
   }

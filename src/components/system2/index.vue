@@ -1,6 +1,6 @@
 <template>
   <div class="search-container">
-    <!-- <div class="nav-menu">
+    <div class="nav-menu">
       <div class="nav-menu-item" @click="collection">
         <i class="el-icon-star-off"></i>
         收藏
@@ -9,7 +9,7 @@
         <i class="el-icon-switch-button"></i>
         退出
       </div>
-    </div> -->
+    </div>
     <div class="search-box">
       <el-checkbox v-model="checked" class="checkAll"
         >是否进行全文检索</el-checkbox
@@ -765,6 +765,7 @@ export default {
     search() {
       let arr = [];
       if (this.searchValue) {
+        console.log(1)
         this.tableData.forEach((item) => {
           if (item.title.indexOf(this.searchValue) !== -1) {
             arr.push(item);
@@ -775,11 +776,11 @@ export default {
             this.showAll = true;
           }
         });
-        console.log(arr)
         this.tableData = arr;
       } else {
         this.tableData = this.tableData2;
-        this.hasData = false;
+        console.log(0)
+        this.hasData = true;
         this.showAll = true;
       }
     },
@@ -809,7 +810,7 @@ export default {
 .search-container {
   width: 100vw;
   height: 100vh;
-  background: url("../assets/login/background.png");
+  background: url("../../assets/login/background.png");
   .nav-menu {
     display: flex;
     float: right;

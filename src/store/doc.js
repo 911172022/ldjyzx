@@ -124,6 +124,65 @@ export default {
       });
     },
 
+    // 获取档案列表--正式库——案卷
+    getunFiledList23({ commit }, data) {
+      ArchivesApi2.getunFiledList3(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+    // 获取档案列表--临时库——案卷
+    getunFiledList223({ commit }, data) {
+      ArchivesApi2.getunFiledList23(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+    // 获取档案列表表头——案卷
+    getunFiledListHead23({ commit }, data) {
+      ArchivesApi2.getunFiledListHead3(data).then(res => {
+        if (res.code === 200) {
+          let result = res.data.map(item => {
+            let obj = {
+              label: item.label,
+              fieldName: item.fieldName,
+              isMain: item.isMain,
+              textValue: ""
+            };
+            return obj;
+          });
+          commit("GET_DOC_LIST_HEAD", result);
+        }
+      });
+    },
+    // 查看档案详情-- 案卷
+    getArchInfo23({ commit }, data) {
+      ArchivesApi2.getArchInfo3(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    },
+
+
     // 获取档案列表-- 审核案卷
     getunFiledList3({ commit }, data) {
       ArchivesApi3.getunFiledList(data).then(res => {

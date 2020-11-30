@@ -109,7 +109,7 @@ export default {
           let loginParams = {
             account: this.ruleForm.account,
             password: this.ruleForm.Password,
-            systemType: this.systemType,
+            systemType: 1,
           };
           login(loginParams).then((res) => {
             if (res.code === 200) {
@@ -119,7 +119,7 @@ export default {
               if (this.systemType == 1) {
                 this.$router.push({ path: "/home" });
               } else {
-                this.$router.push({ path: "/search" });
+                this.$router.push({ path: "/search-system" });
               }
             }
             vm.logining = false;

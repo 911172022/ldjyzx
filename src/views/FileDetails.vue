@@ -3,8 +3,10 @@
     <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick">
       <el-tab-pane label="基本信息" name="1">
         <FileForm
+          isDetail
+          isSearch
           :formList="archInfo.formList"
-          categoryId="15"
+          :categoryId="categoryId"
           @cancel="fileFormCancel"
           @submitFileForm="submitFileForm"
         ></FileForm>
@@ -105,25 +107,15 @@
           :current-page.sync="currentPage"
         />
       </el-tab-pane>
-      <!-- <el-tab-pane label="档案日志" name="4">
-        <el-steps direction="vertical">
-          <el-step
-            status="finish"
-            title="2020-10-14"
-            description="邹粤修改了基本信息"
-          ></el-step>
-          <el-step
-            status="finish"
-            title="2020-10-14"
-            description="邹粤修改了基本信息"
-          ></el-step>
-          <el-step
-            status="process"
-            title="2020-10-14"
-            description="邹粤修改了基本信息"
-          ></el-step>
-        </el-steps>
-      </el-tab-pane> -->
+      <el-tab-pane label="档案日志" name="4">
+        <el-timeline>
+          <el-timeline-item timestamp="2020/11/26" placement="top">
+            <el-card>
+              <p>邹粤 创建于 2020/11/26 10:46</p>
+            </el-card>
+          </el-timeline-item>
+        </el-timeline>
+      </el-tab-pane>
     </el-tabs>
     <el-drawer
       title="文件预览"
@@ -162,6 +154,7 @@ import { mapGetters } from "vuex";
 export default {
   props: {
     dataInfo: Object,
+    isSearch: Boolean,
   },
   components: { Pagination, FileForm },
   data() {
@@ -184,19 +177,6 @@ export default {
     };
   },
   watch: {
-    activeName: {
-      handler(newValue) {
-        switch (newValue) {
-          case "3":
-            this.getList();
-            break;
-          default:
-            break;
-        }
-      },
-      deep: true,
-      immediate: true,
-    },
     menuIndex: {
       handler(newValue) {
         // 只有案卷管理 详情处才有卷内信息
@@ -224,10 +204,11 @@ export default {
       let height = document.body.clientHeight - 270;
       return height;
     },
-    ...mapGetters("menu", ["menuIndex", "menuType"]),
-    ...mapGetters("doc", ["archInfo"]),
+    ...mapGetters("menu", ["menuIndex"]),
+    ...mapGetters("doc", ["archInfo", "categoryId", "menuType"]),
   },
   mounted() {
+    this.getList();
     // this.getArchInfo();
   },
   methods: {
@@ -260,44 +241,60 @@ export default {
           attachmentId: e.id,
         };
         let vm = this;
-        switch (vm.menuType) {
-          case 0:
-            // 未归
-            UploadApi.deleteUpload(data).then((res) => {
-              if (res.code === 200) {
-                this.$message.success("删除成功");
-                this.getList();
-              }
-            });
-            break;
-          case "正式":
-            UploadApi.deleteUpload2(data).then((res) => {
-              if (res.code === 200) {
-                this.$message.success("上传成功");
-                this.getList();
-              }
-            });
-            break;
-          case "临时":
-            UploadApi.deleteUpload2(data).then((res) => {
-              if (res.code === 200) {
-                this.$message.success("上传成功");
-                this.getList();
-              }
-            });
-            break;
-
-          // case "审核案卷":
-          //   // 审核
-          //   break;
-          // case "审核文件":
-
-          //   break;
-          // case "审核资料":
-
-          //   break;
-          default:
-            break;
+        if (this.isSearch) {
+          UploadApi.deleteUpload2(data).then((res) => {
+            if (res.code === 200) {
+              this.$message.success("删除成功");
+              this.getList();
+            }
+          });
+        } else {
+          switch (vm.menuType) {
+            case 0:
+              // 未归
+              UploadApi.deleteUpload(data).then((res) => {
+                if (res.code === 200) {
+                  this.$message.success("删除成功");
+                  this.getList();
+                }
+              });
+              break;
+            case "案卷临时":
+              UploadApi.deleteUpload2(data).then((res) => {
+                if (res.code === 200) {
+                  this.$message.success("删除成功");
+                  this.getList();
+                }
+              });
+              break;
+            case "案卷正式":
+              UploadApi.deleteUpload2(data).then((res) => {
+                if (res.code === 200) {
+                  this.$message.success("删除成功");
+                  this.getList();
+                }
+              });
+              break;
+            case "归档正式":
+              // 预归
+              UploadApi.deleteUpload2(data).then((res) => {
+                if (res.code === 200) {
+                  this.$message.success("删除成功");
+                  this.getList();
+                }
+              });
+              break;
+            case "归档临时":
+              UploadApi.deleteUpload2(data).then((res) => {
+                if (res.code === 200) {
+                  this.$message.success("删除成功");
+                  this.getList();
+                }
+              });
+              break;
+            default:
+              break;
+          }
         }
       });
     },
@@ -308,44 +305,60 @@ export default {
         archId: this.dataInfo.archId,
       };
       let vm = this;
-      switch (vm.menuType) {
-        case 0:
-          // 未归
-          UploadApi.upload(data).then((res) => {
-            if (res.code === 200) {
-              this.$message.success("上传成功");
-              this.getList();
-            }
-          });
-          break;
-        case "正式":
-          UploadApi.upload2(data).then((res) => {
-            if (res.code === 200) {
-              this.$message.success("上传成功");
-              this.getList();
-            }
-          });
-          break;
-        case "临时":
-          UploadApi.upload2(data).then((res) => {
-            if (res.code === 200) {
-              this.$message.success("上传成功");
-              this.getList();
-            }
-          });
-          break;
-
-        // case "审核案卷":
-        //   // 审核
-        //   break;
-        // case "审核文件":
-
-        //   break;
-        // case "审核资料":
-
-        //   break;
-        default:
-          break;
+      if (this.isSearch) {
+        UploadApi.upload2(data).then((res) => {
+          if (res.code === 200) {
+            this.$message.success("上传成功");
+            this.getList();
+          }
+        });
+      } else {
+        switch (vm.menuType) {
+          case 0:
+            // 未归
+            UploadApi.upload(data).then((res) => {
+              if (res.code === 200) {
+                this.$message.success("上传成功");
+                this.getList();
+              }
+            });
+            break;
+          case "案卷临时":
+            UploadApi.upload2(data).then((res) => {
+              if (res.code === 200) {
+                this.$message.success("上传成功");
+                this.getList();
+              }
+            });
+            break;
+          case "案卷正式":
+            UploadApi.upload2(data).then((res) => {
+              if (res.code === 200) {
+                this.$message.success("上传成功");
+                this.getList();
+              }
+            });
+            break;
+          case "归档正式":
+            // 预归
+            UploadApi.upload2(data).then((res) => {
+              if (res.code === 200) {
+                this.$message.success("上传成功");
+                this.getList();
+              }
+            });
+            break;
+          case "归档临时":
+            UploadApi.upload2(data).then((res) => {
+              if (res.code === 200) {
+                this.$message.success("上传成功");
+                this.getList();
+              }
+            });
+            break;
+          default:
+            break;
+        }
       }
     },
     pageNum2(e) {},
@@ -380,47 +393,66 @@ export default {
         pageNum: this.currentPage,
       };
       let vm = this;
-      switch (vm.menuType) {
-        case 0:
-          // 未归
-          UploadApi.getList(data).then((res) => {
-            if (res.code === 200) {
-              this.tableData = res.data.list;
-              this.pagination.total = res.data.total;
-            }
-            this.loading = false;
-          });
-          break;
-        case "正式":
-          UploadApi.getList2(data).then((res) => {
-            if (res.code === 200) {
-              this.tableData = res.data.list;
-              this.pagination.total = res.data.total;
-            }
-            this.loading = false;
-          });
-          break;
-        case "临时":
-          UploadApi.getList2(data).then((res) => {
-            if (res.code === 200) {
-              this.tableData = res.data.list;
-              this.pagination.total = res.data.total;
-            }
-            this.loading = false;
-          });
-          break;
-
-        // case "审核案卷":
-        //   // 审核
-        //   break;
-        // case "审核文件":
-
-        //   break;
-        // case "审核资料":
-
-        //   break;
-        default:
-          break;
+      if (this.isSearch) {
+        UploadApi.getList2(data).then((res) => {
+          if (res.code === 200) {
+            this.tableData = res.data.list;
+            this.pagination.total = res.data.total;
+          }
+          this.loading = false;
+        });
+      } else {
+        switch (vm.menuType) {
+          case 0:
+            // 未归
+            UploadApi.getList(data).then((res) => {
+              if (res.code === 200) {
+                this.tableData = res.data.list;
+                this.pagination.total = res.data.total;
+              }
+              this.loading = false;
+            });
+            break;
+          case "案卷临时":
+            UploadApi.getList2(data).then((res) => {
+              if (res.code === 200) {
+                this.tableData = res.data.list;
+                this.pagination.total = res.data.total;
+              }
+              this.loading = false;
+            });
+            break;
+          case "案卷正式":
+            UploadApi.getList2(data).then((res) => {
+              if (res.code === 200) {
+                this.tableData = res.data.list;
+                this.pagination.total = res.data.total;
+              }
+              this.loading = false;
+            });
+            break;
+          case "归档正式":
+            // 预归
+            UploadApi.getList2(data).then((res) => {
+              if (res.code === 200) {
+                this.tableData = res.data.list;
+                this.pagination.total = res.data.total;
+              }
+              this.loading = false;
+            });
+            break;
+          case "归档临时":
+            UploadApi.getList2(data).then((res) => {
+              if (res.code === 200) {
+                this.tableData = res.data.list;
+                this.pagination.total = res.data.total;
+              }
+              this.loading = false;
+            });
+            break;
+          default:
+            break;
+        }
       }
     },
   },

@@ -18,6 +18,8 @@ Vue.component("OpenLeft", OpenLeft);
 import SystemType from "./system/Type";
 import BaoBiao from './system/baobiao.vue'
 import Template from './system/template.vue'
+import SystemLog from './system/log.vue'
+Vue.component("SystemLog", SystemLog);
 Vue.component("SystemType", SystemType);
 Vue.component("BaoBiao", BaoBiao);
 Vue.component("Template", Template);

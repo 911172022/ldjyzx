@@ -131,7 +131,7 @@ export default {
       type: "",
       pagination: {
         pageSize: 20,
-        total: 0,
+        total: 3,
       },
       currentPage: 1,
       typeOptions: [],

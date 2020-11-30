@@ -296,7 +296,7 @@
     <!-- 新增类别号弹窗 -->
     <el-dialog
       width="50%"
-      title="新增类别号"
+      title="类别号"
       :visible.sync="typeNumVisible"
       :before-close="cancel"
       append-to-body
@@ -647,7 +647,7 @@ export default {
         SystemApi.addTypeNum(data).then((res) => {
           if (res.code === 200) {
             this.$message.success("新增类别号成功");
-            this.$refs.form2.resetFields();
+            this.form2 = {};
             this.cancel();
             this.getTypeNumList();
           }
@@ -662,7 +662,7 @@ export default {
         SystemApi.editTypeNum(data).then((res) => {
           if (res.code === 200) {
             this.$message.success("修改类别号成功");
-            this.$refs.form2.resetFields();
+            this.form2 = {};
             this.cancel();
             this.getTypeNumList();
           }
@@ -729,8 +729,6 @@ export default {
       this.typeAttrVisible = false;
       this.typeNumVisible = false;
       this.visible = false;
-      this.$refs.form2.resetFields();
-      this.$refs.form.resetFields();
     },
     editAttrList(e) {
       this.$set(e.row, "edit", true);

@@ -121,35 +121,35 @@ export default {
             this.getTypeTreeList(0);
             break;
           case "1-3":
-            this.$store.commit("doc/GET_MENU_TYPE", "临时");
+            this.$store.commit("doc/GET_MENU_TYPE", "案卷临时");
             this.getTypeTreeList(1);
             break;
           case "1-2":
-            this.$store.commit("doc/GET_MENU_TYPE", "临时");
+            this.$store.commit("doc/GET_MENU_TYPE", "案卷临时");
             this.getTypeTreeList(1);
             break;
           case "1-1":
-            this.$store.commit("doc/GET_MENU_TYPE", "临时");
+            this.$store.commit("doc/GET_MENU_TYPE", "归档临时");
             this.getTypeTreeList(2);
             break;
           case "1-4":
-            this.$store.commit("doc/GET_MENU_TYPE", "临时");
+            this.$store.commit("doc/GET_MENU_TYPE", "资料临时");
             this.getTypeTreeList(3);
             break;
           case "2-3":
-            this.$store.commit("doc/GET_MENU_TYPE", "正式");
+            this.$store.commit("doc/GET_MENU_TYPE", "案卷正式");
             this.getTypeTreeList(1);
             break;
           case "2-2":
-            this.$store.commit("doc/GET_MENU_TYPE", "正式");
+            this.$store.commit("doc/GET_MENU_TYPE", "案卷正式");
             this.getTypeTreeList(1);
             break;
           case "2-1":
-            this.$store.commit("doc/GET_MENU_TYPE", "正式");
+            this.$store.commit("doc/GET_MENU_TYPE", "归档正式");
             this.getTypeTreeList(2);
             break;
           case "2-4":
-            this.$store.commit("doc/GET_MENU_TYPE", "正式");
+            this.$store.commit("doc/GET_MENU_TYPE", "资料正式");
             this.getTypeTreeList(3);
             break;
           case "3-3":
@@ -495,13 +495,19 @@ export default {
             vm.$store.dispatch("doc/getunFiledList", data);
             vm.$store.dispatch("doc/getunFiledListHead", data2);
             break;
-          case "临时":
-            // 预归
+          case "案卷临时":
+            vm.$store.dispatch("doc/getunFiledList223", data);
+            vm.$store.dispatch("doc/getunFiledListHead23", data2);
+            break;
+          case "案卷正式":
+            this.$store.dispatch("doc/getunFiledList23", data);
+            vm.$store.dispatch("doc/getunFiledListHead23", data2);
+            break;
+          case "归档临时":
             vm.$store.dispatch("doc/getunFiledList22", data);
             vm.$store.dispatch("doc/getunFiledListHead2", data2);
             break;
-          // 归档
-          case "正式":
+          case "归档正式":
             this.$store.dispatch("doc/getunFiledList2", data);
             vm.$store.dispatch("doc/getunFiledListHead2", data2);
             break;

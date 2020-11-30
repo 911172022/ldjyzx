@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form :model="form" ref="form" :rules="rules" :label-width="labelWidth">
-      <el-form-item>
+      <el-form-item v-if='!isDetail'>
         <el-checkbox
           v-model="checked"
           label="开启继承注入"
@@ -45,7 +45,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-form-item>
+      <el-form-item v-if="!isSearch">
         <el-button
           type="primary"
           style="width: 200px"
@@ -68,6 +68,8 @@ export default {
       default: "100px",
     },
     formList: Array,
+    isDetail: Boolean,
+    isSearch: Boolean,
     categoryId: {
       type: [String, Number],
     },
@@ -78,6 +80,7 @@ export default {
       rules: {},
       loading: false,
       checked: false,
+      changeTime: 0,
     };
   },
   watch: {
@@ -137,12 +140,23 @@ export default {
       deep: true,
       immediate: true,
     },
+    changeTime: {
+      handler(newValue) {
+        let vm = this;
+        vm.formList.forEach((item) => {
+          if (item.textKey == "serialNumber") {
+            item.textValue = vm.addSerialNumber(item.textValue);
+          }
+        });
+      },
+      deep: true,
+      immediate: true,
+    },
   },
   methods: {
     submit() {
       let vm = this;
       vm.loading = true;
-      // this.cancel();
       vm.$refs.form.validate((valid) => {
         if (valid) {
           vm.formList.map((item) => {
@@ -164,17 +178,9 @@ export default {
         this.$refs.form.resetFields();
         this.$emit("cancel", false);
       } else {
-        this.$emit("cancel", true);
-        let form = {};
-        vm.formList.forEach((item) => {
-          if (item.textKey == "serialNumber") {
-            form[item.textKey] = this.addSerialNumber(item.textValue);
-          } else {
-            form[item.textKey] = item.textValue;
-          }
-        });
-        vm.form = Object.assign({}, form);
-        console.log(vm.form);
+        let status = true;
+        this.$emit("cancel", status);
+        this.changeTime++;
       }
     },
     addSerialNumber(value) {
@@ -187,7 +193,6 @@ export default {
           if (item == 0 && index == 0) {
             arr.splice(0, 1);
             time += 1;
-            console.log(arr);
           } else {
             num = arr.join("");
           }

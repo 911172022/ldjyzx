@@ -35,17 +35,46 @@
       <el-row class="mainTitle DOCmainTitle">
         <el-col :xl="24" :lg="24" :md="24" class="btn-wrapper">
           <div style="text-align: right" class="FunctionMenu">
-            <!-- 原型代码 -->
-            <el-button size="small" type="primary" @click="sendDocument"
+            <el-select
+              v-if="check"
+              style="width: 200px"
+              size="small"
+              v-model="openStatus"
+            >
+              <el-option value="已审核">已审核</el-option>
+              <el-option value="未审核">未审核</el-option>
+              <el-option value="所有">所有</el-option>
+            </el-select>
+            <el-button
+              v-if="!check"
+              size="small"
+              type="primary"
+              @click="sendDocument"
               >添加</el-button
             >
-            <!-- <el-button @click="addSerialNumber">test</el-button> -->
-            <!-- <el-button size="small" type="primary">查重</el-button> -->
             <!-- <el-button size="small" type="primary">打印</el-button> -->
+            <el-button size="small" type="primary" v-if="status"
+              >查重</el-button
+            >
+            <el-button
+              size="small"
+              type="primary"
+              v-if="status"
+              @click="moreChange"
+              >批量修改</el-button
+            >
+            <el-button size="small" type="primary" v-if="status2"
+              >开放</el-button
+            >
+            <el-button size="small" type="primary" v-if="status2"
+              >鉴定</el-button
+            >
             <el-button size="small" type="primary" @click="exportExcel"
               >导出Excel</el-button
             >
-            <!-- <el-button size="small" type="primary">批量修改</el-button> -->
+            <el-button size="small" type="primary" @click="SearchHandle"
+              >刷新列表</el-button
+            >
             <!-- <el-button size="small" type="primary">开放</el-button> -->
           </div>
         </el-col>
@@ -74,12 +103,12 @@
           @selection-change="handleSelectionChange"
           @row-contextmenu="contextMenuClick"
         >
-          <!-- <el-table-column
+          <el-table-column
             v-if="DocListHead.length > 0"
             type="selection"
             width="55"
             align="center"
-          /> -->
+          />
           <el-table-column
             v-for="(item, index) in DocListHead"
             :key="index"
@@ -161,11 +190,61 @@
       <!-- 高级搜索弹窗 -->
       <el-dialog title="高级搜索" :visible.sync="searchVisible" width="55%">
         <FileForm
+          isDetail
           :formList="DocListHead"
           categoryId="15"
           @cancel="fileFormCancel"
           @submitFileForm="submitHighSearch"
         ></FileForm>
+      </el-dialog>
+
+      <!-- 批量修改 -->
+      <el-dialog title="批量修改" :visible.sync="moreChangeVisible" width="55%">
+        <el-form :model="moreForm">
+          <el-form-item label="选择修改字段">
+            <el-select v-model="moreForm.field">
+              <el-option
+                v-for="(item, index) in DocListHead"
+                :key="index"
+                :label="item.label"
+                :value="item.label"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="字段内容">
+            <el-input v-model="moreForm.content" />
+          </el-form-item>
+          <el-form-item label="数据范围">
+            <el-radio-group v-model="moreForm.range">
+              <el-radio label="0">搜索条件结果</el-radio>
+              <el-radio label="1">选择框选中</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary">提交</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+
+      <!-- 审核日志 -->
+      <el-dialog title="审核日志" :visible.sync="logShow" width="75%">
+        <el-timeline>
+          <el-timeline-item timestamp="2020/11/26" placement="top">
+            <el-card>
+              <p>邹粤 提交于 2020/11/26 10:46</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2020/11/26" placement="top">
+            <el-card>
+              <p>邹粤 审核于 2020/11/26 12:46</p>
+            </el-card>
+          </el-timeline-item>
+          <el-timeline-item timestamp="2020/11/26" placement="top">
+            <el-card>
+              <p>邹粤 更新于 2020/11/26 14:46</p>
+            </el-card>
+          </el-timeline-item>
+        </el-timeline>
       </el-dialog>
     </div>
   </div>
@@ -185,6 +264,12 @@ import XLSX from "xlsx";
 export default {
   data() {
     return {
+      moreForm: {},
+      check: false,
+      status: false,
+      status2: false,
+      openStatus: "",
+      moreChangeVisible: false,
       dataObject: {},
 
       // 生成表单的数组
@@ -234,6 +319,7 @@ export default {
       searchType: "",
       searchForm: {},
       archId: "",
+      logShow: false,
     };
   },
   computed: {
@@ -287,32 +373,27 @@ export default {
         });
       }
     },
+    menuIndex(v) {
+      if (v == "1-1" || v == "1-2" || v == "1-3" || v == "1-4") {
+        this.status = true;
+        this.status2 = false;
+        this.check = false;
+      } else if (v == "2-1" || v == "2-2" || v == "2-3" || v == "2-4") {
+        this.status = true;
+        this.status2 = true;
+        this.check = false;
+      } else if (v == "3-1" || v == "3-2" || v == "3-3" || v == "3-4") {
+        this.status = false;
+        this.status2 = false;
+        this.check = true;
+      }
+    },
   },
   methods: {
-    addSerialNumber(value) {
-      var num = "0401";
-      var length = num.length;
-      var time = 0;
-      var arr = num.split("");
-      for (let i = 0; i < length; i++) {
-        arr.forEach((item, index) => {
-          if (item == 0 && index == 0) {
-            arr.splice(0, 1);
-            time += 1;
-            console.log(arr);
-          } else {
-            num = arr.join("");
-          }
-        });
-      }
-      num++;
-      let str = "0";
-      for (let j = 0; j < time; j++) {
-        str += str;
-      }
-      str = str.slice(0, time);
-      return str + num;
+    moreChange() {
+      this.moreChangeVisible = true;
     },
+
     exportExcel() {
       var wb = XLSX.utils.table_to_book(document.querySelector("#DocList"));
       /* get binary string as output */
@@ -353,11 +434,17 @@ export default {
           // 未归
           vm.$store.dispatch("doc/getunFiledList", data);
           break;
-        case "正式":
+        case "案卷临时":
+          vm.$store.dispatch("doc/getunFiledList223", data);
+          break;
+        case "案卷正式":
+          this.$store.dispatch("doc/getunFiledList23", data);
+          break;
+        case "归档正式":
           // 预归
           vm.$store.dispatch("doc/getunFiledList2", data);
           break;
-        case "临时":
+        case "归档临时":
           vm.$store.dispatch("doc/getunFiledList22", data);
           break;
         case "审核案卷":
@@ -395,7 +482,23 @@ export default {
               }
             });
             break;
-          case "正式":
+          case "案卷临时":
+            ArchivesApi2.deleteArch3(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("销毁成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "案卷正式":
+            ArchivesApi2.deleteArch3(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("销毁成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "归档正式":
             // 预归
             ArchivesApi2.deleteArch4(data).then((res) => {
               if (res.code === 200) {
@@ -404,7 +507,7 @@ export default {
               }
             });
             break;
-          case "临时":
+          case "归档临时":
             ArchivesApi2.deleteArch4(data).then((res) => {
               if (res.code === 200) {
                 vm.$message.success("销毁成功");
@@ -463,7 +566,23 @@ export default {
               }
             });
             break;
-          case "正式":
+          case "案卷正式":
+            ArchivesApi2.updateIsDelete3(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("删除成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "案卷临时":
+            ArchivesApi2.updateIsDelete3(data).then((res) => {
+              if (res.code === 200) {
+                vm.$message.success("删除成功");
+                vm.updateList();
+              }
+            });
+            break;
+          case "归档正式":
             ArchivesApi2.updateIsDelete4(data).then((res) => {
               if (res.code === 200) {
                 vm.$message.success("删除成功");
@@ -471,7 +590,7 @@ export default {
               }
             });
             break;
-          case "临时":
+          case "归档临时":
             ArchivesApi2.updateIsDelete4(data).then((res) => {
               if (res.code === 200) {
                 vm.$message.success("删除成功");
@@ -528,14 +647,28 @@ export default {
             }
           });
           break;
-        case "正式":
+        case "案卷正式":
+          ArchivesApi2.getFileForm3(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "案卷临时":
+          ArchivesApi2.getFileForm3(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "归档正式":
           ArchivesApi2.getFileForm4(data).then((res) => {
             if (res.code === 200) {
               this.formList = res.data;
             }
           });
           break;
-        case "临时":
+        case "归档临时":
           ArchivesApi2.getFileForm4(data).then((res) => {
             if (res.code === 200) {
               this.formList = res.data;
@@ -569,7 +702,10 @@ export default {
       }
     },
     cancel(e) {
-      this.SendDocumentData.switch = e;
+      if (!e) {
+        this.SendDocumentData.switch = e;
+        this.updateList();
+      }
     },
     fileFormCancel(e) {
       this.fileDetailShow = e;
@@ -592,14 +728,28 @@ export default {
             }
           });
           break;
-        case "正式":
+        case "案卷正式":
+          ArchivesApi2.updateArch3(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "案卷临时":
+          ArchivesApi2.updateArch3(data).then((res) => {
+            if (res.code === 200) {
+              this.formList = res.data;
+            }
+          });
+          break;
+        case "归档正式":
           ArchivesApi2.updateArch4(data).then((res) => {
             if (res.code === 200) {
               this.formList = res.data;
             }
           });
           break;
-        case "临时":
+        case "归档临时":
           ArchivesApi2.updateArch4(data).then((res) => {
             if (res.code === 200) {
               this.formList = res.data;
@@ -653,11 +803,16 @@ export default {
           // 未归
           vm.$store.dispatch("doc/getunFiledList", data);
           break;
-        case "正式":
-          // 预归
+        case "案卷临时":
+          vm.$store.dispatch("doc/getunFiledList223", data);
+          break;
+        case "案卷正式":
+          this.$store.dispatch("doc/getunFiledList23", data);
+          break;
+        case "归档正式":
           vm.$store.dispatch("doc/getunFiledList2", data);
           break;
-        case "临时":
+        case "归档临时":
           vm.$store.dispatch("doc/getunFiledList22", data);
           break;
         case "审核案卷":
@@ -692,11 +847,16 @@ export default {
           // 未归
           vm.$store.dispatch("doc/getunFiledList", data);
           break;
-        case "正式":
-          // 预归
+        case "案卷临时":
+          vm.$store.dispatch("doc/getunFiledList223", data);
+          break;
+        case "案卷正式":
+          this.$store.dispatch("doc/getunFiledList23", data);
+          break;
+        case "归档正式":
           vm.$store.dispatch("doc/getunFiledList2", data);
           break;
-        case "临时":
+        case "归档临时":
           vm.$store.dispatch("doc/getunFiledList22", data);
           break;
         case "审核案卷":
@@ -729,28 +889,42 @@ export default {
             if (res.code === 200) {
               vm.$message.success("提交成功");
               vm.fileFormCancel();
-              vm.updateList();
             }
             vm.loading = false;
           });
           break;
-        case "正式":
-          // 预归
+        case "案卷正式":
+          ArchivesApi2.addFileForm3(data).then((res) => {
+            if (res.code === 200) {
+              vm.$message.success("提交成功");
+              vm.fileFormCancel();
+            }
+            vm.loading = false;
+          });
+          break;
+        case "案卷临时":
+          ArchivesApi2.addFileForm4(data).then((res) => {
+            if (res.code === 200) {
+              vm.$message.success("提交成功");
+              vm.fileFormCancel();
+            }
+            vm.loading = false;
+          });
+          break;
+        case "归档正式":
           ArchivesApi2.addFileForm(data).then((res) => {
             if (res.code === 200) {
               vm.$message.success("提交成功");
               vm.fileFormCancel();
-              vm.updateList();
             }
             vm.loading = false;
           });
           break;
-        case "临时":
+        case "归档临时":
           ArchivesApi2.addFileForm2(data).then((res) => {
             if (res.code === 200) {
               vm.$message.success("提交成功");
               vm.fileFormCancel();
-              vm.updateList();
             }
             vm.loading = false;
           });
@@ -762,7 +936,6 @@ export default {
             if (res.code === 200) {
               vm.$message.success("提交成功");
               vm.fileFormCancel();
-              vm.updateList();
             }
             vm.loading = false;
           });
@@ -772,7 +945,6 @@ export default {
             if (res.code === 200) {
               vm.$message.success("提交成功");
               vm.fileFormCancel();
-              vm.updateList();
             }
             vm.loading = false;
           });
@@ -782,7 +954,6 @@ export default {
             if (res.code === 200) {
               vm.$message.success("提交成功");
               vm.fileFormCancel();
-              vm.updateList();
             }
             vm.loading = false;
           });
@@ -972,11 +1143,16 @@ export default {
           // 未归
           vm.$store.dispatch("doc/getunFiledList", data);
           break;
-        case "正式":
-          // 预归
+        case "案卷临时":
+          vm.$store.dispatch("doc/getunFiledList223", data);
+          break;
+        case "案卷正式":
+          this.$store.dispatch("doc/getunFiledList23", data);
+          break;
+        case "归档正式":
           vm.$store.dispatch("doc/getunFiledList2", data);
           break;
-        case "临时":
+        case "归档临时":
           vm.$store.dispatch("doc/getunFiledList22", data);
           break;
         case "审核案卷":
@@ -1031,6 +1207,9 @@ export default {
           this.getFileDetail(this.dataObject);
           this.fileDetailShow = true;
           break;
+        case "查看审核日志":
+          this.logShow = true;
+          break;
         case "销毁":
           this.deleteArch();
           break;
@@ -1048,11 +1227,16 @@ export default {
           // 未归
           this.$store.dispatch("doc/getArchInfo", data);
           break;
-        case "正式":
-          // 预归
+        case "案卷正式":
+          this.$store.dispatch("doc/getArchInfo23", data);
+          break;
+        case "案卷临时":
+          this.$store.dispatch("doc/getArchInfo23", data);
+          break;
+        case "归档正式":
           this.$store.dispatch("doc/getArchInfo2", data);
           break;
-        case "临时":
+        case "归档临时":
           this.$store.dispatch("doc/getArchInfo2", data);
           break;
         case "审核案卷":
@@ -1076,23 +1260,53 @@ export default {
       let vm = this;
       vm.menuVisible = false;
       vm.menuVisible = true;
-      vm.MenuList = [
-        {
-          Name: "查看详情",
-          State: "Enabled",
-          archId: row.archId,
-        },
-        {
-          Name: "销毁",
-          State: "Enabled",
-          archId: row.archId,
-        },
-        {
-          Name: "删除",
-          State: "Enabled",
-          archId: row.archId,
-        },
-      ];
+      if (
+        vm.menuIndex == "3-3" ||
+        vm.menuIndex == "3-1" ||
+        vm.menuIndex == "3-2" ||
+        vm.menuIndex == "3-4"
+      ) {
+        vm.MenuList = [
+          {
+            Name: "查看审核日志",
+            State: "Enabled",
+            archId: row.archId,
+          },
+          {
+            Name: "查看详情",
+            State: "Enabled",
+            archId: row.archId,
+          },
+          {
+            Name: "销毁",
+            State: "Enabled",
+            archId: row.archId,
+          },
+          {
+            Name: "删除",
+            State: "Enabled",
+            archId: row.archId,
+          },
+        ];
+      } else {
+        vm.MenuList = [
+          {
+            Name: "查看详情",
+            State: "Enabled",
+            archId: row.archId,
+          },
+          {
+            Name: "销毁",
+            State: "Enabled",
+            archId: row.archId,
+          },
+          {
+            Name: "删除",
+            State: "Enabled",
+            archId: row.archId,
+          },
+        ];
+      }
       vm.len = vm.MenuList.length * 33;
       vm.styleObject.opacity = 1;
       if (event.clientY > vm.$el.getBoundingClientRect().height / 1.1) {
@@ -1136,11 +1350,16 @@ export default {
           // 未归
           vm.$store.dispatch("doc/getunFiledList", data);
           break;
-        case "正式":
-          // 预归
+        case "案卷临时":
+          vm.$store.dispatch("doc/getunFiledList223", data);
+          break;
+        case "案卷正式":
+          this.$store.dispatch("doc/getunFiledList23", data);
+          break;
+        case "归档正式":
           vm.$store.dispatch("doc/getunFiledList2", data);
           break;
-        case "临时":
+        case "归档临时":
           vm.$store.dispatch("doc/getunFiledList22", data);
           break;
         case "审核案卷":
@@ -1174,11 +1393,16 @@ export default {
           // 未归
           vm.$store.dispatch("doc/getunFiledList", data);
           break;
-        case "正式":
-          // 预归
+        case "案卷临时":
+          vm.$store.dispatch("doc/getunFiledList223", data);
+          break;
+        case "案卷正式":
+          this.$store.dispatch("doc/getunFiledList23", data);
+          break;
+        case "归档正式":
           vm.$store.dispatch("doc/getunFiledList2", data);
           break;
-        case "临时":
+        case "归档临时":
           vm.$store.dispatch("doc/getunFiledList22", data);
           break;
         case "审核案卷":

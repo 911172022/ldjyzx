@@ -12,10 +12,10 @@
       <el-table-column label="名称" prop="name"></el-table-column>
       <el-table-column fixed="right" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="print(scope.row)"
+          <el-button type="primary" size="mini" @click="print(scope)"
             >打印</el-button
           >
-          <el-button type="danger" size="mini" @click="del(scope.row)"
+          <el-button type="danger" size="mini" @click="del(scope)"
             >删除</el-button
           >
         </template>
@@ -38,19 +38,34 @@ export default {
       loading: false,
       tableList: [
         {
-          name: "测试报表"
-        }
+          name: "测试报表",
+        },
+        {
+          name: "测试报表1",
+        },
+        {
+          name: "测试报表2",
+        },
+        {
+          name: "测试报表3",
+        },
+        {
+          name: "测试报表4",
+        },
       ],
-      pagination:{
-        pageSize:20,
-        total: 0
+      pagination: {
+        pageSize: 20,
+        total: 1,
       },
-      currentPage:1
+      currentPage: 1,
     };
   },
   methods: {
     print(e) {},
-    del(e) {},
+    del(e) {
+      console.log(e);
+      this.tableList.splice(e.$index, 1);
+    },
     pageNum2(e) {
       this.currentPage = e;
       this.getList();
@@ -59,9 +74,7 @@ export default {
       this.pagination.pageSize = e;
       this.getList();
     },
-    getList() {
-
-    }
+    getList() {},
   },
   computed: {
     tableHeightLocal() {

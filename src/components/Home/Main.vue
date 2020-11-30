@@ -37,7 +37,7 @@
       <OpenMain />
     </template>
     <template v-else-if="ModulePageNum === 104">
-      <OpenLog />
+      <SystemLog />
     </template>
     <template v-else-if="ModulePageNum === 111">
       <Template />
