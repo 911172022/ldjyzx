@@ -10,6 +10,8 @@
 
   .el-form.mainSearch {
 
+    display: flex;
+    flex-wrap: wrap;
     // background: #f8f9fd;
     // padding: 10px;
     // border-radius: 5px;
@@ -17,9 +19,10 @@
       margin-bottom: 0;
     }
 
-    .el-form-item:nth-child(1) {
-      width: calc(100% - 360px);
-
+    .el-form-item:nth-child(2) {
+      width: calc(100% - 580px);
+      min-width: 200px;
+      margin: 0 10px;
       .el-form-item__content {
         width: 100%;
       }
@@ -160,6 +163,6 @@
   height: 300px;
 }
 
-.el-drawer.rtl{
+.el-drawer.rtl {
   overflow: scroll
 }

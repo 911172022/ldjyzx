@@ -3,12 +3,56 @@ import request from "../BaseAxios";
   档案接口
 */
 export default {
-  // 档案页面表单显示————未归
-  getFileForm(data) {
+  // 入库或退库（根据所选ID）
+  dataBaseById(data) {
     return request({
-      url: "/unfiled/addFormProperty",
+      url: "/ArchDocument/updateWarehousingStatusA",
+      method: "post",
+      data: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 入库或退库（根据所选条件）
+  dataBaseByStatus(data) {
+    return request({
+      url: "ArchDocument/updateWarehousingStatus",
+      method: "post",
+      data: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 档案页面表头显示 ———— 全部档案类型
+  getListHead(data) {
+    return request({
+      url: "sys/category/listFormHead",
       method: "get",
       params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 档案页面表单显示————全部档案类型
+  getFileForm(data) {
+    return request({
+      url: "/sys/category/addFormProperty",
+      method: "get",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 导出Excel————全部档案类型
+  exportExcel(data) {
+    return request({
+      url: "/excel/export",
+      method: "post",
+      data: data,
       headers: {
         "Content-Type": "application/json"
       }
@@ -36,17 +80,7 @@ export default {
       }
     });
   },
-  // 档案页面表头显示 ———— 未归
-  getunFiledListHead(data) {
-    return request({
-      url: "/unfiled/listFormHead",
-      method: "get",
-      params: data,
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-  },
+
   // 查看档案详细信息
   getArchInfo(data) {
     return request({

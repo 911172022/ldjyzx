@@ -1,11 +1,44 @@
 import request from "../BaseAxios";
 export default {
-  // 获取自定义表单内容 归档
-  getFileForm4(data) {
+  // 档案开放状态（根据所选条件）
+  updateOpenStatus(data) {
     return request({
-      url: "/ArchDocument/addFormProperty",
-      method: "get",
-      params: data,
+      url: "/ArchDocument/updateOpenStatus",
+      method: "post",
+      data: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 档案开放状态（根据所选ID）
+  updateOpenStatusByIds(data) {
+    return request({
+      url: "/ArchDocument/updateOpenStatusByIds",
+      method: "post",
+      data: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 批量修改（根据所选ID）———— 归档
+  updateBatchSelect(data) {
+    return request({
+      url: "ArchDocument/update/batch/select",
+      method: "post",
+      data: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 批量修改（根据条件所有）———— 归档
+  updateBatch(data) {
+    return request({
+      url: "ArchDocument/update/batch",
+      method: "post",
+      data: data,
       headers: {
         "Content-Type": "application/json"
       }
@@ -55,17 +88,6 @@ export default {
       }
     });
   },
-  // 档案页面表头显示 ———— 归档
-  getunFiledListHead4(data) {
-    return request({
-      url: "/ArchDocument/listFormHead",
-      method: "get",
-      params: data,
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-  },
   // 查看档案详细信息 ———— 归档
   getArchInfo4(data) {
     return request({
@@ -104,18 +126,6 @@ export default {
     return request({
       url: "/ArchDocument/updateIsDelete",
       method: "post",
-      params: data,
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-  },
-
-  // 获取自定义表单内容 案卷
-  getFileForm3(data) {
-    return request({
-      url: "/ArchFiles/addFormProperty",
-      method: "get",
       params: data,
       headers: {
         "Content-Type": "application/json"
@@ -166,17 +176,6 @@ export default {
       }
     });
   },
-  // 档案页面表头显示 ———— 案卷
-  getunFiledListHead3(data) {
-    return request({
-      url: "/ArchFiles/listFormHead",
-      method: "get",
-      params: data,
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-  },
   // 查看档案详细信息 ———— 案卷
   getArchInfo3(data) {
     return request({
@@ -220,5 +219,5 @@ export default {
         "Content-Type": "application/json"
       }
     });
-  },
+  }
 };

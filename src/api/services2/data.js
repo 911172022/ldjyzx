@@ -77,4 +77,33 @@ export default {
       }
     });
   },
+  // 导出Excel数据模板
+  exportExcelModel(data) {
+    return request({
+      url: "/excel/model/get",
+      method: "post",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      responseType: "blob"
+    });
+  },
+  // 导入Excel数据
+  importExcel(data) {
+    let file = new FormData();
+    file.append("file", data.file);
+    file.append("categoryId", data.categoryId);
+    file.append("warehousingStatus", data.warehousingStatus);
+
+    return request({
+      url: "/excel/import",
+      method: "post",
+      data: file,
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+  },
+  
 };

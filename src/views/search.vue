@@ -48,9 +48,10 @@
               tooltip-effect="dark"
               style="width: 100%"
               stripe
-            >
+            > 
               <el-table-column type="selection" width="55"> </el-table-column>
-              <el-table-column type="index" width="55"> </el-table-column>
+              <el-table-column type="index" width="55" label="序号"> </el-table-column>
+              <el-table-column width="150" label="档案模块" show-overflow-tooltip prop="path"> </el-table-column>
               <el-table-column prop="archNo" label="档案号" min-width="120">
               </el-table-column>
               <el-table-column
@@ -62,7 +63,7 @@
               </el-table-column>
               <!-- <el-table-column prop="year" min-width="100" label="年度">
               </el-table-column> -->
-              <el-table-column>
+              <el-table-column width="250">
                 <template slot-scope="scope">
                   <el-button
                     type="primary"
@@ -99,6 +100,7 @@
             <div class="select-choose">
               <el-select
                 v-model="dataType"
+                @change="selectChange"
                 size="small"
                 placeholder="请选择数据管理类型"
               >
@@ -109,6 +111,18 @@
                   :value="item.value"
                 >
                 </el-option>
+              </el-select>
+              <el-select
+                v-model="type"
+                placeholder="请选择分类"
+                size="small"
+              >
+                <el-option
+                  v-for="(item, index) in typeOptions"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
               </el-select>
               <el-date-picker
                 size="small"
@@ -273,6 +287,7 @@
   </div>
 </template>
 <script>
+import SystemApi from "@/api/services2/system";
 import { loginOut } from "@/api/Login";
 import ArchivesApi from "@/api/services2/archives";
 import ArchivesApi2 from "@/api/services2/archives2";
@@ -283,7 +298,7 @@ export default {
       dataObject: {},
       fileDetailShow: false,
       pagination: {
-        pageSize: 1,
+        pageSize: 30,
         total: 30,
       },
       currentPage: 1,
@@ -292,7 +307,6 @@ export default {
       date: "",
       searchValue: "",
       dataType: "",
-      type: "",
       fieldType: [],
       fieldTypeOptions: [
         { value: 0, label: "姓名" },
@@ -300,40 +314,24 @@ export default {
       ],
       dataTypeOptions: [
         {
-          value: 1,
-          label: "卷内管理",
+          label: "未归",
+          value: "0",
         },
         {
-          value: 2,
-          label: "资料管理",
+          label: "案卷",
+          value: "1",
         },
         {
-          value: 3,
-          label: "案卷管理",
+          label: "归档",
+          value: "2",
         },
         {
-          value: 4,
-          label: "归档管理",
+          label: "资料",
+          value: "3",
         },
       ],
-      typeOptions: [
-        {
-          value: 0,
-          label: "已提交",
-        },
-        {
-          value: 1,
-          label: "已退回",
-        },
-        {
-          value: 2,
-          label: "已审核",
-        },
-        {
-          value: 3,
-          label: "已入库",
-        },
-      ],
+      type: "",
+      typeOptions: [],
       form: {
         boxType: "",
         textType: "",
@@ -355,312 +353,372 @@ export default {
       hasData: false,
       tableData: [
         {
-          archId: "0262cb49ef5-6f85-4077-9c4d-09a0ef96fd2f",
-          title: "关于招工工作的报告",
+          archId: "026b725b039-3757-41fc-b590-68afca373c0e",
+          title: "会议纪要",
           archNo: "1979-永久-0001",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02686941d49-72f8-409a-8cf0-62a572dca0ee",
           title: "请批准到省农、林场招、调广州市上山下乡知青的报告",
           archNo: "1979-永久-0002",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0266659188b-e40e-45af-ba6a-1b5ec39977dd",
           title: "广州市劳动局革命委员会文件",
           archNo: "1979-永久-0003",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026a16898ac-c79c-46e2-b3ff-27cf4e152075",
           title: "关于下达集团所有制单位招工的通知",
           archNo: "1979-永久-0004",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026f097b51a-84de-4e8b-a5eb-093b16691620",
           title: "对几个单位招收下乡知青问题的通知",
           archNo: "1979-短期-0005",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026601f239a-924b-4677-9473-5a0a15d6b67f",
           title: "关于在你县招工问题的复函",
           archNo: "1979-短期-0006",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026cf4da1b3-ae2e-41d4-baf1-1550dd1a60db",
           title: "关于招工问题的通知",
           archNo: "1979-短期-0007",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026db21ca58-4525-400a-a9b6-76488c2492be",
           title: "关于“长临工”转为固定工的上报数字",
           archNo: "1979-短期-0008",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026a56e9ea1-0d65-4868-b7ee-5087d7e8469f",
           title: "关于一九七九年毕业留城学生当前能否推荐招工的问题的通知",
           archNo: "1979-短期-0009",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0264812eafa-4a05-4d8a-9752-d7f9e02251c7",
           title: "转发省劳动局粤劳配(1979)855号文的通知",
           archNo: "1979-短期-0010",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026edbaa700-32b2-47e6-8862-8319a300c6c2",
           title: "复从化县关于就地安置已婚知青报告的函",
           archNo: "1979-短期-0011",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026194eb2e9-2d3d-471d-b089-1aba5771d56f",
           title: "关于招收广州市上山下乡知识青年的通知",
           archNo: "1979-短期-0012",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026721bd6ab-c99b-4ef3-a878-fb4905be4b57",
           title:
             "转发广东省劳动局《关于一九七九年全民所有制单位招工工作若干问题的通知》的通知",
           archNo: "1979-短期-0013",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02689cbeca7-c7ac-466b-8862-d3c485227693",
           title:
             "转发国家劳动总局《关于使用退休、退职人员的待遇问题的通知》的通知",
           archNo: "1979-短期-0014",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026f125082b-a2a8-4682-b94a-98aa2e7497d9",
           title: "关于请求解决待业青年承包麓湖土方工程两个突出问题的报告",
           archNo: "1979-短期-0015",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026d1ecde89-dac5-4e57-a9a6-88b31fc9ec36",
           title: "广东温泉宾馆五十八名指标的招工安排",
           archNo: "1979-短期-0016",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02697d0cb8e-13c1-4a41-ad66-767bb3628094",
           title:
             "转发国家劳动总局《关于贯彻执行中发（1979）43号文件中若干问题的意见的通知》",
           archNo: "1979-短期-0017",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026c24d92a0-6a3f-46fa-a9d5-519cc058eea7",
           title: "关于补报优先招调“三种人”申请表的通知",
           archNo: "1979-短期-0018",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0263f0649a3-9161-4a32-be0c-13a8837d6b6c",
           title: "关于下乡知识青年回城做计划外临时工问题的请示报告",
           archNo: "1979-短期-0019",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026b4aa858a-2482-4312-a3ed-c26f2e9b399f",
           title: "下达市服务局三百二十名招工指标",
           archNo: "1979-短期-0020",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026e21c7018-1417-4550-bfcb-0f8cc2b5ba4d",
           title: "关于下达中央、省局全民所有制单位招工安排的通知",
           archNo: "1979-短期-0021",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02698436d74-1beb-4c24-944e-539419d48c90",
           title: "关于招工工作的报告",
           archNo: "1979-短期-0022",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0268b5d960f-bc2b-4a24-b056-6b78b1696d75",
           title: "关于增加专职武装干部专项指标的通知",
           archNo: "1979-短期-0023",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02669729da0-4f0e-4357-a0cc-2b104faebe9b",
           title: "请批准招收两名农民工为农场工人的报告",
           archNo: "1979-短期-0024",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026ae887e04-a58e-493e-8017-491d95edb9e3",
           title: "关于下达市银行系统新增劳动力指标的通知",
           archNo: "1979-短期-0025",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026be5b394e-c2e3-4d50-a6f7-05178482908d",
           title: "关于下达财政、旅游劳动力指标的通知",
           archNo: "1979-短期-0026",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02616446ab6-3cb6-4f18-bafc-c71321477abc",
           title: "关于第一军医大学安置征地农民的请示报告",
           archNo: "1979-短期-0027",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0266ca8cf93-ccc0-4692-bde4-c9f36ae26c32",
           title: "关于发回《优先招调“三种人”申请表》给归口单位办理招调工的通知",
           archNo: "1979-短期-0028",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0268541361b-2460-4bb0-84c6-5169f572b280",
           title: "关于改进化工有毒有害作业劳动制度扩大试点增加劳动指标的通知",
           archNo: "1979-短期-0029",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02640682743-d8cb-42d7-a7f6-19a39e106b7d",
           title: "关于房管局五和水泥厂招工入户问题的函",
           archNo: "1979-短期-0030",
+          path: "归档管理/文书档案"
         },
       ],
       tableData2: [
         {
-          archId: "0262cb49ef5-6f85-4077-9c4d-09a0ef96fd2f",
-          title: "关于招工工作的报告",
+          archId: "026b725b039-3757-41fc-b590-68afca373c0e",
+          title: "会议纪要",
           archNo: "1979-永久-0001",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02686941d49-72f8-409a-8cf0-62a572dca0ee",
           title: "请批准到省农、林场招、调广州市上山下乡知青的报告",
           archNo: "1979-永久-0002",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0266659188b-e40e-45af-ba6a-1b5ec39977dd",
           title: "广州市劳动局革命委员会文件",
           archNo: "1979-永久-0003",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026a16898ac-c79c-46e2-b3ff-27cf4e152075",
           title: "关于下达集团所有制单位招工的通知",
           archNo: "1979-永久-0004",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026f097b51a-84de-4e8b-a5eb-093b16691620",
           title: "对几个单位招收下乡知青问题的通知",
           archNo: "1979-短期-0005",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026601f239a-924b-4677-9473-5a0a15d6b67f",
           title: "关于在你县招工问题的复函",
           archNo: "1979-短期-0006",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026cf4da1b3-ae2e-41d4-baf1-1550dd1a60db",
           title: "关于招工问题的通知",
           archNo: "1979-短期-0007",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026db21ca58-4525-400a-a9b6-76488c2492be",
           title: "关于“长临工”转为固定工的上报数字",
           archNo: "1979-短期-0008",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026a56e9ea1-0d65-4868-b7ee-5087d7e8469f",
           title: "关于一九七九年毕业留城学生当前能否推荐招工的问题的通知",
           archNo: "1979-短期-0009",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0264812eafa-4a05-4d8a-9752-d7f9e02251c7",
           title: "转发省劳动局粤劳配(1979)855号文的通知",
           archNo: "1979-短期-0010",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026edbaa700-32b2-47e6-8862-8319a300c6c2",
           title: "复从化县关于就地安置已婚知青报告的函",
           archNo: "1979-短期-0011",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026194eb2e9-2d3d-471d-b089-1aba5771d56f",
           title: "关于招收广州市上山下乡知识青年的通知",
           archNo: "1979-短期-0012",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026721bd6ab-c99b-4ef3-a878-fb4905be4b57",
           title:
             "转发广东省劳动局《关于一九七九年全民所有制单位招工工作若干问题的通知》的通知",
           archNo: "1979-短期-0013",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02689cbeca7-c7ac-466b-8862-d3c485227693",
           title:
             "转发国家劳动总局《关于使用退休、退职人员的待遇问题的通知》的通知",
           archNo: "1979-短期-0014",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026f125082b-a2a8-4682-b94a-98aa2e7497d9",
           title: "关于请求解决待业青年承包麓湖土方工程两个突出问题的报告",
           archNo: "1979-短期-0015",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026d1ecde89-dac5-4e57-a9a6-88b31fc9ec36",
           title: "广东温泉宾馆五十八名指标的招工安排",
           archNo: "1979-短期-0016",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02697d0cb8e-13c1-4a41-ad66-767bb3628094",
           title:
             "转发国家劳动总局《关于贯彻执行中发（1979）43号文件中若干问题的意见的通知》",
           archNo: "1979-短期-0017",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026c24d92a0-6a3f-46fa-a9d5-519cc058eea7",
           title: "关于补报优先招调“三种人”申请表的通知",
           archNo: "1979-短期-0018",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0263f0649a3-9161-4a32-be0c-13a8837d6b6c",
           title: "关于下乡知识青年回城做计划外临时工问题的请示报告",
           archNo: "1979-短期-0019",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026b4aa858a-2482-4312-a3ed-c26f2e9b399f",
           title: "下达市服务局三百二十名招工指标",
           archNo: "1979-短期-0020",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026e21c7018-1417-4550-bfcb-0f8cc2b5ba4d",
           title: "关于下达中央、省局全民所有制单位招工安排的通知",
           archNo: "1979-短期-0021",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02698436d74-1beb-4c24-944e-539419d48c90",
           title: "关于招工工作的报告",
           archNo: "1979-短期-0022",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0268b5d960f-bc2b-4a24-b056-6b78b1696d75",
           title: "关于增加专职武装干部专项指标的通知",
           archNo: "1979-短期-0023",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02669729da0-4f0e-4357-a0cc-2b104faebe9b",
           title: "请批准招收两名农民工为农场工人的报告",
           archNo: "1979-短期-0024",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026ae887e04-a58e-493e-8017-491d95edb9e3",
           title: "关于下达市银行系统新增劳动力指标的通知",
           archNo: "1979-短期-0025",
+          path: "归档管理/文书档案"
         },
         {
           archId: "026be5b394e-c2e3-4d50-a6f7-05178482908d",
           title: "关于下达财政、旅游劳动力指标的通知",
           archNo: "1979-短期-0026",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02616446ab6-3cb6-4f18-bafc-c71321477abc",
           title: "关于第一军医大学安置征地农民的请示报告",
           archNo: "1979-短期-0027",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0266ca8cf93-ccc0-4692-bde4-c9f36ae26c32",
           title: "关于发回《优先招调“三种人”申请表》给归口单位办理招调工的通知",
           archNo: "1979-短期-0028",
+          path: "归档管理/文书档案"
         },
         {
           archId: "0268541361b-2460-4bb0-84c6-5169f572b280",
           title: "关于改进化工有毒有害作业劳动制度扩大试点增加劳动指标的通知",
           archNo: "1979-短期-0029",
+          path: "归档管理/文书档案"
         },
         {
           archId: "02640682743-d8cb-42d7-a7f6-19a39e106b7d",
           title: "关于房管局五和水泥厂招工入户问题的函",
           archNo: "1979-短期-0030",
+          path: "归档管理/文书档案"
         },
       ],
       showAll: false,
@@ -673,8 +731,23 @@ export default {
     },
   },
   methods: {
+    selectChange(e) {
+      this.type = "";
+      this.getSimpleList();
+    },
+    getSimpleList() {
+      let data = {
+        archType: this.dataType,
+        type: this.type,
+      };
+      SystemApi.getSimpleList(data).then((res) => {
+        if (res.code === 200) {
+          this.typeOptions = res.data;
+        }
+      });
+    },
     getFile(e) {
-      console.log(e)
+      console.log(e);
     },
     fileFormCancel(e) {
       this.fileDetailShow = e;
@@ -762,7 +835,7 @@ export default {
       this.$store.dispatch("doc/getArchInfo2", data);
     },
     pageNum2(e) {
-      console.log(e)
+      console.log(e);
     },
     fieldChange(e) {
       console.log(e);
@@ -786,7 +859,7 @@ export default {
             this.showAll = true;
           }
         });
-        console.log(arr)
+        console.log(arr);
         this.tableData = arr;
       } else {
         this.tableData = this.tableData2;

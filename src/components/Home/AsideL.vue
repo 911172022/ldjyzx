@@ -3,8 +3,17 @@
     <template v-if="ModulePageNum === 1">
       <DMAsideL />
     </template>
-    <template v-if="ModulePageNum === 51">
+    <template v-else-if="ModulePageNum === 51">
       <OpenLeft />
+    </template>
+    <template v-else-if="ModulePageNum === 33">
+      <CheckLeft />
+    </template>
+    <template v-else-if="ModulePageNum === 31">
+      <CheckLeft />
+    </template>
+    <template v-else-if="ModulePageNum === 34">
+      <CheckLeft />
     </template>
     <!-- <template v-else-if="ModulePageNum === 2">
       <PMAsideL />

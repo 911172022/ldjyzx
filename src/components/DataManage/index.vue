@@ -2,7 +2,7 @@
   <div>
     <div class="flex-row">
       <el-select
-        v-model="archType"
+        v-model="form.archType"
         @change="selectChange"
         placeholder="请选择档案类型"
       >
@@ -13,7 +13,7 @@
           :value="item.value"
         ></el-option>
       </el-select>
-      <el-select v-model="type" style="margin-left: 10px" @change="typeChange">
+      <el-select v-model="form.type" style="margin: 0 10px">
         <el-option
           v-for="(item, index) in typeOptions"
           :key="index"
@@ -21,15 +21,24 @@
           :value="item.id"
         ></el-option>
       </el-select>
-      <el-button :disabled="isTrue" type="primary">导出模板</el-button>
+      <el-select
+        v-model="form.warehousingStatus"
+        placeholder="请选择导入数据存放的库"
+      >
+        <el-option label="正式库" value="1">正式库</el-option>
+        <el-option label="临时库" value="0">临时库</el-option>
+      </el-select>
+      <el-button :disabled="isTrue" type="primary" @click="exportExcel"
+        >导出模板</el-button
+      >
       <el-upload
         class="upload-demo"
-        action="https://jsonplaceholder.typicode.com/posts/"
+        action="#"
         :show-file-list="false"
         :disabled="isTrue"
         :before-upload="beforeUpload"
       >
-        <el-button :disabled="isTrue" type="primary">导入</el-button>
+        <el-button :disabled="isTrue" type="primary">数据导入</el-button>
       </el-upload>
     </div>
     <el-table
@@ -59,15 +68,20 @@
 </template>
 
 <script>
+import DataApi from "@/api/services2/data";
 import SystemApi from "@/api/services2/system";
+
 export default {
   data() {
     return {
       tableHead: [],
       fileList: [],
       tableList: [],
-      type: "",
-      archType: "",
+      form: {
+        warehousingStatus: "",
+        type: "",
+        archType: "",
+      },
       archTypeOptions: [
         {
           label: "未归",
@@ -92,7 +106,7 @@ export default {
     };
   },
   watch: {
-    type: {
+    "form.type": {
       handler(newValue) {
         if (newValue) {
           this.isTrue = false;
@@ -110,69 +124,55 @@ export default {
     },
   },
   methods: {
+    // 导出模板
+    exportExcel() {
+      let data = {
+        categoryId: this.form.type,
+      };
+      DataApi.exportExcelModel(data)
+        .then((res) => {
+          console.log(res);
+          const blob = new Blob(["\ufeff" + res], {
+            type: "text/csv;charset=utf-8",
+          });
+          const url = window.URL.createObjectURL(blob);
+          // 通过创建a标签实现
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "数据模板";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     selectChange(e) {
       this.type = "";
-      this.getSimpleList();
-    },
-    typeChange(e) {
-      this.getSimpleList();
+      this.getList();
     },
     beforeUpload(e) {
-      this.loading = true;
-      setTimeout(() => {
-        this.tableHead = [
-          { label: "文件题名", fieldName: "title", isMain: 1 },
-          { label: "档案号", fieldName: "archNo", isMain: 1 },
-          { label: "分类号", fieldName: "categoryNo", isMain: 1 },
-          { label: "保管期限", fieldName: "storageTime", isMain: 1 },
-          { label: "文件流水号", fieldName: "serialNumber", isMain: 1 },
-        ];
-        this.tableList = [
-          {
-            archId: null,
-            title: "测试文件题名",
-            archNo: "W1-永久-0004",
-            categoryNo: "W1",
-            archType: null,
-            storageTime: "永久",
-            serialNumber: "0004",
-            status: "数据导入错误",
-          },
-          {
-            archId: "10",
-            title: "广州市人民政府建设",
-            archNo: "W1-永久-0007",
-            categoryNo: "W1",
-            storageTime: "永久",
-            serialNumber: "0007",
-            status: "数据导入错误",
-          },
-          {
-            archId: "0150f237b4e-259a-442a-ba7e-b3444a808791",
-            title: "湖南1",
-            archNo: "W1-永久-45646",
-            storageTime: "永久",
-            categoryNo: "W1",
-            serialNumber: "45646",
-            status: "数据导入错误",
-          },
-          {
-            archId: "0154f982527-76c1-4da6-976c-60cf4b20d54d",
-            title: "真实数据文件",
-            archNo: "W2-永久-0006",
-            storageTime: "永久",
-            categoryNo: "W2",
-            serialNumber: "0006",
-            status: "数据导入错误",
-          },
-        ];
-        this.loading = false;
-      }, 2000);
-    },
-    getSimpleList() {
+      if (!this.form.warehousingStatus) {
+        this.$message.error("请选择导入数据存放的库");
+        return false;
+      }
       let data = {
-        archType: this.archType,
-        type: this.type,
+        file: e,
+        categoryId: this.form.type,
+        warehousingStatus: this.form.warehousingStatus,
+      };
+      DataApi.importExcel(data).then((res) => {
+        if (res.code === 200) {
+          this.$message.success("数据导入成功");
+        }
+      });
+    },
+    // 获取分类
+    getList() {
+      let data = {
+        archType: this.form.archType,
+        categoryId: this.form.type,
       };
       SystemApi.getSimpleList(data).then((res) => {
         if (res.code === 200) {
@@ -182,7 +182,7 @@ export default {
     },
   },
   mounted() {
-    this.getSimpleList();
+    // this.getList();
   },
   computed: {
     tableHeightLocal() {

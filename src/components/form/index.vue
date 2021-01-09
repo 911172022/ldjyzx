@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form :model="form" ref="form" :rules="rules" :label-width="labelWidth">
-      <el-form-item v-if='!isDetail'>
+      <el-form-item v-if="!isDetail">
         <el-checkbox
           v-model="checked"
           label="开启继承注入"
@@ -65,7 +65,7 @@ export default {
   props: {
     labelWidth: {
       type: String,
-      default: "100px",
+      default: "120px",
     },
     formList: Array,
     isDetail: Boolean,
@@ -73,6 +73,7 @@ export default {
     categoryId: {
       type: [String, Number],
     },
+    changeTime: Number
   },
   data() {
     return {
@@ -80,7 +81,6 @@ export default {
       rules: {},
       loading: false,
       checked: false,
-      changeTime: 0,
     };
   },
   watch: {
@@ -148,9 +148,8 @@ export default {
             item.textValue = vm.addSerialNumber(item.textValue);
           }
         });
+        this.cancel();
       },
-      deep: true,
-      immediate: true,
     },
   },
   methods: {
@@ -167,7 +166,6 @@ export default {
             }
           });
           vm.$emit("submitFileForm", vm.form, vm.categoryId);
-          this.cancel();
           vm.loading = false;
         }
       });
@@ -175,14 +173,13 @@ export default {
     cancel() {
       let vm = this;
       if (!this.checked) {
-        this.$refs.form.resetFields();
         this.$emit("cancel", false);
       } else {
         let status = true;
         this.$emit("cancel", status);
-        this.changeTime++;
       }
     },
+    // 继承注入数字加一
     addSerialNumber(value) {
       var num = value;
       var length = num.length;

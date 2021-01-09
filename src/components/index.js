@@ -14,6 +14,12 @@ Vue.component("OpenMain", OpenMain);
 Vue.component("OpenLog", OpenLog);
 Vue.component("OpenLeft", OpenLeft);
 
+// 审核管理
+import CheckMain from './check/main.vue'
+import CheckLeft from './check/left.vue'
+Vue.component("CheckMain", CheckMain);
+Vue.component("CheckLeft", CheckLeft);
+
 // 系统设置
 import SystemType from "./system/Type";
 import BaoBiao from './system/baobiao.vue'
@@ -35,6 +41,7 @@ import DMMain from "./DocManagement/Main";
 // import uploadFiles2 from './UploadFiles/uploadFiles2'
 // 靠vuex管理的上传文件
 import uploadFiles3 from "./UploadFiles/uploadFiles3";
+
 // 根据后台返回生产提交的表单
 import FileForm from "./form/index.vue"
 Vue.component("FileForm", FileForm);
@@ -45,6 +52,9 @@ Vue.component("FileDetail", FileDetail);
 import Echart from "./echarts/index.vue";   //Echart
 import Announcement from "./announcement/index.vue"; //公告
 import WangEditor from "./wangEditor/index.vue";   //富文本编辑器
+Vue.component("Echart", Echart);
+Vue.component("Announcement", Announcement);
+Vue.component("WangEditor", WangEditor);
 
 // 数据管理
 import DataManage from './DataManage/index.vue'
@@ -53,13 +63,6 @@ import DataList from './DataManage/list.vue'
 Vue.component("DataList", DataList);
 Vue.component("DataManage", DataManage);
 Vue.component("BackUp", BackUp);
-
-
-
-
-Vue.component("Echart", Echart);
-Vue.component("Announcement", Announcement);
-Vue.component("WangEditor", WangEditor);
 
 // 共用组件
 Vue.component("pagination", pagination);

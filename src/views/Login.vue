@@ -5,18 +5,16 @@
         <el-row class="info">
           <el-col :span="12">
             <div class="left">
-              <el-radio-group v-model="systemType">
-                <el-radio label="1" border>管理平台</el-radio>
-                <el-radio label="2" border>利用平台</el-radio>
-              </el-radio-group>
+              <img src="@/assets/logo.png" style="margin-top: calc(100% - 200px)"  alt="广州就业服务">
+              <h1 style="color: #fff;">广州就业服务</h1>
             </div>
           </el-col>
           <el-col :span="12">
             <div class="right">
               <el-form
-                :model="ruleForm"
+                :model="form"
                 :rules="rules"
-                ref="ruleForm"
+                ref="form"
                 label-position="left"
                 label-width="0px"
                 @submit.native.prevent
@@ -27,7 +25,7 @@
                 <el-form-item prop="account">
                   <el-input
                     type="text"
-                    v-model="ruleForm.account"
+                    v-model="form.account"
                     auto-complete="off"
                     placeholder="请输入用户名"
                   ></el-input>
@@ -35,10 +33,16 @@
                 <el-form-item prop="Password">
                   <el-input
                     type="password"
-                    v-model="ruleForm.Password"
+                    v-model="form.Password"
                     auto-complete="off"
                     placeholder="请输入密码"
                   ></el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-radio-group v-model="form.systemType">
+                    <el-radio label="1">管理平台</el-radio>
+                    <el-radio label="2">利用平台</el-radio>
+                  </el-radio-group>
                 </el-form-item>
                 <!-- <el-row style="margin-bottom: 20px">
                   <el-col :span="10">
@@ -75,16 +79,16 @@ export default {
   data() {
     return {
       logining: false,
-      ruleForm: {
+      form: {
         account: "", //'admin',
         Password: "", //'123456'
+        systemType: "1", // 1是管理平台，2是利用平台
       },
       rules: {
         account: [{ required: true, message: "请输入用户名", trigger: "blur" }],
         Password: [{ required: true, message: "请输入密码", trigger: "blur" }],
       },
       isRememberMe: true, // 是否记住我
-      systemType: "1", // 1是管理平台，2是利用平台
     };
   },
   mounted() {
@@ -104,19 +108,19 @@ export default {
     onSubmit() {
       let vm = this;
       vm.logining = true;
-      vm.$refs.ruleForm.validate((valid) => {
+      vm.$refs.form.validate((valid) => {
         if (valid) {
           let loginParams = {
-            account: this.ruleForm.account,
-            password: this.ruleForm.Password,
-            systemType: 1,
+            account: this.form.account,
+            password: this.form.Password,
+            systemType: this.form.systemType,
           };
           login(loginParams).then((res) => {
             if (res.code === 200) {
               localStorage.setItem("LOGIN", res.data);
               this.$store.commit("SET_TOKEN", res.data);
               this.$message.success("登录成功");
-              if (this.systemType == 1) {
+              if (this.form.systemType == 1) {
                 this.$router.push({ path: "/home" });
               } else {
                 this.$router.push({ path: "/search-system" });

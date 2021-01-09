@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-10-19 09:41:16
+ * @LastEditTime: 2020-12-29 14:44:38
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \gyy_oac:\Users\Shihx\Desktop\ldjyzx\src\api\BaseAxios.js
+ */
 import axios from "axios";
 import { Message } from "element-ui";
 import Router from "@/router/index";
@@ -33,7 +41,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   res => {
     if (res.data.code !== 200) {
-      return Promise.reject(res.data.message);
+      return Message.error(res.data.message);
     }
     return res.data;
   },
@@ -42,14 +50,13 @@ service.interceptors.response.use(
     if (msg == "用户授权过期或未授权，请重新登录！") {
       localStorage.removeItem("LOGIN");
       store.state.token = "";
-      store.state.menu.menuIndex = "4"
+      store.state.menu.menuIndex = "4";
       Router.push({ path: "/" });
       return Message.error(msg);
+    } else {
+      return Message.error(msg);
     }
-    //  else {
-    //   return Message.error(msg);
-    // }
   }
 );
 
-export default service; 
+export default service;

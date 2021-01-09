@@ -45,6 +45,15 @@
     <template v-else-if="ModulePageNum === 84">
       <DataList />
     </template>
+    <template v-else-if="ModulePageNum === 33">
+      <CheckMain />
+    </template>
+    <template v-else-if="ModulePageNum === 31">
+      <CheckMain />
+    </template>
+    <template v-else-if="ModulePageNum === 34">
+      <CheckMain />
+    </template>
   </div>
 </template>
 <script>

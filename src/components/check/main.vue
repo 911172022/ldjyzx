@@ -10,7 +10,7 @@
         <el-form-item>
           <el-select
             placeholder="请选择字段"
-            style="width: 200px"
+            style="width: 200px;"
             v-model="formInline.field"
             size="small"
           >
@@ -31,6 +31,7 @@
             @keyup.enter.native="SearchHandle"
           />
         </el-form-item>
+
         <el-form-item>
           <el-button type="primary" size="small" @click="searchAll"
             >全文检索</el-button
@@ -56,17 +57,17 @@
               size="small"
             >
               <el-radio-button :label="9">所有</el-radio-button>
-              <el-radio-button :label="1">已开放</el-radio-button>
-              <el-radio-button :label="0">未开放</el-radio-button>
+              <el-radio-button :label="1">已审核</el-radio-button>
+              <el-radio-button :label="0">未审核</el-radio-button>
             </el-radio-group>
             <!-- <el-button size="small" type="primary" @click="sendDocument"
               >添加</el-button
             > -->
             <el-button size="small" type="primary" @click="open"
-              >批量开放</el-button
+              >批量入库</el-button
             >
             <el-button size="small" type="primary" @click="close"
-              >批量取消开放</el-button
+              >批量取消入库</el-button
             >
             <el-button size="small" type="primary" @click="exportExcel"
               >导出Excel</el-button
@@ -134,7 +135,9 @@
         :current-page.sync="currentPage"
       />
 
-      <!-- 高级搜索弹窗 -->
+      <el-dialog title="入库日志" :visible.sync="logShow" width="75%">
+        <OpenLog />
+      </el-dialog>
       <el-dialog title="高级搜索" :visible.sync="searchVisible" width="55%">
         <FileForm
           isDetail
@@ -144,21 +147,18 @@
           @submitFileForm="submitHighSearch"
         ></FileForm>
       </el-dialog>
-
-      <el-dialog title="开放日志" :visible.sync="logShow" width="75%">
-        <OpenLog />
-      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import OpenApi from "@/api/services2/openList";
+import CheckApi from "@/api/services2/check";
 import ArchivesApi from "@/api/services2/archives";
 export default {
   data() {
     return {
+      searchVisible: false,
       logShow: false,
       // 搜索框数据
       formInline: {
@@ -178,12 +178,11 @@ export default {
         pageSize: 40,
       },
       currentPage: 1,
-      openStatus: 0,
+      openStatus: 9,
       openStatus2: 9,
 
       searchType: 0,
       searchForm: {},
-      searchVisible: false,
       selectIds: [],
     };
   },
@@ -204,7 +203,7 @@ export default {
         this.updateList();
       }
     },
-    // 开放
+    // 入库
     open() {
       if (this.selectIds.length > 0) {
         this.openByID();
@@ -214,7 +213,7 @@ export default {
         this.$message.error("请先选择要操作的数据或搜索出要操作的数据");
       }
     },
-    // 取消开放
+    // 取消入库
     close() {
       if (this.selectIds.length > 0) {
         this.closeByID();
@@ -229,9 +228,9 @@ export default {
         categoryId: this.categoryId,
         ids: this.selectIds,
       };
-      OpenApi.openByID(data).then((res) => {
+      CheckApi.openByID(data).then((res) => {
         if (res.code === 200) {
-          this.$message.success("批量开放成功");
+          this.$message.success("批量入库成功");
           this.updateList();
         }
       });
@@ -244,9 +243,9 @@ export default {
         searchItem: this.searchForm,
         singleField: this.formInline.field,
       };
-      OpenApi.openByOther(data).then((res) => {
+      CheckApi.openByOther(data).then((res) => {
         if (res.code === 200) {
-          this.$message.success("批量开放成功");
+          this.$message.success("批量入库成功");
           this.updateList();
         }
       });
@@ -256,9 +255,9 @@ export default {
         categoryId: this.categoryId,
         ids: this.selectIds,
       };
-      OpenApi.closeByID(data).then((res) => {
+      CheckApi.closeByID(data).then((res) => {
         if (res.code === 200) {
-          this.$message.success("批量取消开放成功");
+          this.$message.success("批量取消入库成功");
           this.updateList();
         }
       });
@@ -271,18 +270,18 @@ export default {
         searchItem: this.searchForm,
         singleField: this.formInline.field,
       };
-      OpenApi.closeByOther(data).then((res) => {
+      CheckApi.closeByOther(data).then((res) => {
         if (res.code === 200) {
-          this.$message.success("批量取消开放成功");
+          this.$message.success("批量取消入库成功");
           this.updateList();
         }
       });
     },
-    fileFormCancel(e) {
-      this.searchVisible = e;
-    },
     highSearch() {
       this.searchVisible = true;
+    },
+    fileFormCancel(e) {
+      this.searchVisible = e;
     },
     // 高级搜索
     submitHighSearch(form) {
@@ -299,24 +298,22 @@ export default {
         singleField: "",
         openStatus: this.openStatus,
       };
-      this.$store.dispatch("doc/getOpenList", data);
+      this.$store.dispatch("doc/getCheckList", data);
     },
     openRight(e) {
       this.archId = e.archId;
       switch (e.Name) {
-        case "开放":
+        case "入库":
           break;
-        case "取消开放":
+        case "查看入库日志":
+          this.logShow = true;
           break;
-        // case "查看开放日志":
-        //   this.logShow = true;
-        //   break;
-        // case "销毁":
-        //   this.deleteArch();
-        //   break;
-        // case "删除":
-        //   this.updateIsDelete();
-        //   break;
+        case "销毁":
+          this.deleteArch();
+          break;
+        case "删除":
+          this.updateIsDelete();
+          break;
         default:
           break;
       }
@@ -326,12 +323,12 @@ export default {
       let data = {
         categoryId: this.categoryId,
         content: this.formInline.searchContent,
-        pageNum: this.currentPage,
+        pageNum: e,
         pageSize: this.pagination.pageSize,
         searchItem: this.searchForm,
         searchType: this.searchType,
       };
-      this.$store.dispatch("doc/getOpenList", data);
+      this.$store.dispatch("doc/getCheckList", data);
     },
     changeSize(e) {
       this.pagination.pageSize = e;
@@ -343,7 +340,7 @@ export default {
         searchItem: this.searchForm,
         searchType: this.searchType,
       };
-      this.$store.dispatch("doc/getOpenList", data);
+      this.$store.dispatch("doc/getCheckList", data);
     },
     // 多选列表
     handleSelectionChange(val) {
@@ -360,17 +357,17 @@ export default {
       vm.menuVisible = true;
       vm.MenuList = [
         // {
-        //   Name: "开放",
+        //   Name: "入库",
         //   State: "Enabled",
         //   archId: row.archId,
         // },
         // {
-        //   Name: "查看开放日志",
+        //   Name: "查看入库日志",
         //   State: "Enabled",
         //   archId: row.archId,
         // },
         // {
-        //   Name: "取消开放",
+        //   Name: "销毁",
         //   State: "Enabled",
         //   archId: row.archId,
         // },
@@ -416,11 +413,15 @@ export default {
         warehousingStatus: 1,
         openStatus: this.openStatus,
       };
-      this.$store.dispatch("doc/getOpenList", data);
+      this.$store.dispatch("doc/getCheckList", data);
     },
     // 全文检索
     searchAll() {
-      this.searchType == 2;
+      if (this.formInline.searchContent) {
+        this.searchType == 2;
+      } else {
+        this.searchType = "";
+      }
       let data = {
         categoryId: this.categoryId,
         pageNum: this.currentPage,
@@ -429,17 +430,17 @@ export default {
         searchItem: {},
         searchType: this.searchType,
         singleField: this.formInline.field,
-        openStatus: this.openStatus,
         warehousingStatus: 1,
+        openStatus: this.openStatus,
       };
-      this.$store.dispatch("doc/getOpenList", data);
+      this.$store.dispatch("doc/getCheckList", data);
     },
     // 重置搜索条件
     resetSearch() {
       this.currentPage = 1;
       this.pagination.pageSize = 40;
       this.formInline.field = "";
-      this.searchType = 0;
+      this.searchType = "";
       this.formInline.searchContent = "";
       this.searchForm = {};
       this.updateList();
@@ -453,6 +454,7 @@ export default {
         this.searchAll();
       }
     },
+    // 导出Excel
     exportExcel() {
       let data = {
         categoryId: this.categoryId,

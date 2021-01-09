@@ -67,8 +67,12 @@ export default {
   watch: {
     menuIndex: {
       handler(newValue) {
-        if (newValue == "5-1") {
-          this.getTypeTreeList();
+        if (newValue == "3-3") {
+          this.getTypeTreeList(1);
+        } else if (newValue == "3-1") {
+          this.getTypeTreeList(2);
+        } else if (newValue == "3-2") {
+          this.getTypeTreeList(3);
         }
       },
       deep: true,
@@ -77,22 +81,16 @@ export default {
   },
   methods: {
     // 获取分类树列表
-    getTypeTreeList() {
+    getTypeTreeList(e) {
       this.treeLoading = true;
-      SystemApi.getTypeTreeList().then((res) => {
+      let data = {
+        archType: e,
+      };
+      SystemApi.getTypeTreeList(data).then((res) => {
         if (res.code === 200) {
-          this.treeData = res.data.map((item) => {
-            let archType = this.filterArchType(item.archType);
-            return {
-              categoryId: item.categoryId,
-              name: `${item.name}(${archType})`,
-              list: item.list,
-            };
-          });
-          this.treeLoading = false;
-        } else {
-          this.treeLoading = false;
+          this.treeData = res.data;
         }
+        this.treeLoading = false;
       });
     },
     filterArchType(e) {
@@ -118,10 +116,9 @@ export default {
         </span>
       );
     },
-    treeClick(e,a,b) {
-      console.log(e);
+    treeClick(e) {
       this.$store.commit("doc/GET_CATEGORYID", e.categoryId);
-      if (a.level !== 1) {
+      if (e.type !== 0) {
         let data = {
           archType: e.archType,
           categoryId: e.categoryId,
@@ -137,8 +134,8 @@ export default {
         let data2 = {
           categoryId: e.categoryId,
         };
-        this.$store.dispatch("doc/getOpenList", data);
-        this.$store.dispatch("doc/getOpenListHead", data2);
+        this.$store.dispatch("doc/getCheckList", data);
+        this.$store.dispatch("doc/getCheckHeadList", data2);
       }
     },
     getMenuRight(e) {

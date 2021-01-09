@@ -4,7 +4,6 @@
       <el-tab-pane label="基本信息" name="1">
         <FileForm
           isDetail
-          isSearch
           :formList="archInfo.formList"
           :categoryId="categoryId"
           @cancel="fileFormCancel"
@@ -12,40 +11,36 @@
         ></FileForm>
       </el-tab-pane>
       <el-tab-pane label="卷内信息" v-if="hideTwo" name="2">
-        <el-table :data="tableData" border style="width: 100%">
-          <el-table-column type="selection" width="50"> </el-table-column>
-          <el-table-column type="index" label="序号" width="70">
-          </el-table-column>
+        <el-button type="primary" @click="addJuanNei('添加')">添加</el-button>
+        <el-table :data="tableData2" border style="width: 100%">
           <el-table-column
-            prop="num"
-            label="文件编号"
-            width="100"
+            v-if="tableData2Head.length > 0"
+            type="selection"
+            width="55"
+            align="center"
+          />
+          <el-table-column
+            v-for="(item, index) in tableData2Head"
+            :key="index"
+            :prop="item.fieldName"
+            :label="item.label"
+            max-width="5%"
+            min-width="130"
+            sortable
             show-overflow-tooltip
           >
-          </el-table-column>
-          <el-table-column
-            prop="title"
-            label="题名"
-            width="320"
-            show-overflow-tooltip
-          >
-          </el-table-column>
-          <el-table-column prop="unit" label="单位" show-overflow-tooltip>
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="100">
             <template slot-scope="scope">
-              <el-button @click="tableClick(scope.row)" type="text" size="small"
-                >查看</el-button
+              <el-button
+                type="text"
+                size="small"
+                @click="update(scope.row, '修改')"
+                >修改</el-button
               >
-              <el-button type="text" size="small">修改</el-button>
             </template>
           </el-table-column>
         </el-table>
-        <Pagination
-          :pagination="pagination"
-          @changepage="pageNum2"
-          :current-page.sync="currentPage"
-        />
       </el-tab-pane>
       <el-tab-pane label="电子文件" name="3">
         <div class="tab-top">
@@ -130,7 +125,7 @@
           frameborder="0"
           style="width: 100%; height: 100%"
         ></iframe>
-        <img v-else-if="isImg" :src="url" style="width: 100%" />
+        <img v-else-if="isImg" :src="url" style="width: 100%; height: 100%" />
         <iframe
           v-else
           :src="`https://view.officeapps.live.com/op/view.aspx?src=${url}`"
@@ -139,18 +134,30 @@
         ></iframe>
       </el-card>
     </el-drawer>
+
+    <el-dialog
+      title="新增卷内信息"
+      :visible.sync="dialogVisible"
+      append-to-body
+    >
+      <FileForm
+        isDetail
+        :formList="tableData2Head"
+        :categoryId="categoryId"
+        @submitFileForm="submitNewInfo"
+      ></FileForm>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Pagination from "../components/Pagination/index.vue";
 import FileForm from "../components/form/index";
-import ArchivesApi from "@/api/services2/archives"; //未归
-import ArchivesApi2 from "@/api/services2/archives2"; // 归档
-import ArchivesApi3 from "@/api/services2/archives3"; // 审核
+import ArchivesApi4 from "@/api/services2/archives4";
 import UploadApi from "@/api/services2/upload";
 import { Upload } from "element-ui";
 import { mapGetters } from "vuex";
+import { format } from "../util/Time";
 export default {
   props: {
     dataInfo: Object,
@@ -159,21 +166,26 @@ export default {
   components: { Pagination, FileForm },
   data() {
     return {
+      dialogVisible: false,
       hideTwo: true,
       pagination: {
         pageSize: 40,
         total: 0,
         pageSizes: [10, 20, 30, 50],
       },
-      // archInfo: {},
       currentPage: 1,
       activeName: "1",
       fileShow: false,
       loading: false,
       tableData: [],
+      tableData2: [], // 卷内信息列表
+      tableData2Head: [], // 卷内信息表头列表
       url: "",
       isPdf: false,
       isImg: false,
+
+      controlJuanNeiType: "",
+      archId: "",
     };
   },
   watch: {
@@ -209,23 +221,55 @@ export default {
   },
   mounted() {
     this.getList();
-    // this.getArchInfo();
+    this.getJuanNeiList();
+    this.getJuanNeiHeadList();
   },
   methods: {
+    update(row, type) {
+      this.dialogVisible = true;
+      this.controlJuanNeiType = type;
+      this.archId = row.id;
+    },
+    addJuanNei(type) {
+      this.dialogVisible = true;
+      this.controlJuanNeiType = type;
+    },
     onProgress(e, file, fileList) {
       console.log(e);
     },
-    // 查看档案详情
-    // getArchInfo() {
-    //   let data = this.dataInfo;
-    //   ArchivesApi.getArchInfo(data).then((res) => {
-    //     if (res.code === 200) {
-    //       this.archInfo = res.data;
-    //     }
-    //   });
-    // },
     fileFormCancel(e) {
       this.$emit("cancel", false);
+    },
+    // 新增卷内信息
+    submitNewInfo(form) {
+      if (this.controlJuanNeiType == "添加") {
+        let data = {
+          categoryId: this.dataInfo.categoryId,
+          data: form,
+          filesId: this.dataInfo.archId,
+          warehousingStatus: this.dataInfo.warehousingStatus,
+        };
+        ArchivesApi4.addInfoInAnjuan(data).then((res) => {
+          if (res.code === 200) {
+            this.$message.success("提交卷内信息成功");
+            this.getJuanNeiList();
+            this.dialogVisible = false;
+          }
+        });
+      }
+      if (this.controlJuanNeiType == "修改") {
+        let data2 = {
+          archId: this.archId,
+          data: form,
+        };
+        ArchivesApi4.updateFileInfo(data2).then((res) => {
+          if (res.code === 200) {
+            this.$message.success("修改卷内信息成功");
+            this.getJuanNeiList();
+            this.dialogVisible = false;
+          }
+        });
+      }
     },
     submitFileForm(form, id) {
       this.$emit("submit", form);
@@ -241,61 +285,12 @@ export default {
           attachmentId: e.id,
         };
         let vm = this;
-        if (this.isSearch) {
-          UploadApi.deleteUpload2(data).then((res) => {
-            if (res.code === 200) {
-              this.$message.success("删除成功");
-              this.getList();
-            }
-          });
-        } else {
-          switch (vm.menuType) {
-            case 0:
-              // 未归
-              UploadApi.deleteUpload(data).then((res) => {
-                if (res.code === 200) {
-                  this.$message.success("删除成功");
-                  this.getList();
-                }
-              });
-              break;
-            case "案卷临时":
-              UploadApi.deleteUpload2(data).then((res) => {
-                if (res.code === 200) {
-                  this.$message.success("删除成功");
-                  this.getList();
-                }
-              });
-              break;
-            case "案卷正式":
-              UploadApi.deleteUpload2(data).then((res) => {
-                if (res.code === 200) {
-                  this.$message.success("删除成功");
-                  this.getList();
-                }
-              });
-              break;
-            case "归档正式":
-              // 预归
-              UploadApi.deleteUpload2(data).then((res) => {
-                if (res.code === 200) {
-                  this.$message.success("删除成功");
-                  this.getList();
-                }
-              });
-              break;
-            case "归档临时":
-              UploadApi.deleteUpload2(data).then((res) => {
-                if (res.code === 200) {
-                  this.$message.success("删除成功");
-                  this.getList();
-                }
-              });
-              break;
-            default:
-              break;
+        UploadApi.deleteUpload(data).then((res) => {
+          if (res.code === 200) {
+            this.$message.success("删除成功");
+            this.getList();
           }
-        }
+        });
       });
     },
     beforeUpload(e) {
@@ -307,53 +302,63 @@ export default {
       let vm = this;
       if (this.isSearch) {
         UploadApi.upload2(data).then((res) => {
-          if (res.code === 200) {
-            this.$message.success("上传成功");
-            this.getList();
-          }
+          this.$message.success("上传成功");
+          this.getList();
         });
       } else {
         switch (vm.menuType) {
           case 0:
-            // 未归
             UploadApi.upload(data).then((res) => {
-              if (res.code === 200) {
-                this.$message.success("上传成功");
-                this.getList();
-              }
+              this.$message.success("上传成功");
+              this.getList();
+            });
+            break;
+          case "卷内临时":
+            ArchivesApi4.upload(data).then((res) => {
+              this.$message.success("上传成功");
+              this.getList();
+            });
+            break;
+          case "卷内正式":
+            ArchivesApi4.upload(data).then((res) => {
+              this.$message.success("上传成功");
+              this.getList();
             });
             break;
           case "案卷临时":
             UploadApi.upload2(data).then((res) => {
-              if (res.code === 200) {
-                this.$message.success("上传成功");
-                this.getList();
-              }
+              this.$message.success("上传成功");
+              this.getList();
             });
             break;
           case "案卷正式":
             UploadApi.upload2(data).then((res) => {
-              if (res.code === 200) {
-                this.$message.success("上传成功");
-                this.getList();
-              }
+              this.$message.success("上传成功");
+              this.getList();
+            });
+            break;
+          case "资料正式":
+            UploadApi.upload3(data).then((res) => {
+              this.$message.success("上传成功");
+              this.getList();
+            });
+            break;
+          case "资料临时":
+            UploadApi.upload3(data).then((res) => {
+              this.$message.success("上传成功");
+              this.getList();
             });
             break;
           case "归档正式":
-            // 预归
             UploadApi.upload2(data).then((res) => {
-              if (res.code === 200) {
-                this.$message.success("上传成功");
-                this.getList();
-              }
+              this.$message.success("上传成功");
+              this.getList();
             });
             break;
           case "归档临时":
             UploadApi.upload2(data).then((res) => {
-              if (res.code === 200) {
-                this.$message.success("上传成功");
-                this.getList();
-              }
+              this.$message.success("上传成功");
+              this.getList();
             });
             break;
           default:
@@ -366,11 +371,11 @@ export default {
     tableClick2(e) {
       const regImg = /\.(png|jpg|gif|jpeg|webp)$/;
       const regPdf = RegExp(/pdf/);
-      if (regPdf.test(e.type)) {
+      if (regPdf.test(e.originalName)) {
         this.isPdf = true;
         this.isImg = false;
         this.url = e.url + "&.pdf";
-      } else if (regImg.test(e.type)) {
+      } else if (regImg.test(e.originalName)) {
         this.isPdf = false;
         this.isImg = true;
         this.url = e.url;
@@ -384,6 +389,27 @@ export default {
     handleClick(tab, event) {
       // console.log(tab, event);
     },
+    // 获取卷内信息列表
+    getJuanNeiList() {
+      this.loading = true;
+      let data = {
+        archId: this.dataInfo.archId,
+      };
+      ArchivesApi4.listInAnjuan(data).then((res) => {
+        this.tableData2 = res.data;
+        this.loading = false;
+      });
+    },
+    // 获取卷内信息表头列表
+    getJuanNeiHeadList() {
+      this.loading = true;
+      let data = {
+        categoryId: this.dataInfo.categoryId,
+      };
+      ArchivesApi4.headListInAnjuan(data).then((res) => {
+        this.tableData2Head = res.data;
+      });
+    },
     getList() {
       this.loading = true;
       let data = {
@@ -393,67 +419,11 @@ export default {
         pageNum: this.currentPage,
       };
       let vm = this;
-      if (this.isSearch) {
-        UploadApi.getList2(data).then((res) => {
-          if (res.code === 200) {
-            this.tableData = res.data.list;
-            this.pagination.total = res.data.total;
-          }
-          this.loading = false;
-        });
-      } else {
-        switch (vm.menuType) {
-          case 0:
-            // 未归
-            UploadApi.getList(data).then((res) => {
-              if (res.code === 200) {
-                this.tableData = res.data.list;
-                this.pagination.total = res.data.total;
-              }
-              this.loading = false;
-            });
-            break;
-          case "案卷临时":
-            UploadApi.getList2(data).then((res) => {
-              if (res.code === 200) {
-                this.tableData = res.data.list;
-                this.pagination.total = res.data.total;
-              }
-              this.loading = false;
-            });
-            break;
-          case "案卷正式":
-            UploadApi.getList2(data).then((res) => {
-              if (res.code === 200) {
-                this.tableData = res.data.list;
-                this.pagination.total = res.data.total;
-              }
-              this.loading = false;
-            });
-            break;
-          case "归档正式":
-            // 预归
-            UploadApi.getList2(data).then((res) => {
-              if (res.code === 200) {
-                this.tableData = res.data.list;
-                this.pagination.total = res.data.total;
-              }
-              this.loading = false;
-            });
-            break;
-          case "归档临时":
-            UploadApi.getList2(data).then((res) => {
-              if (res.code === 200) {
-                this.tableData = res.data.list;
-                this.pagination.total = res.data.total;
-              }
-              this.loading = false;
-            });
-            break;
-          default:
-            break;
-        }
-      }
+      UploadApi.getList(data).then((res) => {
+        this.tableData = res.data.list;
+        this.pagination.total = res.data.total;
+        this.loading = false;
+      });
     },
   },
 };

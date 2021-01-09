@@ -133,9 +133,8 @@
   </div>
 </template>
 <script>
-import { TimeChange } from "../../util/Time";
+// import { TimeChange } from "../../util/Time";
 import UserApi from "@/api/services2/user";
-import UserApi2 from "../../api/services/file";
 
 export default {
   props: {

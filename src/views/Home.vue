@@ -2,7 +2,10 @@
   <div class="flex-box">
     <div id="home">
       <el-aside class="menu">
-        <div class="logo">劳动就业管理中心</div>
+        <div class="logo">
+          <img src="../assets/logo.png" style="width:40px;vertical-align: middle;" alt="">
+          劳动就业管理中心
+        </div>
         <el-menu
           background-color="#304156"
           text-color="#fff"
@@ -176,12 +179,10 @@ import Header from "@/components/Home/Header.vue";
 import AsideL from "@/components/Home/AsideL";
 import Main from "@/components/Home/Main.vue";
 import AsideR from "@/components/Home/AsideR.vue";
-import { Drag } from "@/util/Drag";
+// import { Drag } from "@/util/Drag";
 import { TweenMax, Power4 } from "gsap";
 import { mapGetters } from "vuex";
-import UserApi from "../api/services/message";
 import SystemApi from "../api/services2/system";
-import UserApi2 from "../api/services/project";
 
 export default {
   name: "home",
@@ -213,7 +214,7 @@ export default {
     Header,
     AsideL,
     Main,
-    AsideR,
+    // AsideR,
   },
   mounted() {
     // this.getMenuList();
@@ -235,6 +236,7 @@ export default {
     menuSelect(index) {
       console.log(index);
       this.$store.commit("menu/GET_MENU_INDEX", index);
+      this.$store.commit("doc/GET_DOC_LIST", []);
       switch (index) {
         case "11-1":
           this.hideLeft = true;
@@ -251,6 +253,18 @@ export default {
         case "5-1":
           this.hideLeft = false;
           this.$store.commit("setHeaderActiveIndex", 51);
+          break;
+        case "3-1":
+          this.hideLeft = false;
+          this.$store.commit("setHeaderActiveIndex", 31);
+          break;
+        case "3-3":
+          this.hideLeft = false;
+          this.$store.commit("setHeaderActiveIndex", 33);
+          break;
+        case "3-4":
+          this.hideLeft = false;
+          this.$store.commit("setHeaderActiveIndex", 34);
           break;
         case "6": {
           const { href } = this.$router.resolve({

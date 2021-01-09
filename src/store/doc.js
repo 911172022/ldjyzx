@@ -1,7 +1,9 @@
 import ArchivesApi from "../api/services2/archives"; //未归
 import ArchivesApi2 from "../api/services2/archives2"; // 归档
 import ArchivesApi3 from "../api/services2/archives3"; // 审核
-
+import ArchivesApi4 from "../api/services2/archives4"; // 卷内
+import OpenApi from "../api/services2/openList";
+import SearchApi from "@/api/services2/searchSystem";
 export default {
   namespaced: true,
   state: {
@@ -38,9 +40,9 @@ export default {
         }
       });
     },
-    // 获取未归档案列表表头
-    getunFiledListHead({ commit }, data) {
-      ArchivesApi.getunFiledListHead(data).then(res => {
+    // 获取档案列表表头————全部档案通用
+    getListHead({ commit }, data) {
+      ArchivesApi.getListHead(data).then(res => {
         if (res.code === 200) {
           let result = res.data.map(item => {
             let obj = {
@@ -96,23 +98,6 @@ export default {
         }
       });
     },
-    // 获取档案列表表头——归档
-    getunFiledListHead2({ commit }, data) {
-      ArchivesApi2.getunFiledListHead4(data).then(res => {
-        if (res.code === 200) {
-          let result = res.data.map(item => {
-            let obj = {
-              label: item.label,
-              fieldName: item.fieldName,
-              isMain: item.isMain,
-              textValue: ""
-            };
-            return obj;
-          });
-          commit("GET_DOC_LIST_HEAD", result);
-        }
-      });
-    },
     // 查看档案详情-- 归档
     getArchInfo2({ commit }, data) {
       ArchivesApi2.getArchInfo4(data).then(res => {
@@ -154,23 +139,6 @@ export default {
         }
       });
     },
-    // 获取档案列表表头——案卷
-    getunFiledListHead23({ commit }, data) {
-      ArchivesApi2.getunFiledListHead3(data).then(res => {
-        if (res.code === 200) {
-          let result = res.data.map(item => {
-            let obj = {
-              label: item.label,
-              fieldName: item.fieldName,
-              isMain: item.isMain,
-              textValue: ""
-            };
-            return obj;
-          });
-          commit("GET_DOC_LIST_HEAD", result);
-        }
-      });
-    },
     // 查看档案详情-- 案卷
     getArchInfo23({ commit }, data) {
       ArchivesApi2.getArchInfo3(data).then(res => {
@@ -179,7 +147,6 @@ export default {
         }
       });
     },
-
 
     // 获取档案列表-- 审核案卷
     getunFiledList3({ commit }, data) {
@@ -194,23 +161,6 @@ export default {
           commit("GET_DOC_LIST", res.data.list);
           const total = res.data.total;
           commit("GET_DOC_TOTAL", total);
-        }
-      });
-    },
-    // 获取档案列表表头-- 审核案卷
-    getunFiledListHead3({ commit }, data) {
-      ArchivesApi3.getunFiledListHead(data).then(res => {
-        if (res.code === 200) {
-          let result = res.data.map(item => {
-            let obj = {
-              label: item.label,
-              fieldName: item.fieldName,
-              isMain: item.isMain,
-              textValue: ""
-            };
-            return obj;
-          });
-          commit("GET_DOC_LIST_HEAD", result);
         }
       });
     },
@@ -238,23 +188,6 @@ export default {
         }
       });
     },
-    // 获取档案列表表头--审核资料
-    getunFiledListHead333({ commit }, data) {
-      ArchivesApi3.getunFiledListHead3(data).then(res => {
-        if (res.code === 200) {
-          let result = res.data.map(item => {
-            let obj = {
-              label: item.label,
-              fieldName: item.fieldName,
-              isMain: item.isMain,
-              textValue: ""
-            };
-            return obj;
-          });
-          commit("GET_DOC_LIST_HEAD", result);
-        }
-      });
-    },
     // 查看档案详情--审核资料
     getArchInfo333({ commit }, data) {
       ArchivesApi3.getArchInfo3(data).then(res => {
@@ -279,9 +212,67 @@ export default {
         }
       });
     },
-    // 获取档案列表表头--审核文件
-    getunFiledListHead444({ commit }, data) {
-      ArchivesApi3.getunFiledListHead4(data).then(res => {
+    // 查看档案详情--审核文件
+    getArchInfo444({ commit }, data) {
+      ArchivesApi3.getArchInfo4(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    },
+
+    // 查看档案列表--资料正式库
+    getArchDataList({ commit }, data) {
+      ArchivesApi3.getArchDataList(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    },
+    // 查看档案列表--资料临时库
+    getArchDataList2({ commit }, data) {
+      ArchivesApi3.getArchDataList2(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    },
+    // 获取档案详情--资料
+    getArchDataInfo({ commit }, data) {
+      ArchivesApi3.getArchDataInfo(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+
+    // 获取审核列表
+    getCheckList({ commit }, data) {
+      ArchivesApi3.getList(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+    // 获取审核列表表头
+    getCheckHeadList({ commit }, data) {
+      ArchivesApi3.getHeadList(data).then(res => {
         if (res.code === 200) {
           let result = res.data.map(item => {
             let obj = {
@@ -296,14 +287,89 @@ export default {
         }
       });
     },
-    // 查看档案详情--审核文件
-    getArchInfo444({ commit }, data) {
-      ArchivesApi3.getArchInfo4(data).then(res => {
+
+    // 获取开放列表
+    getOpenList({ commit }, data) {
+      OpenApi.getList(data).then(res => {
+        if (res.code === 200) {
+          // res.data.list.map(item => {
+          //   for (let key in item.extraParam) {
+          //     item[key] = item.extraParam[key];
+          //   }
+          //   return item;
+          // });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+    // 获取开放列表表头
+    getOpenListHead({ commit }, data) {
+      OpenApi.getListHead(data).then(res => {
+        if (res.code === 200) {
+          let result = res.data.map(item => {
+            let obj = {
+              label: item.label,
+              fieldName: item.fieldName,
+              isMain: item.isMain,
+              textValue: ""
+            };
+            return obj;
+          });
+          commit("GET_DOC_LIST_HEAD", result);
+        }
+      });
+    },
+    // 利用平台 查看详情
+    getSearchInfo({ commit }, data) {
+      SearchApi.getInfoById(data).then(res => {
         if (res.code === 200) {
           commit("GET_ARCH_INFO", res.data);
         }
       });
     },
+
+    // 获取档案列表--卷内  正式
+    getJuanNeiList({ commit }, data) {
+      ArchivesApi4.getList(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+    // 获取档案列表--卷内 临时
+    getJuanNeiList2({ commit }, data) {
+      ArchivesApi4.getList2(data).then(res => {
+        if (res.code === 200) {
+          res.data.list.map(item => {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          });
+          commit("GET_DOC_LIST", res.data.list);
+          const total = res.data.total;
+          commit("GET_DOC_TOTAL", total);
+        }
+      });
+    },
+    // 查看档案详细信息—— ——卷内
+    getJuanNeiInfo({ commit }, data) {
+      ArchivesApi4.getFileInfo(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    }
   },
   mutations: {
     GET_DOC_LIST(state, status) {

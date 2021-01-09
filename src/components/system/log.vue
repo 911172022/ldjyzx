@@ -128,6 +128,7 @@ export default {
   },
   methods: {
     check(e) {
+      console.log(e)
       this.detailShow = true;
     },
     changeSize(e) {

@@ -130,8 +130,7 @@
 </template>
 <script>
 import UserApi from "../../api/services2/user";
-import UserApi2 from "../../api/services/group";
-import { Doc_TreeIconChange } from "@/util/Common";
+// import { Doc_TreeIconChange } from "@/util/Common";
 
 export default {
   data() {
@@ -352,6 +351,7 @@ export default {
     },
     // 删除用户组
     OpenDeleteHandle(e) {
+      console.log(e)
       let vm = this;
       if (!vm.departmentId) return vm.prompt("請选择用户组", "error");
       this.$confirm("此操作将永久删除该用户组, 是否继续?", "提示", {
