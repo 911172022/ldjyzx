@@ -1,6 +1,6 @@
 <template>
   <div class="pageCss">
-    <div class="myNavCss">
+    <!-- <div class="myNavCss">
       <el-row :gutter="20">
         <el-col :span="12">
           <el-card>
@@ -30,13 +30,12 @@
         </el-col>
         <el-col :span="8"></el-col>
       </el-row>
-    </div>
-
+    </div> -->
     <el-row :gutter="20">
       <el-col :span="12">
         <el-card>
           <div slot="header" class="clearfix">
-            <span class="card-title">档案入库趋势</span>
+            <span class="card-title">档案入库与未入库数量</span>
           </div>
           <div class="boxall" style="margin: 0.375rem">
             <div
@@ -49,7 +48,7 @@
       <el-col :span="12">
         <el-card>
           <div slot="header" class="clearfix">
-            <span class="card-title">档案分类统计</span>
+            <span class="card-title">档案分类数量统计</span>
           </div>
           <div class="boxall" style="margin: 0.375rem">
             <div
@@ -62,10 +61,10 @@
     </el-row>
     <!--项目饼图-->
     <el-row :gutter="20" style="margin: 30px 0">
-      <el-col :span="12">
+      <el-col :span="8">
         <el-card>
           <div slot="header" class="clearfix">
-            <span class="card-title">电子文件利用统计</span>
+            <span class="card-title">档案开放状态</span>
           </div>
           <div
             ref="projectPie"
@@ -73,8 +72,19 @@
           ></div>
         </el-card>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="16">
         <el-card>
+          <div slot="header" class="clearfix">
+            <span class="card-title">各保管期限案卷数量</span>
+          </div>
+          <div class="boxall" style="margin: 0.375rem">
+            <div
+              ref="departmentIncExp"
+              :style="{ width: '100%', height: '17.25rem' }"
+            ></div>
+          </div>
+        </el-card>
+        <!-- <el-card>
           <div slot="header" class="clearfix">
             <span class="card-title">案卷占比</span>
             <el-radio-group
@@ -90,12 +100,12 @@
             ref="projectPie2"
             :style="{ width: '100%', height: '17rem' }"
           ></div>
-        </el-card>
+        </el-card> -->
       </el-col>
     </el-row>
 
     <el-row :gutter="20">
-      <el-col :span="16">
+      <!-- <el-col :span="16">
         <el-card>
           <div slot="header" class="clearfix">
             <span class="card-title">各保管期限案卷数量</span>
@@ -107,8 +117,8 @@
             ></div>
           </div>
         </el-card>
-      </el-col>
-      <el-col :span="8">
+      </el-col> -->
+      <!-- <el-col :span="8">
         <el-card>
           <div slot="header" class="clearfix">
             <span>通知公告</span>
@@ -134,14 +144,14 @@
             </li>
           </ul>
         </el-card>
-      </el-col>
+      </el-col> -->
     </el-row>
   </div>
 </template>
 
 <script>
+import EchartApi from "@/api/services2/echart";
 export default {
-  name: "pc-kanban",
   data() {
     return {
       rukuRadio: null,
@@ -222,16 +232,13 @@ export default {
     drawProjectPie(data) {
       let myChart = this.$echarts.init(this.$refs.projectPie);
       let option = {
-        title: {
-          text: "电子文件利用统计",
-        },
         tooltip: {
           trigger: "item",
           formatter: "{a} <br/>{b}: {c} ({d}%)",
         },
         series: [
           {
-            name: "电子文件利用统计",
+            name: "档案开放状态",
             type: "pie",
             radius: ["50%", "70%"],
             center: ["50%", "55%"],
@@ -244,16 +251,7 @@ export default {
                 },
               },
             },
-            data: [
-              {
-                name: "下载",
-                value: 10,
-              },
-              {
-                name: "预览",
-                value: 20,
-              },
-            ],
+            data: data,
           },
         ],
       };
@@ -289,9 +287,9 @@ export default {
           {
             data: [10, 60, 30, 40, 20],
             type: "bar",
-            itemStyle: {
-              color: "#409EFF",
-            },
+            // itemStyle: {
+            //   color: "#409EFF",
+            // },
             barMaxWidth: "30%",
           },
         ],
@@ -303,18 +301,19 @@ export default {
       let option = {
         tooltip: {
           trigger: "axis",
-          formatter: `档案分类统计<br>{b}: {c}`,
+          formatter: `档案分类数量统计<br>{b}: {c}`,
         },
         xAxis: {
-          data: ["预归档档案", "未归档档案", "归档档案", "审核中档案"],
+          data: name,
           verticalAlign: "middle",
         },
         yAxis: {
           type: "value",
+          name: "单位:个",
         },
         series: [
           {
-            data: [10, 20, 30, 40],
+            data: data,
             type: "bar",
             itemStyle: {
               color: "#409EFF",
@@ -331,24 +330,31 @@ export default {
       };
       myChart.setOption(option);
     },
-    drawEchartline(name, data) {
+    drawEchartline(name, data, data2) {
       let myChart = this.$echarts.init(this.$refs.echartLine);
       let option = {
         tooltip: {
           trigger: "axis",
-          formatter: `档案入库趋势<br>{b}: {c}`,
+          formatter: (params) => {
+            return `${params[0].name}已入库数量: ${params[0].value}<br>${params[1].name}未入库数量: ${params[1].value}`;
+          },
         },
         xAxis: {
-          data: ["10-15", "10-16", "10-17", "10-18", "10-19", "10-20", "10-21"],
+          data: name,
           verticalAlign: "middle",
         },
         yAxis: {
           type: "value",
-          name: "单位:件",
+          name: "单位:个",
         },
         series: [
           {
-            data: [50, 80, 70, 90, 60, 40, 70],
+            data: data,
+            type: "line",
+            smooth: true,
+          },
+          {
+            data: data2,
             type: "line",
             smooth: true,
           },
@@ -362,13 +368,76 @@ export default {
       };
       myChart.setOption(option);
     },
+    /* 
+      档案模块总数（未归模块总数、 归档模块总数、预归档模块总数）
+      dataFormTotal: 资料档案入库数量
+      dataTempTotal: 资料档案未入库数量
+      documentFormTotal: 文书档案入库数量
+      documentTempTotal: 文书档案未入库数量
+      filesCatalogFormTotal: 卷内目录入库数量
+      filesCatalogTempTotal: 卷内目录未入库数量
+      filesFormTotal: 案卷档案入库数量
+      filesTempTotal: 案卷档案未入库数量
+      unfiledTotal: 未归档档案数量
+      noWarehousingStatusTotal: 未开放总数
+      warehousingStatusTotal: 开放总数
+    */
+    getAllModelTotal() {
+      EchartApi.getAllModelTotal().then((res) => {
+        let modelName = ["资料档案", "文书档案", "卷内目录", "案卷档案"];
+        let modelFormData = [
+          res.data.dataFormTotal,
+          res.data.documentFormTotal,
+          res.data.filesCatalogFormTotal,
+          res.data.filesFormTotal,
+        ];
+        let modelTempData = [
+          res.data.dataTempTotal,
+          res.data.documentTempTotal,
+          res.data.filesCatalogTempTotal,
+          res.data.filesTempTotal,
+        ];
+        this.drawEchartline(modelName, modelFormData, modelTempData);
+        let modelTotalName = [
+          "未归档案",
+          "资料档案",
+          "文书档案",
+          "卷内目录",
+          "案卷档案",
+        ];
+        let modelTotal = [
+          res.data.unfiledTotal,
+          res.data.dataFormTotal + res.data.dataTempTotal,
+          res.data.documentFormTotal + res.data.documentTempTotal,
+          res.data.filesCatalogFormTotal + res.data.filesCatalogTempTotal,
+          res.data.filesFormTotal + res.data.filesTempTotal,
+        ];
+        this.drawCompanyPolyline(modelTotalName, modelTotal);
+        let openData = [
+          {
+            name: "已开放数量",
+            value: res.data.warehousingStatusTotal,
+          },
+          {
+            name: "未开放数量",
+            value: res.data.noWarehousingStatusTotal,
+          },
+        ];
+        this.drawProjectPie(openData);
+      });
+    },
+    // 文书档案数量二维表格图 （根据年份 -期限 二维表格图）
+    getWenshuTable() {
+      EchartApi.getWenshuTable().then((res) => {
+        console.log(res, "文书");
+      });
+    },
   },
   mounted() {
-    this.drawProjectPie();
-    this.drawProjectPie2();
+    this.getAllModelTotal();
+    this.getWenshuTable();
+    // this.drawProjectPie2();
     this.drawDepartmentHistogram();
-    this.drawCompanyPolyline();
-    this.drawEchartline();
   },
 };
 </script>

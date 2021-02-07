@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-10-19 09:41:32
+ * @LastEditTime: 2021-02-01 14:59:56
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \gyy_oac:\Users\Shihx\Desktop\ldjyzx\vue.config.js
+ */
 const publicPath = process.env.NODE_ENV === "production" ? "/" : "/";
 
 module.exports = {
@@ -6,6 +14,7 @@ module.exports = {
   // lintOnSave: false,
   // 设为false打包时不生成.map文件
   productionSourceMap: false,
+  lintOnSave: false,
   // 这里写你调用接口的基础路径，来解决跨域，如果设置了代理，那你本地开发环境的axios的baseUrl要写为 '' ，即空字符串
   devServer: {
     host: "0.0.0.0",

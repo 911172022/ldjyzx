@@ -105,5 +105,19 @@ export default {
       }
     });
   },
-  
+  // 导入Excel数据
+  importExcel2(data) {
+    let file = new FormData();
+    file.append("file", data.file);
+    file.append("categoryId", data.categoryId);
+
+    return request({
+      url: "excel/import/attachment",
+      method: "post",
+      data: file,
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+  },
 };

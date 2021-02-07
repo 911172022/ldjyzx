@@ -1,3 +1,11 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-10-19 09:41:16
+ * @LastEditTime: 2021-01-19 18:08:34
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \gyy_oac:\Users\Shihx\Desktop\ldjyzx\src\App.vue
+-->
 <template>
   <div id="app">
     <router-view />
@@ -6,9 +14,18 @@
 <script>
 export default {
   methods: {},
+  mounted() {
+    let height = document.body.clientHeight - 310;
+    this.$store.commit("doc/GET_DOC_HEIGHT",height)
+  },
 };
 </script>
 <style lang="scss">
+.point {
+  input {
+    cursor: pointer;
+  }
+}
 // *::-webkit-scrollbar {width:6px; height:10px; background-color:transparent; z-index: 99} /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
 // *::-webkit-scrollbar-track {background-color:#fff;  } /*定义滚动条轨道 内阴影+圆角*/
 // *::-webkit-scrollbar-thumb {background-color:rgba(144,147,153,.3); border-radius:6px;} /*定义滑块 内阴影+圆角*/

@@ -42,7 +42,7 @@
                   stripe
                   v-loading="tableLoading"
                   :data="mainList"
-                  :height="tableHeightLocal"
+                  :height="tableHeightLocal - 270"
                   highlight-current-row
                   style="width: 100%"
                 >
@@ -62,7 +62,7 @@
                   stripe
                   v-loading="tableLoading"
                   :data="listForm.otherList"
-                  :height="tableHeightLocal"
+                  :height="tableHeightLocal - 270"
                   highlight-current-row
                   style="width: 100%"
                 >
@@ -99,7 +99,7 @@
           </el-option>
         </el-select>
         <el-table
-          :height="tableHeightLocal2"
+          :height="tableHeightLocal + 100"
           border
           v-loading="loading"
           :data="tableData"
@@ -365,6 +365,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from "vuex";
 import SystemApi from "../../api/services2/system";
 
 export default {
@@ -477,14 +478,7 @@ export default {
     };
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 590;
-      return height;
-    },
-    tableHeightLocal2() {
-      let height = document.body.clientHeight - 200;
-      return height;
-    },
+    ...mapGetters("doc", ["tableHeightLocal"]),
   },
   mounted() {
     this.getTypeTreeList();
@@ -918,6 +912,8 @@ export default {
           return (e = "归档");
         case 3:
           return (e = "资料");
+        case 4:
+          return (e = "卷内");
         default:
           break;
       }

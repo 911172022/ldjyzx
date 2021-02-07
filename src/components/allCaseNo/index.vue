@@ -4,7 +4,7 @@
       :data="tableList"
       border
       v-loading="loading"
-      :height="tableHeightLocal"
+      :height="tableHeightLocal+100"
     >
       <el-table-column
         prop="generalArchiveName"
@@ -71,6 +71,7 @@
 
 <script>
 import NoApi from "@/api/services2/allCaseNo";
+import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
@@ -212,10 +213,7 @@ export default {
     },
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 270;
-      return height;
-    },
+    ...mapGetters("doc",["tableHeightLocal"])
   },
 };
 </script>

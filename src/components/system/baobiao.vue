@@ -1,3 +1,11 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-11-26 19:15:51
+ * @LastEditTime: 2021-01-20 11:46:37
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \gyy_oac:\Users\Shihx\Desktop\ldjyzx\src\components\system\baobiao.vue
+-->
 <template>
   <div>
     <div class="flex-row">
@@ -7,7 +15,7 @@
       v-loading="loading"
       :data="tableList"
       border
-      :height="tableHeightLocal"
+      :height="tableHeightLocal+100"
     >
       <el-table-column label="名称" prop="name"></el-table-column>
       <el-table-column fixed="right" label="操作">
@@ -32,6 +40,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
@@ -77,10 +86,7 @@ export default {
     getList() {},
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 270;
-      return height;
-    },
+    ...mapGetters("doc",["tableHeightLocal"])
   },
 };
 </script>

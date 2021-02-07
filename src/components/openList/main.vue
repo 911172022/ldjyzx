@@ -163,7 +163,7 @@ export default {
       // 搜索框数据
       formInline: {
         searchContent: "",
-        field: "archNo",
+        field: "",
       },
       MenuList: [],
       menuVisible: false,
@@ -188,11 +188,24 @@ export default {
     };
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 270;
-      return height;
+    ...mapGetters("doc", [
+      "DocList",
+      "DocListHead",
+      "categoryId",
+      "tableHeightLocal",
+    ]),
+    filed() {
+      return this.$store.state.doc.field;
     },
-    ...mapGetters("doc", ["DocList", "DocListHead", "categoryId"]),
+  },
+  watch: {
+    filed: {
+      handler(newValue) {
+        console.log(newValue);
+        this.formInline.field = newValue;
+      },
+      deep: true,
+    },
   },
   methods: {
     radioChange(e) {
@@ -286,7 +299,7 @@ export default {
     },
     // 高级搜索
     submitHighSearch(form) {
-      let vm = this;
+      // let vm = this;
       this.searchForm = form;
       this.searchType = 1;
       let data = {

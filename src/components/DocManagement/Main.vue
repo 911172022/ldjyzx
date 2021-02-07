@@ -95,7 +95,7 @@
               style="margin-left: 10px"
               action="#"
               :show-file-list="false"
-              :before-upload="beforeUpload"
+              :http-request="httpRequest"
             >
               <el-button size="small" type="primary">数据导入</el-button>
             </el-upload>
@@ -112,17 +112,17 @@
       <!--列表-->
       <!-- @dragover="fileDragover" @drop="fileDrop" -->
       <div id="uploadDrop" style="overflow: hidden; flex: 1">
-        <div v-if="dragStatus" class="drag-tip" :style="dragMaskStyle">
+        <!-- <div v-if="dragStatus" class="drag-tip" :style="dragMaskStyle">
           <i class="el-icon-plus"></i>
           <p v-if="!dragEnterDiv">请将文件拖拽至此处</p>
           <p v-else>放开上传</p>
-        </div>
+        </div> -->
         <el-table
           :data="DocList"
           id="DocList"
           ref="DocList"
           class="mainTable"
-          :height="tableHeightLocal"
+          :height="tableHeightLocal - 1"
           border
           highlight-current-row
           :tree-props="treeprops"
@@ -291,7 +291,6 @@ import ArchivesApi2 from "@/api/services2/archives2";
 import ArchivesApi3 from "@/api/services2/archives3";
 import ArchivesApi4 from "@/api/services2/archives4";
 import DataApi from "@/api/services2/data";
-import OpenApi from "@/api/services2/openList";
 import { mapGetters } from "vuex";
 import { setDragEventListener } from "@/util/Common";
 export default {
@@ -335,7 +334,7 @@ export default {
       // 搜索框数据
       formInline: {
         searchContent: "",
-        field: "archNo",
+        field: "",
       },
       // table 多选数据
       multipleSelection: [],
@@ -382,6 +381,7 @@ export default {
       "DocListHead",
       "categoryId",
       "menuType",
+      "tableHeightLocal",
     ]),
     ...mapGetters("menu", ["isTable", "menuIndex"]),
     // 拖拽上传的mask
@@ -396,9 +396,12 @@ export default {
         };
       }
     },
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 270;
-      return height;
+    // tableHeightLocal() {
+    //   let height = document.body.clientHeight - 270;
+    //   return height;
+    // },
+    filed() {
+      return this.$store.state.doc.field;
     },
   },
   destroyed() {
@@ -426,19 +429,29 @@ export default {
         });
       }
     },
-    menuIndex(v) {
-      if (v == "1-1" || v == "1-2" || v == "1-3" || v == "1-4") {
-        this.warehousingStatus = 0;
-        this.status = true;
-        this.status2 = false;
-      } else if (v == "2-1" || v == "2-2" || v == "2-3" || v == "2-4") {
-        this.warehousingStatus = 1;
-        this.status = true;
-        this.status2 = true;
-      } else {
-        this.status = false;
-        this.status2 = false;
-      }
+    filed: {
+      handler(newValue) {
+        this.formInline.field = newValue;
+      },
+      deep: true,
+    },
+    menuIndex: {
+      handler(v) {
+        if (v == "1-1" || v == "1-2" || v == "1-3" || v == "1-4") {
+          this.warehousingStatus = 0;
+          this.status = true;
+          this.status2 = false;
+        } else if (v == "2-1" || v == "2-2" || v == "2-3" || v == "2-4") {
+          this.warehousingStatus = 1;
+          this.status = true;
+          this.status2 = true;
+        } else {
+          this.status = false;
+          this.status2 = false;
+        }
+      },
+      deep: true,
+      immediate: true,
     },
   },
   methods: {
@@ -488,12 +501,12 @@ export default {
         searchItem: this.searchForm,
         singleField: this.formInline.field,
       };
-      ArchivesApi4.updateWarehousingStatus(data).then((res) => {
+      ArchivesApi4.updateWarehousingStatus(data).then(() => {
         if (status == 1) {
           this.$message.success("开放成功");
         }
         if (status == 0) {
-          this.$message.success("开放成功");
+          this.$message.success("取消开放成功");
         }
         this.updateList();
       });
@@ -510,7 +523,7 @@ export default {
           this.$message.success("开放成功");
         }
         if (status == 0) {
-          this.$message.success("开放成功");
+          this.$message.success("取消开放成功");
         }
         this.updateList();
       });
@@ -731,11 +744,9 @@ export default {
         updateContent: this.moreForm.content,
       };
       ArchivesApi3.updateById(data).then((res) => {
-        if (res.code === 200) {
-          this.$message.success("批量修改成功");
-          this.updateList();
-          this.moreChangeVisible = false;
-        }
+        this.$message.success("批量修改成功");
+        this.updateList();
+        this.moreChangeVisible = false;
       });
     },
     // 批量修改（根据条件所有）———— 资料
@@ -750,12 +761,10 @@ export default {
         searchItem: this.searchForm,
         singleField: this.formInline.field,
       };
-      ArchivesApi3.updateByOther(data).then((res) => {
-        if (res.code === 200) {
-          this.$message.success("批量修改成功");
-          this.updateList();
-          this.moreChangeVisible = false;
-        }
+      ArchivesApi3.updateByOther(data).then(() => {
+        this.$message.success("批量修改成功");
+        this.updateList();
+        this.moreChangeVisible = false;
       });
     },
     // 批量修改（根据所选ID）———— 归档
@@ -766,12 +775,10 @@ export default {
         ids: this.tableIDList,
         updateContent: this.moreForm.content,
       };
-      ArchivesApi2.updateBatchSelect(data).then((res) => {
-        if (res.code === 200) {
-          this.$message.success("批量修改成功");
-          this.updateList();
-          this.moreChangeVisible = false;
-        }
+      ArchivesApi2.updateBatchSelect(data).then(() => {
+        this.$message.success("批量修改成功");
+        this.updateList();
+        this.moreChangeVisible = false;
       });
     },
     // 批量修改（根据条件所有）———— 归档
@@ -787,11 +794,9 @@ export default {
         singleField: this.formInline.field,
       };
       ArchivesApi2.updateBatch(data).then((res) => {
-        if (res.code === 200) {
-          this.$message.success("批量修改成功");
-          this.updateList();
-          this.moreChangeVisible = false;
-        }
+        this.$message.success("批量修改成功");
+        this.updateList();
+        this.moreChangeVisible = false;
       });
     },
     // 批量修改（根据所选ID）———— 卷内
@@ -831,16 +836,14 @@ export default {
       this.moreChangeVisible = true;
     },
     // 导入数据
-    beforeUpload(e) {
+    httpRequest(e) {
       let data = {
-        file: e,
+        file: e.file,
         categoryId: this.categoryId,
         warehousingStatus: this.warehousingStatus,
       };
       DataApi.importExcel(data).then((res) => {
-        if (res.code === 200) {
-          this.$message.success("数据导入成功");
-        }
+        this.$message.success("数据导入成功");
       });
     },
     // 导出Excel
@@ -856,13 +859,11 @@ export default {
         singleField: this.formInline.field,
       };
       ArchivesApi.exportExcel(data).then((res) => {
-        if (res.code === 200) {
-          const a = document.createElement("a");
-          a.setAttribute("target", "_blank");
-          a.setAttribute("href", res.data);
-          a.setAttribute("download", "数据导出");
-          a.click();
-        }
+        const a = document.createElement("a");
+        a.setAttribute("target", "_blank");
+        a.setAttribute("href", res.data);
+        a.setAttribute("download", "数据导出");
+        a.click();
       });
     },
     // 重置搜索条件
@@ -1038,9 +1039,7 @@ export default {
       };
       let vm = this;
       ArchivesApi.getFileForm(data).then((res) => {
-        if (res.code === 200) {
-          this.formList = res.data;
-        }
+        this.formList = res.data;
       });
     },
     cancel(e) {

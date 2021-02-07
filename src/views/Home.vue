@@ -4,7 +4,7 @@
       <el-aside class="menu">
         <div class="logo">
           <img src="../assets/logo.png" style="width:40px;vertical-align: middle;" alt="">
-          劳动就业管理中心
+          广州就业
         </div>
         <el-menu
           background-color="#304156"
@@ -215,9 +215,6 @@ export default {
     AsideL,
     Main,
     // AsideR,
-  },
-  mounted() {
-    // this.getMenuList();
   },
   methods: {
     getMenuList() {

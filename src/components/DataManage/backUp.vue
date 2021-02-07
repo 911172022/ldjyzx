@@ -28,7 +28,7 @@
     <el-table
       border
       v-loading="loading"
-      :height="tableHeightLocal"
+      :height="tableHeightLocal+80"
       :data="tableList"
       highlight-current-row
       stripe
@@ -65,6 +65,7 @@
 
 <script>
 import BackUpApi from "@/api/services2/data";
+import { mapGetters } from 'vuex';
 export default {
   data() {
     return {
@@ -232,10 +233,7 @@ export default {
     },
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 210;
-      return height;
-    },
+    ...mapGetters("doc",["tableHeightLocal"])
   },
 };
 </script>

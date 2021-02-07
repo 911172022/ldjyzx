@@ -10,6 +10,7 @@
         node-key="categoryId"
         @node-click="treeClick"
         :props="props"
+        :default-expanded-keys="defaultExpandedKeys"
         @node-contextmenu="contextMenuClickTest"
         :render-content="renderContent"
       >
@@ -45,6 +46,7 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
+      defaultExpandedKeys: [],
       dialogFormVisible: false,
       // 控制目录树显示loading
       loading: true,
@@ -212,14 +214,20 @@ export default {
       SystemApi.getTypeTreeList(data).then((res) => {
         if (res.code === 200) {
           this.treeData = res.data;
+          if (res.data[0].list.length > 0) {
+            this.defaultExpandedKeys.push(res.data[0].list[0].categoryId);
+          } else {
+            this.defaultExpandedKeys = []
+          }
         }
         this.treeLoading = false;
       });
     },
-    treeClick(e) {
+    treeClick(e, a) {
       let vm = this;
       this.$store.commit("doc/GET_CATEGORYID", e.categoryId);
-      if (e.type !== 0) {
+      if (a.level !== 1) {
+        this.$store.commit("doc/GET_FIELD", "archNo");
         let data = {
           categoryId: e.categoryId,
           content: "",
@@ -227,6 +235,7 @@ export default {
           pageSize: this.pagination.pageSize,
           searchItem: {},
           searchType: this.searchType,
+          singleField: "archNo",
         };
         let data2 = {
           categoryId: e.categoryId,

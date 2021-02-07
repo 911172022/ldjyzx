@@ -21,7 +21,7 @@
       v-loading="loading"
       :data="userData"
       tooltip-effect="dark"
-      :height="tableHeightLocal"
+      :height="tableHeightLocal+100"
       class="dialogTable"
       border
       highlight-current-row
@@ -135,6 +135,7 @@
 <script>
 // import { TimeChange } from "../../util/Time";
 import UserApi from "@/api/services2/user";
+import { mapGetters } from 'vuex';
 
 export default {
   props: {
@@ -186,10 +187,7 @@ export default {
     };
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 230;
-      return height;
-    },
+    ...mapGetters("doc",["tableHeightLocal"]),
     hideTableBtn() {
       let result;
       if (this.groupId || this.departmentId) {

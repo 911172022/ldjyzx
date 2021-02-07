@@ -1,4 +1,12 @@
-import { Form } from "element-ui";
+/*
+ * @Author: your name
+ * @Date: 2020-11-25 10:10:29
+ * @LastEditTime: 2021-02-01 14:59:01
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \gyy_oac:\Users\Shihx\Desktop\ldjyzx\src\api\services2\upload.js
+ */
+// import { Form } from "element-ui";
 import request from "../BaseAxios";
 export default {
   // 删除附件

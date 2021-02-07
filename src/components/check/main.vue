@@ -10,7 +10,7 @@
         <el-form-item>
           <el-select
             placeholder="请选择字段"
-            style="width: 200px;"
+            style="width: 200px"
             v-model="formInline.field"
             size="small"
           >
@@ -83,7 +83,7 @@
           id="DocList"
           ref="DocList"
           class="mainTable"
-          :height="tableHeightLocal"
+          :height="tableHeightLocal - 30"
           border
           highlight-current-row
           @selection-change="handleSelectionChange"
@@ -163,7 +163,7 @@ export default {
       // 搜索框数据
       formInline: {
         searchContent: "",
-        field: "archNo",
+        field: "",
       },
       MenuList: [],
       menuVisible: false,
@@ -187,11 +187,23 @@ export default {
     };
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 270;
-      return height;
+    ...mapGetters("doc", [
+      "DocList",
+      "DocListHead",
+      "categoryId",
+      "tableHeightLocal",
+    ]),
+    filed() {
+      return this.$store.state.doc.field;
     },
-    ...mapGetters("doc", ["DocList", "DocListHead", "categoryId"]),
+  },
+  watch: {
+    filed: {
+      handler(newValue) {
+        this.formInline.field = newValue;
+      },
+      deep: true,
+    },
   },
   methods: {
     radioChange(e) {

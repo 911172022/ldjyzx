@@ -4,7 +4,7 @@
       >新增</el-button
     >
     <el-table
-      :height="tableHeightLocal"
+      :height="tableHeightLocal+80"
       v-loading="loading"
       :data="tableData"
       border
@@ -41,6 +41,7 @@
 <script>
 import Add from "./add";
 import ReportApi from "@/api/services2/announcement";
+import { mapGetters } from 'vuex';
 
 export default {
   components: { Add },
@@ -61,10 +62,7 @@ export default {
     };
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 270;
-      return height;
-    },
+    ...mapGetters("doc",["tableHeightLocal"])
   },
   methods: {
     sizeChange(e) {

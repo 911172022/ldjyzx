@@ -49,7 +49,7 @@
             action="#"
             multiple
             :show-file-list="false"
-            :before-upload="beforeUpload"
+            :http-request="httpRequest"
             :on-progress="onProgress"
           >
             <el-button type="primary" size="small">点击上传</el-button>
@@ -104,9 +104,14 @@
       </el-tab-pane>
       <el-tab-pane label="档案日志" name="4">
         <el-timeline>
-          <el-timeline-item timestamp="2020/11/26" placement="top">
+          <el-timeline-item
+            v-for="(item, index) in logDetail"
+            :key="index"
+            :timestamp="item.createTime"
+            placement="top"
+          >
             <el-card>
-              <p>邹粤 创建于 2020/11/26 10:46</p>
+              <p>{{ item.username }} {{ item.operation }}</p>
             </el-card>
           </el-timeline-item>
         </el-timeline>
@@ -121,11 +126,11 @@
       <el-card>
         <iframe
           v-if="isPdf"
-          :src="`/pdf/web/viewer.html?file=${url}`"
+          :src="url"
           frameborder="0"
-          style="width: 100%; height: 100%"
+          style="width: 100%; height: 80vh"
         ></iframe>
-        <img v-else-if="isImg" :src="url" style="width: 100%; height: 100%" />
+        <img v-else-if="isImg" :src="url" style="width: 100%; height: 80vh" />
         <iframe
           v-else
           :src="`https://view.officeapps.live.com/op/view.aspx?src=${url}`"
@@ -154,6 +159,7 @@
 import Pagination from "../components/Pagination/index.vue";
 import FileForm from "../components/form/index";
 import ArchivesApi4 from "@/api/services2/archives4";
+import ArchivesApi from "@/api/services2/archives";
 import UploadApi from "@/api/services2/upload";
 import { Upload } from "element-ui";
 import { mapGetters } from "vuex";
@@ -186,6 +192,8 @@ export default {
 
       controlJuanNeiType: "",
       archId: "",
+
+      logDetail: [],
     };
   },
   watch: {
@@ -195,12 +203,18 @@ export default {
         switch (newValue) {
           case "1-3":
             this.hideTwo = true;
+            this.getJuanNeiList();
+            this.getJuanNeiHeadList();
             break;
           case "2-3":
             this.hideTwo = true;
+            this.getJuanNeiList();
+            this.getJuanNeiHeadList();
             break;
           case "3-3":
             this.hideTwo = true;
+            this.getJuanNeiList();
+            this.getJuanNeiHeadList();
             break;
           default:
             this.hideTwo = false;
@@ -221,10 +235,19 @@ export default {
   },
   mounted() {
     this.getList();
-    this.getJuanNeiList();
-    this.getJuanNeiHeadList();
   },
   methods: {
+    getArchLog() {
+      let data = {
+        archId: this.dataInfo.archId,
+      };
+      ArchivesApi.getArchLog(data).then((res) => {
+        res.data.forEach((item) => {
+          item.createTime = format(item.createTime, "yyyy-MM-dd");
+        });
+        this.logDetail = res.data;
+      });
+    },
     update(row, type) {
       this.dialogVisible = true;
       this.controlJuanNeiType = type;
@@ -293,9 +316,9 @@ export default {
         });
       });
     },
-    beforeUpload(e) {
+    httpRequest(e) {
       let data = {
-        file: e,
+        file: e.file,
         categoryId: this.dataInfo.categoryId,
         archId: this.dataInfo.archId,
       };
@@ -369,12 +392,13 @@ export default {
     pageNum2(e) {},
     tableClick(e) {},
     tableClick2(e) {
+      console.log(e)
       const regImg = /\.(png|jpg|gif|jpeg|webp)$/;
       const regPdf = RegExp(/pdf/);
       if (regPdf.test(e.originalName)) {
         this.isPdf = true;
         this.isImg = false;
-        this.url = e.url + "&.pdf";
+        this.url = e.url;
       } else if (regImg.test(e.originalName)) {
         this.isPdf = false;
         this.isImg = true;
@@ -387,7 +411,9 @@ export default {
       this.fileShow = true;
     },
     handleClick(tab, event) {
-      // console.log(tab, event);
+      if (tab.label == "档案日志") {
+        this.getArchLog();
+      }
     },
     // 获取卷内信息列表
     getJuanNeiList() {

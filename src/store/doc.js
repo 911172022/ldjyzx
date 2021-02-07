@@ -21,7 +21,11 @@ export default {
     // 用户刷新列表
     refreshList: true,
     // 0未归 1案卷 2归档 3资料
-    menuType: ""
+    menuType: "",
+
+    tableHeightLocal: "",
+    // 默认是档案号
+    field: ""
   },
   actions: {
     // 获取未归档案列表
@@ -292,13 +296,12 @@ export default {
     getOpenList({ commit }, data) {
       OpenApi.getList(data).then(res => {
         if (res.code === 200) {
-          // res.data.list.map(item => {
-          //   for (let key in item.extraParam) {
-          //     item[key] = item.extraParam[key];
-          //   }
-          //   return item;
-          // });
-          commit("GET_DOC_LIST", res.data.list);
+          let result = res.data.list.map(item => {
+            item.openStatus == 0 ? (item.openStatus = "未开放") : (item.openStatus = "已开放");
+            return item;
+          });
+          console.log(result);
+          commit("GET_DOC_LIST", result);
           const total = res.data.total;
           commit("GET_DOC_TOTAL", total);
         }
@@ -330,6 +333,14 @@ export default {
       });
     },
 
+    // 管理平台 查看详情
+    getSearchInfo2({ commit }, data) {
+      SearchApi.getInfoById2(data).then(res => {
+        if (res.code === 200) {
+          commit("GET_ARCH_INFO", res.data);
+        }
+      });
+    },
     // 获取档案列表--卷内  正式
     getJuanNeiList({ commit }, data) {
       ArchivesApi4.getList(data).then(res => {
@@ -372,6 +383,12 @@ export default {
     }
   },
   mutations: {
+    GET_FIELD(state, status) {
+      state.field = status;
+    },
+    GET_DOC_HEIGHT(state, status) {
+      state.tableHeightLocal = status;
+    },
     GET_DOC_LIST(state, status) {
       state.DocList = status;
     },
@@ -401,6 +418,8 @@ export default {
     categoryId: state => state.categoryId,
     refreshList: state => state.refreshList,
     archInfo: state => state.archInfo,
-    menuType: state => state.menuType
+    menuType: state => state.menuType,
+    tableHeightLocal: state => state.tableHeightLocal,
+    field: state => state.field
   }
 };

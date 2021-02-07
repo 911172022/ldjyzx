@@ -111,7 +111,7 @@
               max-width="5%"
               min-width="150"
             ></el-table-column>
-            <el-table-column width="200" fixed="right">
+            <el-table-column min-width="150" fixed="right">
               <template slot-scope="scope">
                 <el-button type="primary" @click="check(scope.row)" size="mini"
                   >查看</el-button
@@ -184,27 +184,22 @@ export default {
       searchValue: "",
       dataType: "",
       type: "",
-      fieldType: [],
-      fieldTypeOptions: [
-        { value: 0, label: "姓名" },
-        { value: 1, label: "性别" },
-      ],
       dataTypeOptions: [
         {
           value: 1,
-          label: "卷内管理",
-        },
-        {
-          value: 2,
-          label: "资料管理",
-        },
-        {
-          value: 3,
           label: "案卷管理",
         },
         {
-          value: 4,
+          value: 2,
           label: "归档管理",
+        },
+        {
+          value: 3,
+          label: "资料管理",
+        },
+        {
+          value: 4,
+          label: "卷内管理",
         },
       ],
       typeOptions: [],
@@ -239,25 +234,23 @@ export default {
         archType: this.dataType,
       };
       SearchApi.getCategoryList(data).then((res) => {
-        if (res.code === 200) {
-          this.typeOptions = res.data;
-        }
+        this.typeOptions = res.data;
       });
     },
     // 添加收藏
     addData(e) {
       let archType;
       switch (e.archType) {
-        case "卷内管理":
+        case "案卷管理":
           archType = 1;
           break;
-        case "资料管理":
+        case "归档管理":
           archType = 2;
           break;
-        case "案卷管理":
+        case "资料管理":
           archType = 3;
           break;
-        case "归档管理":
+        case "卷内管理":
           archType = 4;
           break;
         default:
@@ -269,9 +262,7 @@ export default {
         archId: e.archId,
       };
       SearchApi.addData(data).then((res) => {
-        if (res.code === 200) {
-          this.$message.success("收藏成功");
-        }
+        this.$message.success("收藏成功");
       });
     },
     // 获取表头
@@ -280,9 +271,7 @@ export default {
         categoryId: this.type,
       };
       SearchApi.getHeadList(data).then((res) => {
-        if (res.code === 200) {
-          this.tableHeadData = res.data;
-        }
+        this.tableHeadData = res.data;
       });
     },
     fileFormCancel(e) {
@@ -321,9 +310,6 @@ export default {
       this.pagination.pageSize = e;
       this.getList();
     },
-    fieldChange(e) {
-      console.log(e);
-    },
     getList() {
       let data = {
         archType: this.dataType,
@@ -336,37 +322,35 @@ export default {
         singleField: this.singleField,
       };
       SearchApi.getList(data).then((res) => {
-        if (res.code === 200) {
-          res.data.list.forEach((item) => {
-            switch (item.archType) {
-              case 1:
-                return (item.archType = "卷内管理");
-              case 2:
-                return (item.archType = "资料管理");
-              case 3:
-                return (item.archType = "案卷管理");
-              case 4:
-                return (item.archType = "归档管理");
-              default:
-                break;
-            }
-          });
-          res.data.list.map((item) => {
-            if (item.extraParam) {
-              for (let key in item.extraParam) {
-                item[key] = item.extraParam[key];
-              }
-              return item;
-            }
-          });
-          this.tableData = res.data.list;
-          if (this.tableData.length == 0) {
-            this.hasData = false;
-          } else {
-            this.hasData = true;
+        res.data.list.forEach((item) => {
+          switch (item.archType) {
+            case 1:
+              return (item.archType = "案卷管理");
+            case 2:
+              return (item.archType = "归档管理");
+            case 3:
+              return (item.archType = "资料管理");
+            case 4:
+              return (item.archType = "卷内管理");
+            default:
+              break;
           }
-          this.pagination.total = res.data.total;
+        });
+        res.data.list.map((item) => {
+          if (item.extraParam) {
+            for (let key in item.extraParam) {
+              item[key] = item.extraParam[key];
+            }
+            return item;
+          }
+        });
+        this.tableData = res.data.list;
+        if (this.tableData.length == 0) {
+          this.hasData = false;
+        } else {
+          this.hasData = true;
         }
+        this.pagination.total = res.data.total;
       });
     },
     search() {
@@ -385,12 +369,10 @@ export default {
       var vm = this;
       vm.$confirm("确认退出吗?", "提示", {}).then(() => {
         loginOut().then((res) => {
-          if (res.code === 200) {
-            this.$message.success("退出成功");
-            this.$store.commit("SET_TOKEN", "");
-            localStorage.removeItem("LOGIN");
-            this.$router.push("/");
-          }
+          this.$message.success("退出成功");
+          this.$store.commit("SET_TOKEN", "");
+          localStorage.removeItem("LOGIN");
+          this.$router.push("/");
         });
       });
     },
@@ -399,9 +381,7 @@ export default {
         categoryId: this.type,
       };
       SearchApi.getHighSearchField(data).then((res) => {
-        if (res.code === 200) {
-          this.formList = res.data;
-        }
+        this.formList = res.data;
       });
     },
   },

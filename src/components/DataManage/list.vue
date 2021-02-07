@@ -87,6 +87,7 @@
 
 <script>
 import SystemApi from "@/api/services2/system";
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -198,10 +199,7 @@ export default {
     this.getSimpleList();
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 270;
-      return height;
-    },
+    ...mapGetters("doc",["tableHeightLocal"])
   },
 };
 </script>

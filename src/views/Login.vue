@@ -6,7 +6,7 @@
           <el-col :span="12">
             <div class="left">
               <img src="@/assets/logo.png" style="margin-top: calc(100% - 200px)"  alt="广州就业服务">
-              <h1 style="color: #fff;">广州就业服务</h1>
+              <h1 style="color: #fff;">广州就业</h1>
             </div>
           </el-col>
           <el-col :span="12">

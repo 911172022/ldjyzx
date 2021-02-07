@@ -36,15 +36,24 @@
         action="#"
         :show-file-list="false"
         :disabled="isTrue"
-        :before-upload="beforeUpload"
+        :http-request="httpRequest"
       >
         <el-button :disabled="isTrue" type="primary">数据导入</el-button>
+      </el-upload>
+      <el-upload
+        class="upload-demo"
+        action="#"
+        :show-file-list="false"
+        :disabled="isTrue"
+        :http-request="httpRequest2"
+      >
+        <el-button :disabled="isTrue" type="primary">导入附件信息</el-button>
       </el-upload>
     </div>
     <el-table
       border
       v-loading="loading"
-      :height="tableHeightLocal"
+      :height="tableHeightLocal + 100"
       :data="tableList"
       highlight-current-row
       stripe
@@ -70,6 +79,7 @@
 <script>
 import DataApi from "@/api/services2/data";
 import SystemApi from "@/api/services2/system";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
@@ -129,43 +139,39 @@ export default {
       let data = {
         categoryId: this.form.type,
       };
-      DataApi.exportExcelModel(data)
-        .then((res) => {
-          console.log(res);
-          const blob = new Blob(["\ufeff" + res], {
-            type: "text/csv;charset=utf-8",
-          });
-          const url = window.URL.createObjectURL(blob);
-          // 通过创建a标签实现
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = "数据模板";
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      DataApi.exportExcelModel(data).then((res) => {
+        const a = document.createElement("a");
+        a.setAttribute("target", "_blank");
+        a.setAttribute("href", res.data);
+        a.setAttribute("download", "数据导出");
+        a.click();
+      });
     },
     selectChange(e) {
       this.type = "";
       this.getList();
     },
-    beforeUpload(e) {
+    httpRequest(e) {
       if (!this.form.warehousingStatus) {
         this.$message.error("请选择导入数据存放的库");
         return false;
       }
       let data = {
-        file: e,
+        file: e.file,
         categoryId: this.form.type,
         warehousingStatus: this.form.warehousingStatus,
       };
       DataApi.importExcel(data).then((res) => {
-        if (res.code === 200) {
-          this.$message.success("数据导入成功");
-        }
+        this.$message.success("数据导入成功");
+      });
+    },
+    httpRequest2(e) {
+      let data = {
+        file: e.file,
+        categoryId: this.form.type,
+      };
+      DataApi.importExcel2(data).then((res) => {
+        this.$message.success("导入附件信息成功");
       });
     },
     // 获取分类
@@ -175,9 +181,7 @@ export default {
         categoryId: this.form.type,
       };
       SystemApi.getSimpleList(data).then((res) => {
-        if (res.code === 200) {
-          this.typeOptions = res.data;
-        }
+        this.typeOptions = res.data;
       });
     },
   },
@@ -185,10 +189,7 @@ export default {
     // this.getList();
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 170;
-      return height;
-    },
+    ...mapGetters("doc", ["tableHeightLocal"]),
   },
 };
 </script>

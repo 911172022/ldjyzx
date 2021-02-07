@@ -186,5 +186,39 @@ export default {
         "Content-Type": "application/json"
       }
     });
-  }
+  },
+  // 根据查询日志详情
+  getLogDetail(data) {
+    return request({
+      url: "/sys/log/get",
+      method: "get",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 根据查询日志详情
+  getLogList(data) {
+    return request({
+      url: "/sys/log/list",
+      method: "get",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+
+  // 获取用户部门列表
+  getUserAndDepartment(data) {
+    return request({
+      url: "/sys/user/getUserAndDepartment",
+      method: "get",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
 };

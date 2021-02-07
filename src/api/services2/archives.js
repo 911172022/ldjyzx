@@ -124,5 +124,38 @@ export default {
         "Content-Type": "application/json"
       }
     });
-  }
+  },
+  // 查询档案日志详情
+  getLogDetail(data) {
+    return request({
+      url: "/arch/log/get",
+      method: "get",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 查看档案生命周期
+  getArchLog(data) {
+    return request({
+      url: "/arch/log/getArchLog",
+      method: "get",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  // 根据条件查询日志列表
+  getLogList(data) {
+    return request({
+      url: "/arch/log/list",
+      method: "get",
+      params: data,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
 };

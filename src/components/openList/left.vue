@@ -105,6 +105,8 @@ export default {
           return (e = "归档");
         case 3:
           return (e = "资料");
+        case 4:
+          return (e = "卷内");
         default:
           break;
       }
@@ -118,10 +120,10 @@ export default {
         </span>
       );
     },
-    treeClick(e,a,b) {
-      console.log(e);
+    treeClick(e, a, b) {
       this.$store.commit("doc/GET_CATEGORYID", e.categoryId);
       if (a.level !== 1) {
+        this.$store.commit("doc/GET_FIELD", "archNo");
         let data = {
           archType: e.archType,
           categoryId: e.categoryId,

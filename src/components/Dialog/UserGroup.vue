@@ -41,7 +41,7 @@
           <el-table
             v-loading="tableLoading"
             :data="userList"
-            :height="tableHeightLocal"
+            :height="tableHeightLocal+150"
             highlight-current-row
             style="width: 100%"
           >
@@ -129,6 +129,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from 'vuex';
 import UserApi from "../../api/services2/user";
 // import { Doc_TreeIconChange } from "@/util/Common";
 
@@ -174,10 +175,7 @@ export default {
     };
   },
   computed: {
-    tableHeightLocal() {
-      let height = document.body.clientHeight - 170;
-      return height;
-    },
+    ...mapGetters("doc",["tableHeightLocal"])
   },
   mounted() {
     this.getGroupList();

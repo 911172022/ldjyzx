@@ -1,4 +1,4 @@
-import store from '../store/index.js'
+// import store from '../store/index.js'
 import Vue from 'vue'
 // import {connectionWebSocket} from '@/util/WebSocket'
 
